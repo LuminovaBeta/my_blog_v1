@@ -1,0 +1,27 @@
+{% extends 'login.html' %}
+
+{% block title %}
+    <title>萤途个人博客|用户注册</title>
+{% endblock %}
+
+{% block main_title %}
+    <h2>注册</h2>
+{% endblock %}
+
+{% block form %}
+    <input type="text" ref="sign_form_name" v-model="sign_form.name" placeholder="请输入用户名" class="sing_input">
+    <input type="password" ref="sign_form_pwd" v-model="sign_form.pwd" placeholder="请输入密码" class="sing_input">
+    <input type="password" ref="sign_form_re_pwd" v-model="sign_form.re_pwd" placeholder="请输入确认密码" class="sing_input">
+    <div class="code">
+        <input type="text" ref="sign_form_code" v-model="sign_form.code" placeholder="请输入验证码" class="sing_input">
+        <img @click="get_random_code" src="/static/my/img/login/code.png" alt="">
+    </div>
+    <button @click="sign">注册</button>
+{% endblock %}
+
+{% block sign %}
+<div class="sign">
+    <p>已有账号? </p>
+    <a href="/login">返回登录</a>
+</div>
+{% endblock %}

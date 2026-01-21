@@ -1,0 +1,177 @@
+{% extends 'backend/backend.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/backend/add_article.css">
+    <link rel="stylesheet" href="/static/editor.md-master/css/editormd.css" />
+{% endblock %}
+
+{% block main %}
+    <!-- 按钮 -->
+    <div class="add_article_action">
+        {% block btn %}
+            <div class="item">
+                <el-button type="primary" plain @click="drawer = true">完善文章信息</el-button>
+            </div>
+            <!-- <div class="item">
+                <el-button type="info" plain>修改头像</el-button>
+            </div>
+            <div class="item">
+                <el-button type="success" plain>修改密码</el-button>
+            </div>
+            <div class="item">
+                <el-button type="danger" plain>注销退出</el-button>
+            </div> -->
+        {% endblock %}
+
+    </div>
+    {% block drawer %}
+    <!-- element-plus抽屉 -->
+    <el-drawer
+        v-model="drawer"
+        @open="handleOpen"
+        title="文章信息完善"
+        direction="rtl"
+        :lock-scroll="false"
+        :before-close="add_handleClose">
+        <div class="add_el_drawer_content">
+            <el-collapse v-model="add_arctile_activeNames">
+                <el-collapse-item class="article-basic-info" title="文章标题与简介" name="1">
+                    <el-input
+                        v-model="title"
+                        style="width: 260px"
+                        placeholder="请输入文章标题"
+                        clearable
+                    ></el-input>
+                    <div style="margin: 20px 0"></div>
+                    <el-input
+                        v-model="abstract"
+                        style="width: 260px"
+                        :autosize="{ minRows: 2, maxRows: 4 }"
+                        type="textarea"
+                        placeholder="请输入文章简介 (默认截取正文) "
+                    ></el-input>
+                </el-collapse-item>
+                <el-collapse-item class="category_tags" title="文章分类与标签" name="2">
+                    <!-- 分类 -->
+                    <el-select v-model="category_id" class="category" placeholder="请选择文章分类" style="width: 240px">
+                        {% for categroy in categroy_list %}
+                            <el-option
+                                label="{{ categroy.1 }}"
+                                value="{{ categroy.0 }}"
+                            ></el-option>
+                        {% endfor %}
+                        
+                    </el-select>
+                    <!-- 标签 -->
+                    <el-select
+                        v-model="tags"
+                        multiple
+                        filterable
+                        allow-create
+                        default-first-option
+                        collapse-tags
+                        class="tags"
+                        placeholder="请选择文章标签">
+                        {% for tag in tag_list %}
+                            <el-option
+                                label="{{ tag.title }}"
+                                value="{{ tag.nid }}"
+                            ></el-option>                            
+                        {% endfor %}
+                    </el-select>
+                </el-collapse-item>
+                <el-collapse-item class="article_cover" title="文章封面" name="3">
+                    <div class="left">
+                        <!-- 随机封面图片 -->
+                        <img id="cover_img" data="{{ c_l }}" src="" alt="">
+                    </div>
+                    <div class="right">
+                        <el-select @change="select_cover" v-model="cover_id" placeholder="请选择文章封面">
+                            {% for cover in cover_list %}
+                                <el-option
+                                    label="{{ cover.url.url }}"
+                                    value="{{ cover.nid }}">
+                                </el-option>
+                            {% endfor %}
+                        </el-select>
+                    </div>
+                </el-collapse-item>
+                <el-collapse-item class="can_choose" title="文章可选设置" name="4">
+                    <div class="option-row">
+                        <span class="label-text">是否上推荐</span>
+                        <el-switch
+                            v-model="recommend"
+                            inline-prompt
+                            active-text="是"
+                            inactive-text="否"
+                        ></el-switch>
+                    </div>
+                    <div class="password-row">
+                        <div class="pwd_active">
+                            <span class="label-text">是否加密</span>
+                            <el-switch
+                                v-model="pwd_active"
+                                inline-prompt
+                                active-text="是"
+                                inactive-text="否"
+                            ></el-switch>                            
+                        </div>
+                        <div class="pwd">
+                            <el-input
+                                v-if="pwd_active"
+                                v-model="pwd"
+                                placeholder="请输入文章密码"
+                                clearable
+                            ></el-input>                            
+                        </div>
+                    </div>
+
+                </el-collapse-item>
+            </el-collapse>
+            <div class="article_btn_list" >
+                <el-button @click="add_article" type="success" plain>发布文章</el-button>
+            </div>
+        </div>
+    </el-drawer>
+    {% endblock %}
+    <!-- 添加文章 -->
+    <div class="add_article" id="editor">
+        {% block textarea %}
+        <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
+        <textarea style="display:none;"></textarea>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/editor.md-master/lib/marked.min.js"></script>
+<script src="/static/editor.md-master/lib/prettify.min.js"></script>
+<script src="/static/js/jquery/jquery-3.7.1.min.js"></script>
+<script src="/static/editor.md-master/editormd.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd("editor", {
+            width: "100%",
+            height: "700",
+            // markdown: "xxxx",     // dynamic set Markdown text
+            path : "/static/editor.md-master/lib/",  // Autoload modules mode, codemirror, marked... dependents libs path
+            tex : true,
+            htmlDecode : "style,script,iframe,sub,sup|on*", // 启用img等html标签，并过滤某些比较危险的标签和属性
+
+            // 1. 开启图片上传功能
+            imageUpload    : true,    // 默认关闭
+            imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"], // 允许的格式
+            
+            // 2. 指向 Django 的上传接口，然后再django的urls.py里面配置
+            imageUploadURL : "/api/upload_image/", 
+        });
+
+        editormd.katexURL = {
+            js  : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min",  // 注意：不需要写 .js 后缀
+            css : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min"   // 注意：不需要写 .css 后缀
+        };
+    });
+
+</script>
+
+{% endblock %}

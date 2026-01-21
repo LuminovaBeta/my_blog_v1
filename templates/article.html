@@ -1,0 +1,191 @@
+{% extends 'index.html' %}
+{% load my_tag my_filter %}
+
+<!-- 公共样式继承 -->
+{% block css %}
+<link rel="stylesheet" href="/static/editor.md-master/css/editormd.css" />
+<link rel="stylesheet" href="/static/css/article.css">
+{% endblock %}
+
+<!-- 轮播图片位置继承 -->
+{% block banner %}
+    <!-- article 为通过 render 传给模板的文章对象 -->
+    {% banner 'article' article %}
+{% endblock %}
+
+<!-- 主要区域继承 -->
+{% block main %}
+<!-- 悬浮目录 -->
+<div class="slider_bar" ref="slider">
+    <div class="title">
+        <span>[[ slide_text ]]</span>
+        <el-switch
+            v-model="isShowSlider"
+            class="mt-2"
+            style="margin-left: 6px"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            @change="sliderChange"
+        ></el-switch>
+    </div>
+    <div class="body">
+        <p :tagName="item.tagName" @click="go_side_bar(item.pos, $event)" v-for="(item, index) in slide_list" :key="index">
+            [[ item.c ]]
+        </p>
+    </div>
+</div>
+<div class="article">
+    <!-- 文章点赞、收藏、回到顶部 -->
+    <div class="article_artions">
+        <div class="item" title="文章点赞">
+            <i class="fa fa-thumbs-up" @click="article_digg($event, '{{ article.nid }}')" aria-hidden="true"></i>
+            <span>{{ article.digg_count }}</span>
+            
+        </div>
+        <div class="item" title="文章收藏">
+            <!-- 有登录: 过滤器会返回 show -->
+            <i class="fa fa-star {{ article|is_user_coll:request }}" @click="article_collects($event, '{{ article.nid }}')" aria-hidden="true"></i>
+            <span>{{ article.collects_count }}</span>
+            
+        </div>
+        <div class="item" title="回到顶部">
+            <i class="fa fa-angle-double-up " @click="go_to_top" aria-hidden="true"></i>
+        </div>
+    </div>
+    <div class="article_title">
+        <h2>{{ article.title }}
+            {% if request.user.is_superuser %}
+                <a href="/backend/edit_article/{{ article.nid }}/"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+            {% endif %}
+        </h2>
+        <p>
+            <!-- 发布时间格式化输出，不输出时分秒 -->
+            <span>发布时间: <i>{{ article.create_date|date:'Y-m-d' }}</i></span>
+            <span>作者: <i>{{ article.author }}</i></span>
+            <span>来源: <i>{{ article.source }}</i></span>
+        </p>
+        
+        <div>
+            {% if article.tag.all %}
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <!-- 正向查询标签（用字段） -->
+            {% for tag in article.tag.all %}
+                <i>{{ tag.title }}</i>
+            {% endfor %}
+            {% endif %}
+        </div>
+        
+
+    </div>
+    <!-- 内容 -->
+    <div class="article_content" id="article_content">
+        <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
+        <textarea style="display:none;">{{ article.content }}</textarea>
+        
+    </div>
+    <!-- 发布评论 -->
+    <div class="comment_submit">
+        <div class="title">
+            你觉得文章怎么样
+        </div>
+        {% csrf_token %}
+        <div class="body">
+            <textarea name="" id="" ref="comment_content" rows="10" cols="30" v-model="comment_content" placeholder="你举得怎么样, 写下你想说的话吧："></textarea>
+            <button class="submin_comment" @click="add_comment('{{ article.nid }}')">发布评论</button>
+        </div>
+        <div class="footer">
+            <p><span>{{ article.look_count }}</span>人参与, <span>{{ article.comment_count }}</span>条评论</p>
+        </div>
+    </div>
+    <!-- 评论列表 -->
+    <div class="comment_list">
+        <ul>
+            <!-- 父评论 -->
+            {% for comment in comment_list %}
+                <li>
+                    <div class="left">
+                        <img src="{{ comment.user.avatar.url.url }}" alt="">
+                    </div>
+                    <div class="right">
+                        <h4>{{ comment.user.username }}</h4>
+                        <div class="comment_content">
+                            {{ comment.content }}
+                        </div>
+                        <div class="comment_info">
+                            <span>{{ comment.create_time }}</span>
+                            <div>
+                                <span @click="comment_digg($event, '{{ comment.nid }}')">点赞 ({{ comment.digg_count }})</span>
+                                <span @click="show_sub_comment_list($event, '{{ comment.user.username }}', '{{ comment.nid }}')">回复 ({{ comment.comment_count }})</span>
+                                {% if comment.user == request.user or request.user.is_superuser %}
+                                <span @click="delate_sub_comment('{{ comment.nid }}', '{{ article.nid }}', null)" class="deleat">删除</span>
+                                {% endif %}
+                                
+                            </div>
+                        </div>
+                        <!-- 子评论 -->
+                        <div class="sub_comment_list">
+                            {% for sub in comment.sub_comment %}
+                                <div>
+                                    <div class="left">
+                                        <img src="{{ sub.user.avatar.url.url }}" alt="">
+                                    </div>
+                                    <div class="right">
+                                        <h4>{{ sub.user.username }} @ {{ sub.parent_comment.user.username }}</h4>
+                                        <div class="sub_comment_content">
+                                            {{ sub.content }}
+                                        </div>
+                                        <div class="sub_comment_info">
+                                            <span>{{ sub.create_time }}</span>
+                                            <div>
+                                                <span @click="comment_digg($event, '{{ sub.nid }}')">点赞({{ sub.digg_count }})</span>
+                                                <span @click="sub_comment_set_placeholder($event, '{{ sub.user.username }}', '{{ sub.nid }}')">回复</span>
+                                                
+                                                {% if sub.user == request.user or request.user.is_superuser %}
+                                                <span @click="delate_sub_comment('{{ sub.nid }}', '{{ article.nid }}', '{{ comment.nid }}')" class="deleat">删除</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="sub_comment_textarea">
+                                <textarea name="" id="" cols="30" ref="sub_comment_content" rows="10" placeholder=""></textarea>
+                                <button @click="add_sub_comment($event, '{{ article.nid }}')">回复</button>
+                            </div>
+                        </div>
+                    </div>
+                </li>            
+            {% endfor %}
+
+        </ul>
+
+    </div>
+</div>
+{% endblock %}
+
+<!-- 重写js -->
+{% block js %}
+<script src="/static/editor.md-master/lib/marked.min.js"></script>
+<script src="/static/editor.md-master/lib/prettify.min.js"></script>
+<script src="/static/js/jquery/jquery-3.7.1.min.js"></script>
+<script src="/static/editor.md-master/editormd.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd.markdownToHTML("article_content", {
+            width: "100%",
+            height: "100%",
+            // markdown: "xxxx",     // dynamic set Markdown text
+            path : "/static/editor.md-master/lib/",  // Autoload modules mode, codemirror, marked... dependents libs path
+            
+            tex : true, // 1. 开启科学公式 TeX 语言支持，默认关闭
+            htmlDecode : "style,script,iframe,sub,sup|on*" // 启用img等html标签，并过滤某些比较危险的标签和属性
+        });
+
+        editormd.katexURL = {
+            js  : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min",  // 注意：不需要写 .js 后缀
+            css : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min"   // 注意：不需要写 .css 后缀
+        };
+    });
+</script>
+{% endblock %}

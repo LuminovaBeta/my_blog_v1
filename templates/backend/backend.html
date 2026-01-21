@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html leng="en">
+<head>
+    <meta charset="UTF-8">
+    <title>后台界面</title>
+    <link rel="stylesheet" href="/static/reset.css">
+    <link rel="stylesheet" href="/static/css/backend/backend_base.css">
+    <link rel="stylesheet" href="/static/element-plus/element-plus@2.13.0/dist/index.css" />
+
+    {% block css %}
+
+    {% endblock %}
+    <script src="/static/js/axios/axios.min.js"></script>
+    <script src="/static/vue/vue.global.js"></script>
+    <script src="/static/element-plus/element-plus@2.13.0/dist/index.full.js"></script>
+    <!-- <script src="//unpkg.com/@element-plus/icons-vue"></script>    -->
+    <script src="/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <aside>
+        <div class="clogan">
+            <img src="/static/my/img/backend/FLY-code-2.png" alt="">
+        </div>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/backend">个人中心</a></li>
+            <li><a href="/backend/edit_avatar">修改头像</a></li>
+            <li><a href="/backend/reset_passward">修改密码</a></li>
+            {% if request.user.is_superuser %}
+                <li><a href="/backend/add_article">添加文章</a></li>
+                <li><a href="/admin">后台管理</a></li>
+            {% endif %}
+            <li><a href="/logout">注销退出</a></li>
+        </ul>
+    </aside>
+    <main>
+        {% csrf_token %}
+        {% block main %}
+            <div class="user_info">
+                <div class="left">
+                    <img src="/static/my/img/default/头像1.jpg" alt="">
+                </div>
+                <div class="right">
+                    <div class="item">
+                        <span><b>用户名: </b>wshsm</span>
+                    </div>
+                    <div class="item">
+                        <span><b>注册时间: </b>2026-1-14</span>
+                    </div>
+                    <div class="item">
+                        <span><b>上次登录时间: </b>2026-1-14</span>
+                    </div>
+                    <div class="item">
+                        <span><b>用户积分: </b>666</span>
+                    </div>
+                    <div class="item">
+                        <span><b>邮箱: </b>yt@gmail.com</span>
+                    </div>
+                    <div class="item">
+                        <span><b>手机号码: </b>66666666666</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 按钮 -->
+            <div class="action">
+                <div class="item">
+                    <el-button type="info" plain>完善信息</el-button>
+                </div>
+                <div class="item">
+                    <el-button type="primary" plain>修改头像</el-button>
+                </div>
+                <div class="item">
+                    <el-button type="success" plain>修改密码</el-button>
+                </div>
+                <div class="item">
+                    <el-button type="danger" plain>注销退出</el-button>
+                </div>
+            </div>
+            {% block content %}
+            <!-- 收藏文章 -->
+            <div class="collection_article_all">
+                <p>我收藏的文章</p>
+                <div class="article_list">
+                    <div class="item">
+                        <div class="left">
+                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        </div>
+                        <div class="right">
+                            <h2>无人机硬件基础</h2>
+                            <p>基于px4的飞行器。</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="left">
+                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        </div>
+                        <div class="right">
+                            <h2>无人机硬件基础</h2>
+                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="left">
+                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        </div>
+                        <div class="right">
+                            <h2>无人机硬件基础</h2>
+                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="left">
+                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        </div>
+                        <div class="right">
+                            <h2>无人机硬件基础</h2>
+                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        {% endblock %}
+    </main>
+</div>
+
+{% block js %}
+
+{% endblock %}
+
+<script>
+    // 请求中间件
+    axios.interceptors.request.use(request => {
+        // 只要不是get请求，比如['post', 'put', 'patch', 'delete']就加一个请求头
+        if (request.method !== 'get'){
+            let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+            // console.log(request)
+            request.headers['X-CSRFToken'] = csrf_token
+        }
+        return request
+    })
+    // 响应中间件
+    axios.interceptors.response.use(
+        response=>{
+            // console.log(response)
+            return response.data
+        }
+    )
+    // 解构
+    const { createApp, ref, nextTick } = Vue;
+    // vue3
+    const app = Vue.createApp({
+        delimiters: ['[[', ']]'],// 分割符配置
+        data(){
+            return {
+                // 选中的
+                add_arctile_activeNames: ['1'],
+                // 文章分类id
+                category_id: '',
+                // 文章分类, 已经通过后端和前端处理过了，只需要修改数据库就可
+                // category_options: [
+                //     {value: 1, label: '嵌入式'},
+                //     {value: 2, label: '网页开发'},
+                //     {value: 3, label: '学习记录'},
+                //     {value: 4, label: '生活随笔'},
+                // ],
+                // 文章标签
+                tags: [],
+                // 是否上推荐
+                recommend: true,
+                // 是否需要密码
+                pwd_active: false,
+                // 文章密码
+                pwd: '',
+                // 文章封面id
+                cover_id: '',
+                // 文章标题
+                title: '',
+                // 文章简介
+                abstract: '',
+            }
+        },
+        // 生命周期钩子用法
+        created(){
+
+        },
+        // 方法定义
+        methods: {
+            // 添加文章函数
+            add_article(){
+                let data = {
+                    title: this.title,
+                    cover_id: this.cover_id,
+                    tags: this.tags,
+                    category: this.category_id,
+                    recommend: this.recommend,
+                    pwd: this.pwd,
+                    abstract: this.abstract,
+                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                }
+                
+                axios.post('/api/article/', data).then(res => {
+                    if(res.code){
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    this.$message.success(res.msg)
+                    setTimeout(() => {
+                        location.href = `/article/${res.data}/`
+                    }, 1000)
+                })
+            },
+            // 选择图片
+            select_cover(val){
+                setTimeout(() => {
+                    let v = document.querySelector('.article_cover .el-select__selected-item span').innerText
+                    let cover = document.getElementById('cover_img')
+                    cover.src = v
+                }, 1)
+            },
+            // 编辑文章
+            edit_article(nid){
+                let data = {
+                    title: this.title,
+                    cover_id: this.cover_id,
+                    tags: this.tags,
+                    category: this.category_id,
+                    recommend: this.recommend,
+                    pwd: this.pwd,
+                    abstract: this.abstract,
+                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                }
+                
+                axios.put(`/api/article/${nid}/`, data).then(res => {
+                    console.log(res)
+                    if(res.code){
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    this.$message.success(res.msg)
+                    setTimeout(() => {
+                        location.href = `/article/${res.data}/`
+                    }, 1000)
+                })
+            },
+            // 保存文章内容
+            save_content(nid){
+                // 暂时不用
+            }
+        },
+        setup() {
+            // 1. 定义 drawer 变量 (解决 Property "drawer" ... not defined)
+            const drawer = ref(false);
+
+            // 2. 定义 direction 变量 (解决 Property "rtl" ... 或者是方向相关的报错)
+            // 注意：通常我们用变量名 direction，值为 'rtl'
+            const direction = ref('rtl'); 
+
+            // 3. 定义 add_handleClose 函数 (解决 Property "add_handleClose" ... not defined)
+            const add_handleClose = (done) => {
+                ElementPlus.ElMessageBox.confirm('确认关闭吗？')
+                    .then(() => {
+                        done();
+                    })
+                    .catch(() => {
+                        // 取消关闭
+                    });
+            };
+            
+            
+            
+            // 抽屉绑定的open事件
+            // 1. 定义响应式变量
+            const cover_id = ref('');
+            const cover_url = ref('');
+            const title = ref(''); // 定义 title
+            const abstract = ref(''); // 简介
+            const category_id = ref(undefined); // 分类，默认为 undefined
+            const pwd = ref(''); // 密码
+            const pwd_active = ref(false); // 密码状态，默认为 boolean
+            const tags = ref([]); // 标签，默认为空数组
+            const recommend = ref(undefined); // 上推荐，默认为 boolean
+
+            const handleOpen = () => {
+                let path_now = location.pathname // 获取当前文章地址
+                console.log('抽屉正在打开，等待 DOM 渲染...');
+                let index = path_now.indexOf('add_article') // 在字符串中查找子字符串  如果没找到返回 -1
+
+                // nextTick 用来等待 DOM 更新完成的
+                nextTick(() => {
+                    // add_article
+                    if (index !== -1){/* 添加文章 */
+                        // 随机封面
+                        const img = document.getElementById('cover_img')
+                        let cover_list = eval(img.getAttribute('data'))
+                        let item = cover_list[Math.floor(Math.random() * cover_list.length)]
+                        img.setAttribute('src', item.url)
+                        cover_id.value = item.nid.toString()
+                        this.cover_id = item.nid.toString()
+                        console.log(item) // 随机选中的img背景图片
+                    }else{/* 编辑文章 */
+                        let box = document.getElementById('edit_info')
+                        title.value = box.getAttribute('data_title')
+                        abstract.value = box.getAttribute('data_abstract')
+                        // 分类
+                        let raw_category = box.getAttribute('data_category')
+                        if(raw_category !== 'None'){
+                            category_id.value = raw_category // 字符串类型
+                        }else{
+                            category_id.value = ''
+                        }
+                        // 标签
+                        tags.value = eval(box.getAttribute('data_tags'))// 字符串类型的数组
+                        // 上推荐
+                        if(box.getAttribute('data_recommend') === 'True'){
+                            recommend.value = true
+                        }else{
+                            recommend.value = false
+                        }
+                        // 密码
+                        let raw_pwd = box.getAttribute('data_pwd');
+                        if(raw_pwd !== 'None'){
+                            pwd.value = box.getAttribute('data_pwd')
+                            pwd_active.value = true
+                        }else{
+                            pwd.value = ''
+                            pwd_active.value = false
+                        }
+                        // 封面
+                        cover_id.value = box.getAttribute('data_cover_id') // 拿到图片id
+                        cover_url.value = box.getAttribute('data_cover_url') // 拿到图片url
+                        console.log(cover_url.value)
+                        const img = document.getElementById('cover_img') // 拿到图片DOM
+                        img.setAttribute('src', cover_url.value) // 修改图片地址                        
+                    }
+
+                });
+            };
+
+            // 必须把上面定义的变量和函数 return 出去，HTML 才能看见！
+            return {
+                drawer,
+                direction, 
+                add_handleClose,
+                // 如果你的 HTML 里写的是 :direction="rtl"，那你要么改成 direction="rtl"，
+                // 要么在这里 return 一个叫 rtl 的变量。
+                // 为了保险，我这里顺便帮你定义一个 rtl 变量，防止你改 HTML 麻烦
+                rtl: 'rtl',
+                handleOpen,
+                cover_id,// 图片id
+                title,
+                abstract, // 文章简介
+                category_id, // 文章分类
+                pwd,
+                pwd_active,
+                tags,
+                recommend,
+            };
+        }
+    });
+    app.use(ElementPlus);
+    // vue3 手动挂载到 DOM 元素
+    app.mount('#app');
+</script>
+
+</body>
+</html>

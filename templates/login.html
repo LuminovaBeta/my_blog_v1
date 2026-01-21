@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html leng="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>萤途个人博客|用户登录</title>
+    {% endblock %}
+    <link rel="stylesheet" href="/static/reset.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="/static/element-plus/element-plus@2.13.0/dist/index.css" />
+</head>
+<body>
+<div id="app">
+    <main>
+        <div class="left">
+            <img src="/static/my/img/login/tree-swing.svg" alt="">
+        </div>
+        <div class="right">
+            <div class="title">
+                {% block main_title %}
+                    <h2>登录</h2>
+                {% endblock %}
+            </div>
+            
+            <div class="login_forms">
+                {% csrf_token %}
+                {% block form %}
+                    <input type="text" ref="login_form_name" v-model="login_form.name" placeholder="请输入用户名">
+                    <input type="password" ref="login_form_pwd" v-model="login_form.pwd" placeholder="请输入密码">
+                    <div class="code">
+                        <input type="text" ref="login_form_code" v-model="login_form.code" placeholder="请输入验证码">
+                        <!-- 创建点击事件 -->
+                        <img @click="get_random_code" src="/static/my/img/login/code.png" alt="">
+                    </div>
+                    <button @click="login">登录</button>
+                {% endblock %}
+            </div>
+            {% block sign %}
+            <div class="sign">
+                <p>还没有账号? </p>
+                <a href="/sign">去注册</a>
+            </div>
+            {% endblock %}
+            <div class="other_login">
+                <p>其他登录方式</p>
+                <div>
+                    <img src="/static/my/img/footer/QQ_icon.svg" alt="">
+                    <img src="/static/my/img/footer/wechat_icon.svg" alt="">
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- <script src="/static/js/qs/6.11.2/qs.min.js"></script> -->
+<script src="/static/js/axios/axios.min.js"></script>
+<script src="/static/vue/vue.global.js"></script>
+<!-- 引入组件库 -->
+<script src="/static/element-plus/element-plus@2.13.0/dist/index.full.js"></script>
+
+<script>
+    // 请求中间件
+    axios.interceptors.request.use(request => {
+        if (request.method === 'post'){
+            let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+            // console.log(request)
+            request.headers['X-CSRFToken'] = csrf_token
+        }
+        return request
+    })
+    // 响应中间件
+    axios.interceptors.response.use(
+        response=>{
+            // console.log(response)
+            return response.data
+        }
+    )
+
+    // vue3
+    const app = Vue.createApp({
+        data(){
+            return{
+                login_form:{    
+                    name: '',
+                    pwd: '',
+                    code: ''
+                },
+                sign_form:{
+                    name: '',
+                    pwd: '',
+                    re_pwd: '',
+                    code: ''
+                }
+            }
+        },
+        methods:{
+            login(){
+                axios.post('/api/login/', this.login_form).then(res=>{
+                    // 这里需要引入elemnet Plus不能用element ui
+                    if(res.code){
+                        // 失败的报错
+                        ElementPlus.ElMessage.error(res.msg)
+                        this.$refs[`login_form_${res.self}`].focus()
+                        return
+                    }
+                    ElementPlus.ElMessage.success(res.msg)
+
+                    setTimeout(()=>{
+                        location.href = '/'
+                    }, 1000)
+                })
+            },
+
+            sign(){
+                axios.post('/api/sign/', this.sign_form).then(res=>{
+                    // 这里需要引入elemnet Plus不能用element ui
+                    if(res.code){
+                        // 失败的报错
+                        ElementPlus.ElMessage.error(res.msg)
+                        this.$refs[`sign_form_${res.self}`].focus()
+                        return
+                    }
+                    ElementPlus.ElMessage.success(res.msg);
+
+                    setTimeout(()=>{
+                        location.href = '/login'
+                    }, 3000)
+                })
+            },
+
+            get_random_code(e){
+                let data = new Date().getTime()
+                e.target.src = '/login/random_code/?timestamp=' + data
+
+            },
+        }
+    })
+    app.mount('#app')
+
+
+</script>
+
+</body>
+</html>

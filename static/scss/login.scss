@@ -1,0 +1,150 @@
+body{
+    width: 100%;
+    height: 100vh; // 100%视窗高度
+    #app{
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+main{
+    width: 900px;
+    min-height: 500px;
+    border-radius: 7px;
+    background-color: white;
+    box-shadow: 0 0 9px rgba($color: #000000, $alpha: 0.2);  // 阴影
+    display: flex;
+    position: relative;
+
+    .left{
+        width: 60%;
+        display: flex;
+        img{
+            position: absolute;
+            height: 200px;
+            bottom: 0;
+            left: 40px;
+        }
+    }
+    .right{
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        padding: 20px;
+        box-sizing: border-box;
+        .title{
+            h2{
+                padding-top: 20px;
+                display: flex;
+                justify-content: center;
+                color: #ff9800;
+            }            
+        }
+        .login_forms{
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            input{
+                height: 30px;
+                margin-bottom: 18px;
+                border: 1px solid #f0eeee;
+                outline: none;
+                border-radius: 5px;
+                transition: all 0.3s;
+
+                &:focus{
+                    border: 1px solid #ff9800;
+                }
+            }
+            input.sign_input{
+                margin-bottom: 14px;
+            }
+            .code{
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                input{
+                    flex: 1; /* 【核心】自动占据左边剩下的所有空间 */
+                    width: 60%;
+                }
+                img{
+                    display: block;
+                    height: 34px;
+                    width: 130px; 
+                    margin-left: 10px; /* 【核心】给中间留点缝隙 */
+                    border-radius: 5px;
+                    /* 防止图片被压缩变形 */
+                    object-fit: cover; /* 保持图片比例 */
+                    border: 1px solid #f0eeee;
+                }
+            }
+            > button{
+                border: none;
+                cursor: pointer;
+                height: 40px;
+                background-color: #ff9800;
+                color: white;
+                border-radius: 5px;
+            }
+        }
+        .sign{
+            height: 30px;
+            align-items: center;
+            display: flex; // 开启弹性布局
+            justify-content: space-between;// 左右布局
+
+            p{
+                font-size: 14px;
+                color: #808595;
+            }
+        }
+        .other_login{
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+
+            > p{
+                font-size: 14px;
+                color: #808595;
+            }
+            // 前
+            &::before{
+                position: absolute;
+                content: '';
+                display: block;
+                width: 100px;
+                height: 1px;
+                background-color: #808595;
+                left: 6px;
+                top: 10px;
+            }
+            // 后
+            &::after{
+                position: absolute;
+                content: '';
+                display: block;
+                width: 100px;
+                height: 1px;
+                background-color: #808595;
+                right: 6px;
+                top: 10px;
+            }
+
+            >div{
+                margin-top: 20px;
+                img{
+                    width: 30px;
+                    margin: 0 5px;
+                }
+            }
+        }
+    }
+}

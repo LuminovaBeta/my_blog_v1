@@ -1,0 +1,9 @@
+# 递归找根评论
+def find_root_comment(comment):
+        # 找最终跟评论
+        if comment.parent_comment:
+            # 不是跟评论
+            # 递归查找根评论
+            return find_root_comment(comment.parent_comment)
+        # 是根评论
+        return comment

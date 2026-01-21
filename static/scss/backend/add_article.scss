@@ -1,0 +1,84 @@
+.add_article_action{
+    height: 40px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    .item{
+        margin: 0 5px;
+    }
+}
+.add_article {
+    flex: 1; /* 让它自动占据剩余空间 */
+    width: 100%;
+}
+.el-drawer__body{
+    position: relative;
+}
+.add_el_drawer_content{
+    .article-basic-info .el-collapse-item__content{
+        .el-input{
+            width: 260px;
+        }
+    }
+    .category_tags .el-collapse-item__content{
+        display: flex;
+        // justify-content: space-between;
+        gap: 15px;
+        .category{
+            flex: 1;
+        }
+        .tags{
+            flex: 1;
+        }
+    }
+    .article_cover .el-collapse-item__content{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .left{
+            width: 38%;
+            img{
+                width: 100%;
+            }
+        }
+        .right{
+            width: 60%;
+        }
+    }
+    .can_choose .el-collapse-item__content{
+        .option-row{
+            display: flex;
+            align-items: center;
+            height: 32px;
+            margin-bottom: 10px;
+            .label-text{
+                margin-right: 8px;
+                font-size: 14px;     /* 保持和 Element Plus 字体一致 */
+            }
+        }
+        .password-row{
+            display: flex;
+            align-items: center; /* 让文字、开关、输入框在垂直方向居中对齐 */
+            height: 32px;        /* 固定高度，防止输入框出现时撑开高度跳动 */
+            .label-text{
+                margin-right: 8px;
+                font-size: 14px;     /* 保持和 Element Plus 字体一致 */
+            }
+            .pwd_active{
+                display: flex;
+                align-items: center;
+                white-space: nowrap; /* 防止“是否加密”换行 */
+                margin-right: 15px; /* 核心：把输入框往右推开一点距离 */
+            }
+            .pwd{
+                flex: 1; /* 核心：让输入框自动填满右边剩余的所有空间 */
+                /* 如果不想占满，可以删掉上一行，改成 width: 200px; */
+            }
+        }
+    }
+    .article_btn_list{
+        position: absolute;
+        bottom: 30px;
+        right: 25px;
+    }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html leng="en">
+<head>
+    <meta charset="UTF-8">
+    <title>萤途个人博客</title>
+    <link rel="stylesheet" href="/static/reset.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/vue/vue.js"></script>
+    
+</head>
+<body>
+<div id="app">
+    <link rel="stylesheet" :href="'/static/theme/' + theme + '.css'">
+    <!--顶部区域-->
+    <nav>
+        <div class="left">
+            <a href="#">首页</a>
+            <a href="#">新闻</a>
+            <a href="#">心情</a>
+            <a href="#">关于</a>
+        </div>
+        <div class="right">
+            <img v-show="theme == 'light'" src="/static/my/img/nav/light.svg" @click="setTheme('dark')">
+            <img v-show="theme == 'dark'" src="/static/my/img/nav/dark.svg" @click="setTheme('light')">
+
+            <!-- <a href="#" @click="setTheme('light')">白色主题</a>
+            <a href="#" @click="setTheme('dark')">黑色主题</a> -->
+            <a href="#">登录</a>
+            <a href="#">注册</a>
+        </div>
+    </nav>
+
+    <!-- 图片 -->
+    <header>
+        {% for img in img_list %}
+            <div class="dynamic_shuffl">
+                <img src="{{ img }}">
+            </div>        
+        {% endfor %}
+    </header>
+    <!--主区域-->
+    <main>
+        内容区域
+    </main>
+    <!--底部-->
+    <footer>
+        底部信息栏
+    </footer>    
+</div>
+<script>
+    new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data:{
+            theme:'light',  // 默认主题白色
+        },
+        created(){
+            // 调用初始化主题
+            this.init_theme()
+        },
+        methods:{
+            // 初始化主题
+            init_theme(){
+                // 读取存储的主题信息
+                let theme = localStorage.getItem('theme')
+                if (theme){
+                    this.theme = theme
+                }
+            },
+
+            // 设置主题
+            setTheme(themeName){
+                this.theme = themeName
+                // 持久化存储
+                localStorage.setItem('theme', themeName)
+            }
+        }
+    })
+    
+    // 获取需要轮播的div
+    let menu_img = document.querySelectorAll('.dynamic_shuffl')
+
+    // 获取他的长度
+    let menu_length = menu_img.length
+    // 初始位置
+    let index = 0
+    // 配置定时器函数，定时轮播
+    setInterval(()=>{
+        // 
+        index ++
+
+        // 到头了
+        if (index == menu_length){
+            index = 0
+        }
+        // 样式复原
+        for (let i of menu_img) {
+            i.style.opacity = 0
+        }
+        // 设置变化
+        menu_img[index].style.opacity = 1
+    }, 6000)
+</script>
+</body>
+</html>

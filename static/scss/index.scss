@@ -1,0 +1,257 @@
+#app{
+    width: 100%;
+    
+
+    .main{
+        width: 1200px;
+        min-height: 600px;
+        display: flex;
+        justify-content: space-between;// 横向布局，两端对齐，中间留空
+
+        >div>div{
+            margin-bottom: 20px;// left和right下的div边距，也就是card的边距
+        }
+
+        .left{
+            width: 69%;
+            .selected_articles > .title{
+                .switch_article_categroy{
+                    span{
+                        cursor: pointer;// 当鼠标移上去时，把箭头变成一只👆小手
+                        font-size: 16px;
+                        font-weight: bold;
+                        transition: all 0.3s;
+
+                        &:hover{
+                            color: #ff9800;
+                        }
+                        &.active{
+                            color: #ff9800;
+                        }
+                    }
+                }
+            }
+            .selected_articles > .body{
+                padding: 0 20px;
+                > ul{
+                    display: flex;
+                    flex-wrap: wrap;// 空间不够时，允许自动换行
+                    > li{
+                        width: 50%;
+                        box-sizing: border-box;
+                        display: flex;
+                        padding: 10px 0;
+
+                        &:nth-child(1), &:nth-child(3), &:nth-child(5){
+                            border-right: 1px solid #f0eeee;
+                            .right{
+                                padding-right: 10px;
+                            }
+                        }
+                        &:nth-child(2), &:nth-child(4), &:nth-child(6){
+                            padding: 10px 0 10px 10px;
+                        }
+                        &:nth-child(1), &:nth-child(2), &:nth-child(3), &:nth-child(4){
+                            border-bottom: 1px solid #f0eeee;
+                        }
+                        .left{
+                            width: 40%;
+                            > div{
+                                width: 100%;
+                                height: 80px;
+                                overflow: hidden;
+                            }
+                            img{
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                &:hover{
+                                    transform: scale(1.1);
+                                    transition: all 0.3s;
+                                }
+                            }
+                        }
+                        .right{
+                            width: 60%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            padding-left: 10px;
+                            box-sizing: border-box;
+                            h2{
+                                font-size: 20px;
+                            }
+                            p{
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                            span{
+                                font-size: 14px;
+                                color: #555;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .all_articles > .body{
+                background-color: transparent;// 透明
+                padding: 0;
+                >ul{
+                    width: 100%;
+
+                    li{
+                        width: 100%;
+                        display: flex;
+                        background-color: white;
+                        border-radius: 5px;
+                        margin-bottom: 20px;// 相对于下一个的距离
+
+                        &:nth-child(1){
+                            // 第一个自身(li)标签
+                            border-radius: 0 0 5px 5px;
+
+                            .left{
+                                padding: 10px 10px 20px 20px;
+                            }
+                            .right{
+                                padding: 10px 20px 20px 10px;
+                            }
+                        }
+
+                        .left{
+                            width: 30%;
+                            box-sizing: border-box;
+                            padding: 20px 10px 20px 20px;
+                            
+                            > div{
+                                width: 100%;
+                                height: 120px;
+                                border-radius: 5px;
+                                overflow: hidden;// img放大后超出部分隐藏，超出部分隐藏
+                            }
+                            img{
+                                // 剪裁图片
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover; // cover = 保持比例，像放大镜一样填满盒子，多余的部分会被裁剪掉
+                                object-position: center; // 可选：加上这个可以让图片居中裁剪，而不是只裁剪底部
+
+                                &:hover{
+                                    transform: scale(1.1);// 1.1倍缩放
+                                    transition: 0.3s;// 过度
+                                }
+                            }
+                        }
+                        .right{
+                            width: 70%;
+                            padding: 20px 20px 20px 10px;
+                            // display: flex;
+                            // flex-direction: column;// 按列排布
+                            // justify-content: space-between;// 两端对齐
+
+                            > h2{
+                                font-size: 23px;
+                                margin-bottom: 10px;
+                            }
+
+                            p{
+                                display: -webkit-box; /* 必须结合的属性，将对象作为弹性伸缩盒子模型显示 */
+                                -webkit-box-orient: vertical; /* 必须结合的属性，设置伸缩盒对象的子元素的排列方式 */
+                                -webkit-line-clamp: 2; /* 限制显示的行数 */
+                                overflow: hidden; /* 隐藏超出的内容 */
+                                text-overflow: ellipsis; /* 超出部分显示省略号 */
+                                margin-bottom: 10px;
+                            }
+                            .article_info{
+                                font-size: 14px;
+                                color: #555;
+                                > span{
+                                    margin-right: 10px;
+                                }
+                                i{
+                                    margin-right: 5px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        .right{
+            width: 29%;
+        }
+        
+        .tags > .body{
+            position: relative;
+            ul{
+                display: flex;
+                flex-wrap: wrap;// 空间不够时，允许自动换行
+                margin-top: 10px;
+                
+                @keyframes move_box {
+                    0%{
+                        left: 0;
+                        top: 0;
+                    }
+                    25%{
+                        left: calc(100% - 20px);
+                        top: 0;
+                    }
+                    50%{
+                        left: calc(100% - 20px);
+                        top: calc(100% - 20px);
+                    }
+                    75%{
+                        left: 0;;
+                        top: calc(100% - 20px);
+                    }
+                    100%{
+                        left: 0;
+                        top: 0;
+                    }
+                }
+
+                // ul的伪元素
+                &::before{
+                    display: block;
+                    width: 20px;
+                    height: 20px;
+                    content: "";
+                    background-color: #ff9800;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+
+                    // -webkit-兼容旧版本浏览器
+                    -webkit-animation-name: move_box;
+                    animation-name: move_box;
+                    -webkit-animation-duration: 5s;
+                    animation-duration: 5s;
+                    -webkit-animation-iteration-count: infinite;
+                    animation-iteration-count: infinite;
+                }
+                li{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: calc(100% / 3);// 中间留间隔竖线
+                    height: 35px;
+                    box-sizing: border-box;
+
+                    &:nth-child(6n+1), &:nth-child(6n+2), &:nth-child(6n+3){
+                        background-color: #f5f5f5;
+                    }
+                    &:nth-child(3n+1), &:nth-child(3n+2){
+                        border-right: 1px solid #f5f5f5; // 中间留间隔竖线
+                    }
+                }
+            }
+        }
+    }
+
+}
+

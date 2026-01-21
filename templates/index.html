@@ -1,0 +1,658 @@
+<!-- vue3版本 -->
+<!DOCTYPE html>
+<html leng="en">
+{% load my_tag %}
+<head>
+    <meta charset="UTF-8">
+    <title>萤途个人博客</title>
+    <!-- <style>
+        /* 修正下拉菜单文字的样式 */
+        .el-dropdown-link {
+            cursor: pointer;
+            /* 使用 Element Plus 的主色，或者你可以改成 color: #333; */
+            color: #333; 
+            display: flex;
+            align-items: center;
+            outline: none; /* 去掉点击时的边框 */
+            font-size: 16px; /* 根据你的导航栏调整字体大小 */
+            margin-left: 10px; /* 如果离左边的图标太近，加点间距 */
+        }
+        
+        /* 调整图标颜色与文字一致 */
+        .el-dropdown-link .el-icon--right {
+            margin-left: 5px;
+        }
+    </style> -->
+    <link rel="stylesheet" href="/static/reset.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    {% block css %}
+    <link rel="stylesheet" href="/static/css/index.css">
+    {% endblock %}
+    <link rel="stylesheet" href="/static/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/element-plus/element-plus@2.13.0/dist/index.css" />
+    
+
+    <script src="/static/vue/vue.global.js"></script>
+    <script src="/static/element-plus/element-plus@2.13.0/dist/index.full.js"></script>
+    <!-- <script src="//unpkg.com/@element-plus/icons-vue"></script>    -->
+    <script src="/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js"></script>
+    <script src="/static/js/jquery/jquery-3.7.1.min.js"></script>
+     
+
+</head>
+<body>
+<div id="app">
+    <link rel="stylesheet" :href="'/static/theme/' + theme + '.css'">
+    <!--顶部区域-->
+    <nav class="nav_bg">
+        <div class="left">
+            <a href="/">首页</a>
+            <a href="/news">新闻</a>
+            <a href="#">心情</a>
+            <a href="#">关于</a>
+        </div>
+        <div class="right">
+            <img v-show="theme == 'light'" src="/static/my/img/nav/light.svg" @click="setTheme('dark')">
+            <img v-show="theme == 'dark'" src="/static/my/img/nav/dark.svg" @click="setTheme('light')">
+
+            {% if request.user.username %}
+                <el-dropdown>
+                    <span class="el-dropdown-link">
+                        {{ request.user.username }}
+                        <el-icon class="el-icon--right">
+                            <arrow-down />
+                        </el-icon>
+                    </span>
+                    <template #dropdown>
+                        <el-dropdown-menu>
+                            <el-dropdown-item><a href="/backend">个人中心</a></el-dropdown-item>
+                            <el-dropdown-item><a href="/backend/edit_avatar">修改头像</a></el-dropdown-item>
+                            <el-dropdown-item><a href="/backend">发布文章</a></el-dropdown-item>
+                            <el-dropdown-item><a href="/admin">后台管理</a></el-dropdown-item>
+                            <!-- <el-dropdown-item disabled>暂不可用</el-dropdown-item> -->
+                            <el-dropdown-item divided><a href="/logout">退出登录</a></el-dropdown-item>
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
+            {% else %}
+                <a href="/login">登录</a>
+                <a href="/sign">注册</a>
+            {% endif %}
+        </div>
+    </nav>
+    <!-- 图片 -->
+    {% block banner %}
+        {% banner 'index' %}
+    {% endblock %}
+    
+    <!--主区域-->
+    <main>
+        <!-- 内容区域使用钩子 -->
+        {% block main %}
+        <div class="main">
+            <div class="left">
+                <div class="selected_articles card">
+                    <div class="title">
+                        <h2>精选文章</h2>
+                        <div class="switch_article_categroy">
+                            <span :class="{active: this_category === 'tech'}" @click="switch_article_categroy('tech')">技术</span>
+                            <span :class="{active: this_category === 'project'}" @click="switch_article_categroy('project')">项目</span>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                        <ul v-show="this_category === 'tech'" class="tech">
+                            {% for tech in tech_list%}
+                                <!-- 技术精选 -->
+                                <li>
+                                    <div class="left">
+                                        <div>
+                                            <img src="{{ tech.cover.url.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <h2><a href="/article/{{ tech.nid }}/">{{ tech.title }}</a></h2>
+                                        <p>{{ tech.abstract }}</p>
+                                        <span>{{ tech.create_date|date:'Y-m-d' }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <ul v-show="this_category === 'project'" class="project">
+                            {% for project in project_list%}
+                                <!-- 项目精选 -->
+                                <li>
+                                    <div class="left">
+                                        <div>
+                                            <img src="{{ project.cover.url.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <h2><a href="/article/{{ project.nid }}/">{{ project.title }}</a></h2>
+                                        <p>{{ project.abstract }}</p>
+                                        <span>{{ project.create_date|date:'Y-m-d' }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="all_articles card">
+                    <div class="title">
+                        <h2>博客文章</h2>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                        <ul>
+                            {% for article in article_list %}
+                                <li>
+                                    <div class="left">
+                                        <div>
+                                            <img src="{{ article.cover.url.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <h2><a href="/article/{{ article.nid }}/">{{ article.title }}</a></h2>
+                                        <p>{{ article.abstract }}</p>
+                                        <div class="article_info">
+                                            <span><i class="fa fa-calendar" aria-hidden="true"></i>{{ article.create_date|date:'Y-m-d' }}</span>
+                                            <span><i class="fa fa-thumbs-up" aria-hidden="true"></i>{{ article.digg_count }}</span>
+                                            <span><i class="fa fa-comments" aria-hidden="true"></i>{{ article.comment_count }}</span>
+                                            <span><i class="fa fa-eye" aria-hidden="true"></i>{{ article.look_count }}</span>
+                                            <span><i class="fa fa-star" aria-hidden="true"></i>{{ article.collects_count }}</span>
+                                        </div>
+                                    </div>
+                                </li>                            
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="right">
+                <div class="tags card">
+                    <div class="title">
+                        <h2>标签云</h2>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                         <ul>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                            <li>python</li>
+                         </ul>
+                    </div>
+                </div>
+                <div class="site_info card">
+                    <div class="title">
+                        <h2>站点信息</h2>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                    </div>
+                </div>
+                <div class="links card">
+                    <div class="title">
+                        <h2>阅读排行榜</h2>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                    </div>
+                </div>
+                <div class="links card">
+                    <div class="title">
+                        <h2>友情链接</h2>
+                        <a href="#">申请</a>
+                    </div>
+                    <div class="body">
+                        <!-- 主要内容区域 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </main>
+    <!--底部-->
+    <footer>
+        <div class="left">
+            <p class="thank">Thank For</p>
+            <p>© 2025 萤途 | Powered by Django & Vue 3</p>
+            <p>Copyright © 2025 萤途. All Rights Reserved</p>
+            <p class="version">
+                <span>version</span>
+                <span>1.0.0</span>
+            </p>
+            <p>建站日期: 2025-12-31</p>
+        </div>
+        <div class="right">
+            <!-- 联系方式 -->
+            <div class="contact">
+                <!-- 右侧的图片 -->
+                <div>
+                    <img class="svg" src="/static/my/img/footer/QQ_icon.svg" alt="">
+                    <img class="qq" src="/static/my/img/footer/qq.png" alt="">
+                </div>
+                <div>
+                    <img class="svg" src="/static/my/img/footer/wechat_icon.svg" alt="">
+                    <img class="wechat" src="/static/my/img/footer/wechat.jpg" alt="">
+                </div>
+            </div>
+            <p>联系邮箱: 2636049376@qq.com</p>
+        </div>
+    </footer>    
+</div>
+<script src="/static/js/axios/axios.min.js"></script>
+
+<script>
+    // 请求中间件
+    // 只要不是get请求，比如['post', 'put', 'patch', 'delete']就加一个请求头
+    axios.interceptors.request.use(request => {
+        if (request.method !== 'get'){
+            let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+            // console.log(request)
+            request.headers['X-CSRFToken'] = csrf_token
+        }
+        return request
+    })
+    // 响应中间件
+    axios.interceptors.response.use(
+        response=>{
+            // console.log(response)
+            return response.data
+        }
+    )
+    // 解构赋值
+    const { ElMessage, ElMessageBox } = ElementPlus;
+    const { createApp, ref, markRaw } = Vue;
+    const { Check, Close } = ElementPlusIconsVue;
+    // vue3
+    const app = Vue.createApp({
+        delimiters: ['[[', ']]'],// 分割符配置
+        data(){
+            return {
+                theme: 'light',// 默认主题
+                this_category: 'tech',  // 当前所在的位置
+                comment_content: '', // 评论内容
+
+                // 开关 
+                // 定义图标变量
+                // 在 CDN 模式下，图标都在 ElementPlusIconsVue 这个全局大对象里
+                isShowSlider: false, // 默认不显示悬浮窗
+                Check: markRaw(ElementPlusIconsVue.Check),
+                Close: markRaw(ElementPlusIconsVue.Close),
+                slide_list: [],
+                slide_text: '显示文章目录',
+            }
+        },
+        // 生命周期钩子用法不变
+        created () {
+            // 调用初始化主题
+            this.init_theme()
+            // 初始化分类，持久化存储
+            this.init_article_categroy()
+            // 初始化悬浮目录
+            this.init_slider()
+
+            setTimeout(()=>{
+                this.get_sidebar()
+            }, 1000)
+        },
+        // 方法定义不变
+        methods: {
+            // 初始化主题
+            init_theme() {
+                let theme = localStorage.getItem('theme')
+                if (theme) {
+                    this.theme = theme
+                }
+            },
+            // 设置主题
+            setTheme(themeName) {
+                this.theme = themeName
+                // 持久化存储
+                localStorage.setItem('theme', themeName)
+            },
+
+            // 初始化分类
+            init_article_categroy(){
+                let this_category = localStorage.getItem('this_category')
+                if (this_category) {
+                    this.this_category = this_category
+                }
+            },
+            // 选择分类
+            switch_article_categroy(categroyName){
+                this.this_category = categroyName
+                // 持久化存储
+                localStorage.setItem('this_category', categroyName)
+            },
+
+            // 发布评论
+            add_comment(nid){
+                
+                axios.post(`/api/article/comment/${nid}/`, {content: this.comment_content}).then(res => {
+                    if (res.code){
+                        if (res.self){
+                            this.$refs[`comment_${res.self}`].focus(); // 获取焦点，可以直接输入内容，不需要再次点击
+                        }
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    // 成功
+                    this.$message.success(res.msg)
+                    // 刷新当前页面
+                    setTimeout(() => {
+                        location.reload()
+                    }, 200)
+                })
+            },
+
+            // 将被评论人的用户名写到placeholder, cid 评论id
+            set_sub_laceholder(div, username, cid){
+                $(div).find('textarea').attr('placeholder', `@${username}`)
+                $(div).find('textarea').attr('cid', cid)
+            },
+
+            // 展示子评论列表, cid 评论id
+            show_sub_comment_list(e, username, cid){
+                let div = $(e.target).parent().parent().next() // 找二级父元素的子标签
+                // console.log(div);
+                $(div).slideToggle() // 收缩
+                // div 回复div
+                this.set_sub_laceholder(div, username, cid)
+            },
+
+            // 子评论回复显示, cid 评论id
+            sub_comment_set_placeholder(e, username, cid){
+                let div = $(e.target).parents('.sub_comment_list') // 所有的父亲
+                this.set_sub_laceholder(div, username, cid)
+            },
+
+            // 发布子评论，文章id，评论id
+            add_sub_comment(e, nid){
+                // nid 文章id
+                // cid 评论id
+                axios.post(`/api/article/comment/${nid}/`, {
+                    content: $(e.target).prev().val(),
+                    pid: $(e.target).prev().attr('cid'),
+                }).then(res => {
+                    if (res.code){
+                        if (res.self){
+                            this.$refs[`sub_comment_${res.self}`].focus(); // 获取焦点，可以直接输入内容，不需要再次点击
+                        }
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    // 成功
+                    this.$message.success(res.msg)
+                    // 刷新当前页面
+                    setTimeout(() => {
+                        location.reload()
+                    }, 200)
+                })
+            },
+            // 删除子评论, nid评论id, aid文章id, root_comment_id根评论id
+            delate_sub_comment(nid, aid, root_comment_id){
+                ElMessageBox.confirm(
+                    'proxy will permanently delete the file. Continue?',
+                    'Warning',
+                    {
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Cancel',
+                    type: 'warning',
+                    }
+                )
+                .then(() => {
+                    axios.delete(`/api/article/comment/${nid}/`, {data:{
+                        aid,
+                        pid: root_comment_id,
+                    }}).then(res => {
+                        console.log(res);
+                        if(res.code){
+                            this.$message.error(res.msg)
+                            return
+                        }
+                        this.$message.success(res.msg)
+                        setTimeout(() => {
+                            location.reload()
+                        }, 200)
+                    })
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: 'info',
+                        message: 'Delete canceled',
+                    })
+                })
+            },
+            // 评论点赞, nid评论id, num数量
+            comment_digg(e, nid, num){
+                axios.post(`/api/comment/digg/${nid}/`).then(res => {
+                    if (res.code){
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    // 成功
+                    e.target.innerHTML = `点赞(${res.data})`
+                    this.$message.success(res.msg)
+                })
+            },
+
+            // 文章·点赞
+            article_digg(e, nid){
+                let dom = e.target
+                axios.post(`/api/article/digg/${nid}/`).then(res => {
+                    if (res.code){
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    // 成功
+                    $(dom).next().text(res.data)
+                    this.$message.success(res.msg)
+                })
+                dom.classList.add('show')
+                let timer = null
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    dom.classList.remove('show')
+                }, 4000)
+            },
+
+            // 文章·收藏
+            article_collects(e, nid){
+                let dom = e.target
+                axios.post(`/api/article/collects/${nid}/`).then(res => {
+                    if (res.code){
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    // 成功
+                    this.$message.success(res.msg)
+
+                    // 收藏数
+                    $(dom).next().text(res.data)
+
+                    // 样式切换
+                    if(res.isCollects){
+                        dom.classList.add('show')
+                        return
+                    }
+                    dom.classList.remove('show')
+                    
+                })
+            },
+
+            // 回到顶部
+            go_to_top(){
+                $('html,body').animate({
+                    scrollTop: 0
+                }, 1000)
+            },
+
+            // 初始化悬浮目录
+            init_slider(){
+                let flag = localStorage.getItem('isShowSlider')
+                if (flag){
+                    flag = eval(flag)// 转换类型为布尔类型
+                    if (flag){
+                        this.isShowSlider = true
+                        this.$nextTick(()=>{
+                            this.sliderChange(true)
+                        })
+                    }
+                    return 
+                }
+                
+            },
+
+            // 悬浮目录是否显示
+            sliderChange(val){
+                let dom = this.$refs.slider
+                // 当前页面不存在 slider 元素
+                if (!dom) {
+                    return;
+                }
+
+                localStorage.setItem('isShowSlider', val)
+                if (val){
+                    dom.classList.add('show')
+                    this.slide_text = '关闭文章目录'
+                    return
+                }
+                dom.classList.remove('show')
+                this.slide_text = '显示文章目录'
+            },
+
+            // 悬浮目录
+            get_sidebar(){
+                let content = $('#article_content')
+                let h_list = content.children('h1, h2, h3, h4')
+                let lis = []
+                for(let i = 0; i<h_list.length; i++){
+                    let c = h_list[i].innerText
+                    let tagName = h_list[i].tagName
+                    let tagId = h_list[i].id
+                    let ele = {
+                        tagName,
+                        c,
+                        pos: '#' + tagId,
+                    }
+                    console.log(ele);
+                    lis.push(ele);
+                }
+                lis.push({
+                    tagName: 'H1',
+                    c: '去评论吧',
+                    pos: '.comment_submit',
+                })
+                this.slide_list = lis
+            },
+            // 参数1：位置  参数2：标签自身
+            go_side_bar(selector, e){
+                $('.slider_bar .body>p').css('color', '')
+                e.target.style.color = '#ff9800'
+                let box = $(selector)
+                let pos = box.offset()
+                pos.top = pos.top - 80
+                $('html,body').animate({scrollTop: pos.top}, 800)
+                
+            },
+        }
+    });
+
+    // ==========================================
+    // 【新增】配置 Element Plus 和 图标
+    // ==========================================
+    
+    // 1. 注册 Element Plus 插件
+    app.use(ElementPlus);
+
+    // 2. 注册所有图标 (因为你引入了 @element-plus/icons-vue CDN)
+    // 这样你就可以直接使用 <arrow-down /> 等所有图标了
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+        app.component(key, component)
+    }
+
+    // ==========================================
+
+    // 【vue3重要变化】手动挂载到 DOM 元素
+    app.mount('#app');
+
+    // 获取需要轮播的div
+    let menu_img = document.querySelectorAll('.dynamic_shuffl')
+
+    // 获取他的长度
+    let menu_length = menu_img.length
+    // 初始位置
+    let index = 0
+    let timer = null;
+    clearInterval(timer)
+    // 配置定时器函数，定时轮播
+    timer = setInterval(()=>{
+        // 
+        index ++
+
+        // 到头了
+        if (index == menu_length){
+            index = 0
+        }
+        // 样式复原
+        for (let i of menu_img) {
+            i.style.opacity = 0
+        }
+        // 设置变化
+        menu_img[index].style.opacity = 1
+    }, 6000)
+
+    // 动态导航条
+    let nav = document.querySelector('.nav_bg')
+
+    // 目录悬浮
+    let path = location.pathname // 文章页
+    let slider;
+    let top1 = 0
+    if (path.indexOf('article') !== -1){
+        slider = document.querySelector('.slider_bar')
+        top1 = $(slider).offset().top - 80
+    }
+    
+
+    window.onscroll = function(){
+        let top = document.documentElement.scrollTop
+        if (top >= 200){
+            nav.classList.add('show')
+        }else{
+            nav.classList.remove('show')
+        }
+
+        // slider存在：文章界面
+        if(slider){
+            if(top >= top1){
+                slider.classList.add('fixed')
+            }else{
+                slider.classList.remove('fixed')
+            }
+        }
+
+    }
+</script>
+
+<!-- 用于重写js -->
+{% block js %}
+
+{% endblock %}
+
+</body>
+</html>
