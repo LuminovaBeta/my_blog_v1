@@ -31,13 +31,10 @@
     <link rel="stylesheet" href="/static/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/element-plus/element-plus@2.13.0/dist/index.css" />
     
-
-    <script src="/static/vue/vue.global.js"></script>
-    <script src="/static/element-plus/element-plus@2.13.0/dist/index.full.js"></script>
-    <!-- <script src="//unpkg.com/@element-plus/icons-vue"></script>    -->
-    <script src="/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js"></script>
-    <script src="/static/js/jquery/jquery-3.7.1.min.js"></script>
-     
+    <script src="{{ libs.vue }}"></script>
+    <script src="{{ libs.element_plus_index }}"></script>
+    <script src="{{ libs.element_plus_icons }}"></script>
+    <script src="{{ libs.jquery }}"></script>
 
 </head>
 <body>
@@ -253,7 +250,7 @@
         </div>
     </footer>    
 </div>
-<script src="/static/js/axios/axios.min.js"></script>
+<script src="{{ libs.axios }}"></script>
 
 <script>
     // 请求中间件

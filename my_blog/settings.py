@@ -65,6 +65,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # 用户自定义函数
+                'app01.context_processors.js_libs',
             ],
         },
     },
@@ -142,3 +145,26 @@ AUTH_USER_MODEL = "app01.UserInfo"
 # 用户自己上传文件的话需要自己配置，添加以下两行
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# 设为 True 则使用 CDN，False 则使用本地路径
+USE_CDN = False
+
+# 七斗云js加速
+CDN_LINKS = {
+    'vue': 'https://cdn.staticfile.org/vue/3.4.21/vue.global.prod.js',
+    'axios': 'https://cdn.staticfile.org/axios/1.6.8/axios.min.js',
+    'jquery': '/static/js/jquery/jquery-3.7.1.min.js',
+    'element_plus_index': 'https://cdn.staticfile.org/element-plus/2.3.0/index.full.min.js',
+    'element_plus_icons': 'https://cdn.staticfile.org/element-plus-icons-vue/2.3.1/index.iife.min.js',
+    'katex': 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min', # 不需要加后缀，js和css都通用
+}
+
+# 本地
+LOCAL_LINKS = {
+    'vue': '/static/vue/vue.global.js',
+    'axios': '/static/js/axios/axios.min.js',
+    'jquery': '/static/js/jquery/jquery-3.7.1.min.js',
+    'element_plus_index': '/static/element-plus/element-plus@2.13.0/dist/index.full.js',
+    'element_plus_icons': '/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js',
+    'katex': '/static/editor.md-master/lib/KaTeX/0.16.9/katex.min', # 不需要加后缀，js和css都通用
+}

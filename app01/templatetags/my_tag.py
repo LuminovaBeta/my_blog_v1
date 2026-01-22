@@ -11,9 +11,9 @@ register = template.Library()
 @register.inclusion_tag('my_tag/headers.html')
 def banner(menu_name, article=None):
     img_list = [
-        "/static/my/img/header/小汽车.png",
-        "/static/my/img/header/28.jpg",
-        "/static/my/img/header/5-32.jpg"        
+        "/static/my/img/header/index_小汽车.png",
+        "/static/my/img/header/index_1.jpg",
+        "/static/my/img/header/index_2.jpg"        
     ]
 
     print(menu_name, article)

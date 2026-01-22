@@ -168,8 +168,10 @@
 {% block js %}
 <script src="/static/editor.md-master/lib/marked.min.js"></script>
 <script src="/static/editor.md-master/lib/prettify.min.js"></script>
-<script src="/static/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/static/editor.md-master/editormd.min.js"></script>
+
+<script src="{{ libs.jquery }}"></script>
+
 <script type="text/javascript">
     $(function() {
         var editor = editormd.markdownToHTML("article_content", {
@@ -183,8 +185,8 @@
         });
 
         editormd.katexURL = {
-            js  : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min",  // 注意：不需要写 .js 后缀
-            css : "/static/editor.md-master/lib/KaTeX/0.16.9/katex.min"   // 注意：不需要写 .css 后缀
+            js  : "{{ libs.katex }}",  // 注意：不需要写 .js 后缀
+            css : "{{ libs.katex }}"   // 注意：不需要写 .css 后缀
         };
     });
 </script>

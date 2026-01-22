@@ -10,11 +10,9 @@
     {% block css %}
 
     {% endblock %}
-    <script src="/static/js/axios/axios.min.js"></script>
-    <script src="/static/vue/vue.global.js"></script>
-    <script src="/static/element-plus/element-plus@2.13.0/dist/index.full.js"></script>
-    <!-- <script src="//unpkg.com/@element-plus/icons-vue"></script>    -->
-    <script src="/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js"></script>
+    <script src="{{ libs.vue }}"></script>
+    <script src="{{ libs.element_plus_index }}"></script>
+    <script src="{{ libs.element_plus_icons }}"></script>
 </head>
 <body>
 <div id="app">
@@ -128,6 +126,8 @@
 {% block js %}
 
 {% endblock %}
+
+<script src="{{ libs.axios }}"></script>
 
 <script>
     // 请求中间件
