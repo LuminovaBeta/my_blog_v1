@@ -69,6 +69,8 @@ nav{
     
     .left{
         width: 60%;
+
+
     }
     .right{
         width: 40%;
@@ -99,6 +101,55 @@ nav.show{
         color: #333;
     }
 }
+
+// 导航条搜索 四种状态
+nav .search{
+    display: inline-flex;
+    input{
+        // 隐藏input
+        width: 0;
+        height: 34px;
+        padding: 0;
+        border: none;
+        outline: none;
+        transition: all 0.3s;
+    }
+    button{
+        border: none;
+        color: white;
+        background-color: transparent;
+        cursor: pointer;
+    }
+}
+nav.show .search{
+    button{
+        color: #333;
+    }
+}
+nav .show_search{
+    input{
+        width: 200px;
+        border-radius: 5px 0 0 5px ;
+        padding-left: 10px;
+        background-color: rgba(white, 0.5);
+    }
+    button{
+        width: 50px;
+        background-color: rgba(white, 0.5);
+        color: #333;
+        border-radius: 0 5px 5px 0;
+    }
+}
+nav.show .show_search{
+    input{
+        border: 1px solid #e5e9ef;
+    }
+    button{
+        border: solid #e5e9ef;
+        border-width: 1px 1px 1px 0;
+    }
+}
+
 
 main{
     width: calc(100% - 240px);

@@ -1,4 +1,43 @@
 @charset "UTF-8";
+ul.pager {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+ul.pager > li {
+  display: inline-flex;
+  min-width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s;
+  margin-right: 10px;
+}
+ul.pager > li:last-child {
+  margin-right: 0px;
+}
+ul.pager > li a {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 4px 2px 4px;
+  color: #464749;
+}
+ul.pager > li:hover {
+  background-color: #e9ecef;
+}
+ul.pager > li.active {
+  background-color: #00aeec;
+}
+ul.pager > li.active a {
+  color: white;
+}
+
 #app {
   width: 100%;
 }
@@ -92,55 +131,55 @@
   background-color: transparent;
   padding: 0;
 }
-#app .main .left .all_articles > .body > ul {
+#app .main .left .all_articles > .body > ul.article_content {
   width: 100%;
 }
-#app .main .left .all_articles > .body > ul li {
+#app .main .left .all_articles > .body > ul.article_content li {
   width: 100%;
   display: flex;
   background-color: white;
   border-radius: 5px;
   margin-bottom: 20px;
 }
-#app .main .left .all_articles > .body > ul li:nth-child(1) {
+#app .main .left .all_articles > .body > ul.article_content li:nth-child(1) {
   border-radius: 0 0 5px 5px;
 }
-#app .main .left .all_articles > .body > ul li:nth-child(1) .left {
+#app .main .left .all_articles > .body > ul.article_content li:nth-child(1) .left {
   padding: 10px 10px 20px 20px;
 }
-#app .main .left .all_articles > .body > ul li:nth-child(1) .right {
+#app .main .left .all_articles > .body > ul.article_content li:nth-child(1) .right {
   padding: 10px 20px 20px 10px;
 }
-#app .main .left .all_articles > .body > ul li .left {
+#app .main .left .all_articles > .body > ul.article_content li .left {
   width: 30%;
   box-sizing: border-box;
   padding: 20px 10px 20px 20px;
 }
-#app .main .left .all_articles > .body > ul li .left > div {
+#app .main .left .all_articles > .body > ul.article_content li .left > div {
   width: 100%;
   height: 120px;
   border-radius: 5px;
   overflow: hidden;
 }
-#app .main .left .all_articles > .body > ul li .left img {
+#app .main .left .all_articles > .body > ul.article_content li .left img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
-#app .main .left .all_articles > .body > ul li .left img:hover {
+#app .main .left .all_articles > .body > ul.article_content li .left img:hover {
   transform: scale(1.1);
   transition: 0.3s;
 }
-#app .main .left .all_articles > .body > ul li .right {
+#app .main .left .all_articles > .body > ul.article_content li .right {
   width: 70%;
   padding: 20px 20px 20px 10px;
 }
-#app .main .left .all_articles > .body > ul li .right > h2 {
+#app .main .left .all_articles > .body > ul.article_content li .right > h2 {
   font-size: 23px;
   margin-bottom: 10px;
 }
-#app .main .left .all_articles > .body > ul li .right p {
+#app .main .left .all_articles > .body > ul.article_content li .right p {
   display: -webkit-box; /* 必须结合的属性，将对象作为弹性伸缩盒子模型显示 */
   -webkit-box-orient: vertical; /* 必须结合的属性，设置伸缩盒对象的子元素的排列方式 */
   -webkit-line-clamp: 2; /* 限制显示的行数 */
@@ -148,14 +187,14 @@
   text-overflow: ellipsis; /* 超出部分显示省略号 */
   margin-bottom: 10px;
 }
-#app .main .left .all_articles > .body > ul li .right .article_info {
+#app .main .left .all_articles > .body > ul.article_content li .right .article_info {
   font-size: 14px;
   color: #555;
 }
-#app .main .left .all_articles > .body > ul li .right .article_info > span {
+#app .main .left .all_articles > .body > ul.article_content li .right .article_info > span {
   margin-right: 10px;
 }
-#app .main .left .all_articles > .body > ul li .right .article_info i {
+#app .main .left .all_articles > .body > ul.article_content li .right .article_info i {
   margin-right: 5px;
 }
 #app .main .right {

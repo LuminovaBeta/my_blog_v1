@@ -1,0 +1,146 @@
+@import "./pager";
+
+.main{
+    width: 1000px;
+    min-height: 1000px;
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .search_box{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80%;
+        >div{
+            margin-right: 10px;
+            &:last-child{
+                margin-right: 10px;
+            }
+
+        }
+
+        .logo{
+
+            img{
+                width: 50px;
+            }   
+        }
+
+        input{
+            width: 200px;
+            height: 37px;
+            outline: none;
+            border: 1px solid #e5e9ef;
+            border-radius: 5px;
+            padding-left: 10px;
+            margin-left: 5px;
+        }
+        button{
+            width: 70px;
+            height: 37px;
+            border-radius: 5px;
+            background-color: #00aeec;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    }
+    .search_criteria{
+        margin: 20px 0;
+        width: 100%;
+        // min-height: 400px;
+        font-size: 14px;
+        &::before{
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: #808595;
+            content: '';
+            margin-bottom: 15px;
+        }
+        &::after{
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: #808595;
+            content: '';
+            margin-top: 15px;
+        }
+        >ul{
+            display: flex;
+            list-style: none;
+            margin: 8px 0;
+            >li{
+                padding: 3px 8px;
+                margin: 0 5px;
+                border-radius: 5px;
+                a{
+                    color: #333;
+                }
+                &:hover{
+                    a{
+                        color: #00a1d6;
+                    }
+                }
+            }
+            >li.active{
+                background-color: #00a1d6;
+                a{
+                    color: white;
+                }
+            }
+        }
+    }
+    .search_content{
+        >ul{
+            list-style: none;
+            >li.info{
+                width: 900px;
+                height: auto;
+                border: 1px solid #e5e9ef;
+                border-radius: 9px;
+                background-color: white;
+                margin: 15px 0;
+                padding: 8px 9px;
+
+                &:hover{
+                    background-color: #f1f2f3;
+                }
+                
+                a.title{
+                    color: #222;
+                    display: block;
+                    font-size: 22px;
+                }
+                .content{
+                    margin: 4px 0 5px 0;
+                    span{
+                        display: -webkit-box;
+                        -webkit-box-orient: vertical;
+                        -webkit-line-clamp: 2; /* 限制行数 */
+                        overflow: hidden;    
+                        
+                        color: #444;
+                        font-size: 14px;
+                    }
+                }
+                .icon{
+                    font-size: 13px;
+                    span{
+                        margin-right: 10px;
+                        &:last-child{
+                            margin-right: 0px;
+                        }                        
+                        i{
+                            margin-right: 2px;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+

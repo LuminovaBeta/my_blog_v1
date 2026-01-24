@@ -1,0 +1,187 @@
+{% extends 'index.html' %}
+{% load my_tag my_filter %}
+
+{% block banner %}
+<!-- 不要banner -->
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/search.css">
+{% endblock %}
+
+{% block main %}
+    <div class="main">
+        <form action="" class="search_box">
+            <div class="logo" >
+                <img src="/static/my/img/logo/YT-logo.jpg" alt="">
+                yt | 搜索
+            </div>
+            <div>
+                <input name="key" class="search_key_input" type="text" placeholder="搜索你想要的内容" data="{{ search_key }}"
+                       v-model="search_key">
+            </div>
+            <div>
+                <button>
+                    <i class="fa fa-search"></i>
+                    搜索
+                </button>
+            </div>
+        </form>
+        <div class="search_criteria">
+            <ul>
+                <li class="active"><a href="">综合排序</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+            </ul>
+            <ul>
+                <li class="active"><a href="">文章字数</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+            </ul>
+            <ul>
+                <li class="active"><a href="">全部标签</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+                <li><a href="">最新发布</a></li>
+            </ul>
+        </div>
+        <div class="search_content">
+            <ul >
+                <li class="info">
+                    <a href="" class="title">标题title</a>
+                    <div class="content">
+                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
+                    </div>
+                    
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            9999
+                        </span>
+                        <span>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            666
+                        </span>
+                        <span>
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            666
+                        </span>
+
+                    </div>
+                </li>
+                <li class="info">
+                    <a href="" class="title">标题title</a>
+                    <div class="content">
+                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
+                    </div>
+                    
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            9999
+                        </span>
+                        <span>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            666
+                        </span>
+                        <span>
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            666
+                        </span>
+
+                    </div>
+                </li>
+                <li class="info">
+                    <a href="" class="title">标题title</a>
+                    <div class="content">
+                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
+                    </div>
+                    
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            9999
+                        </span>
+                        <span>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            666
+                        </span>
+                        <span>
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            666
+                        </span>
+
+                    </div>
+                </li>
+                <li class="info">
+                    <a href="" class="title">标题title</a>
+                    <div class="content">
+                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
+                    </div>
+                    
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            9999
+                        </span>
+                        <span>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            666
+                        </span>
+                        <span>
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            3K
+                        </span>
+
+                    </div>
+                </li>
+                <li class="info">
+                    <a href="" class="title">标题title</a>
+                    <div class="content">
+                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
+                    </div>
+                    
+                    <div class="icon">
+                        <span>
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            9999
+                        </span>
+                        <span>
+                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            666
+                        </span>
+                        <span>
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            666
+                        </span>
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <ul class="pager">
+            {{ pager.page_html|safe }}
+            <li><a href="">上一页</a></li>
+            <li><a href="">1</a></li>
+            <li class="active"><a href="">2</a></li>
+            <li><a href="">3</a></li>
+            <li><a href="">上一页</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        // 固定导航条
+        let nav = document.querySelector('.nav_bg')
+        nav.classList.add('show')
+    </script>
+{% endblock %}

@@ -1,3 +1,5 @@
+@import "./pager";
+
 #app{
     width: 100%;
     
@@ -98,7 +100,7 @@
             .all_articles > .body{
                 background-color: transparent;// 透明
                 padding: 0;
-                >ul{
+                >ul.article_content{
                     width: 100%;
 
                     li{

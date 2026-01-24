@@ -1,0 +1,41 @@
+ul.pager{
+    list-style: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    >li{
+        display: inline-flex;
+        min-width: 30px;
+        height: 30px;
+        background-color: white;
+        border-radius: 5px;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.3s;
+        margin-right: 10px;
+
+        &:last-child{
+            margin-right: 0px;
+        }
+
+        a{
+            width: 100%;
+            height: 100%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0px 4px 2px 4px;
+            color: #464749;
+        }
+
+        &:hover{
+            background-color: #e9ecef;
+        }
+    }
+    >li.active{
+        background-color: #00aeec;
+        a{
+            color: white;
+        }
+    }
+}

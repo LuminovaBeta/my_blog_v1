@@ -25,6 +25,7 @@ urlpatterns = [
     # 函数分发
     path('',views.index),
     path('news/', views.news),
+    path('search/', views.search),
     path('login/', views.login),
     path('login/random_code/', views.get_random_code),
     path('sign/', views.sign),

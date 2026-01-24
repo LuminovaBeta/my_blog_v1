@@ -6,11 +6,14 @@ from django import forms
 import json
 from app01.utils.random_code import random_code
 from app01.utils.sub_comment import sub_comment_list # 评论列表
+from app01.utils.pagination import Pagination # 分页
+
 from django.contrib import auth
 from app01.models import UserInfo # 导入用户表
 from app01.models import Articles # 导入文章表
 from app01.models import Tags # 导入标签
 from app01.models import Cover # 导入文章封面
+
 
 
 
@@ -22,7 +25,23 @@ def index(request):
     # 过滤分类
     tech_list = article_list.filter(category=1)[:6]  # 过滤出技术
     project_list = article_list.filter(category=2)[:6]  # 过滤出项目
+
+    query_params = request.GET.copy()
+    # 分页
+    pager = Pagination(current_page=request.GET.get('page'),
+        all_count=article_list.count(),
+        base_url='',
+        query_params=query_params,
+        per_page=1,
+        pager_page_count=7,
+    )
+    article_list = article_list[ pager.start:pager.end ]
+    
     return render(request,'index.html', locals())
+
+def search(request):
+    search_key = request.GET.get('search_key', '')
+    return render(request,'search.html', locals())
 
 # 文章页面
 def article(request, nid):

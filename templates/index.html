@@ -43,10 +43,15 @@
     <!--顶部区域-->
     <nav class="nav_bg">
         <div class="left">
+            <i title="copy" class="code_copy"><el-icon size="16px"><document-copy /></el-icon></i>
             <a href="/">首页</a>
             <a href="/news">新闻</a>
             <a href="#">心情</a>
             <a href="#">关于</a>
+            <div class="search">
+                <input type="text" v-model="search_key" class="search_box" placeholder="搜索你想要的内容">
+                <button @click="search"><i class="fa fa-search" aria-hidden="true"></i></button>
+            </div>
         </div>
         <div class="right">
             <img v-show="theme == 'light'" src="/static/my/img/nav/light.svg" @click="setTheme('dark')">
@@ -136,12 +141,12 @@
                     </div>
                 </div>
                 <div class="all_articles card">
-                    <div class="title">
+                    <div class="title" id="position">
                         <h2>博客文章</h2>
                     </div>
                     <div class="body">
                         <!-- 主要内容区域 -->
-                        <ul>
+                        <ul class="article_content">
                             {% for article in article_list %}
                                 <li>
                                     <div class="left">
@@ -162,6 +167,9 @@
                                     </div>
                                 </li>                            
                             {% endfor %}
+                        </ul>
+                        <ul class="pager">
+                            {{ pager.page_html|safe }}
                         </ul>
                     </div>
                 </div>
@@ -273,7 +281,8 @@
     // 解构赋值
     const { ElMessage, ElMessageBox } = ElementPlus;
     const { createApp, ref, markRaw } = Vue;
-    const { Check, Close } = ElementPlusIconsVue;
+    const { Check, Close} = ElementPlusIconsVue;
+
     // vue3
     const app = Vue.createApp({
         delimiters: ['[[', ']]'],// 分割符配置
@@ -289,21 +298,32 @@
                 isShowSlider: false, // 默认不显示悬浮窗
                 Check: markRaw(ElementPlusIconsVue.Check),
                 Close: markRaw(ElementPlusIconsVue.Close),
+
                 slide_list: [],
                 slide_text: '显示文章目录',
+
+                search_key: '',
             }
         },
         // 生命周期钩子用法不变
         created () {
+            const path = window.location.pathname;
             // 调用初始化主题
             this.init_theme()
             // 初始化分类，持久化存储
             this.init_article_categroy()
+            // 初始化搜索界面
+            if (path.indexOf('search') !== -1){
+                this.init_search_key()
+            }
             // 初始化悬浮目录
             this.init_slider()
+            
 
             setTimeout(()=>{
                 this.get_sidebar()
+                // 初始化文章代码一键复制
+                this.code_copy()
             }, 1000)
         },
         // 方法定义不变
@@ -406,9 +426,9 @@
                     'proxy will permanently delete the file. Continue?',
                     'Warning',
                     {
-                    confirmButtonText: 'OK',
-                    cancelButtonText: 'Cancel',
-                    type: 'warning',
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'Cancel',
+                        type: 'warning',
                     }
                 )
                 .then(() => {
@@ -566,13 +586,83 @@
                 $('html,body').animate({scrollTop: pos.top}, 800)
                 
             },
+
+            // 文章页面，代码一键复制
+            code_copy(){
+                $('pre').each(function (){
+                    // 使用elementplus的图标库
+                    let iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" ><path fill="currentColor" d="M128 320v576h576V320zm-32-64h640a32 32 0 0 1 32 32v640a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V288a32 32 0 0 1 32-32M960 96v704a32 32 0 0 1-32 32h-96v-64h64V128H384v64h-64V96a32 32 0 0 1 32-32h576a32 32 0 0 1 32 32M256 672h320v64H256zm0-192h320v64H256z"></path></svg>'
+                    let copy_btn = $('<i title="copy" class="code_copy">' + iconSvg + '</i>');
+                    $(this).append(copy_btn)
+
+                    // 给刚才创建的按钮绑定点击事件
+                    copy_btn.on('click', function() {
+                        // 克隆一份当前的 pre 标签
+                        let clone = $(this).parent().clone();
+                        
+                        // 在克隆体中删掉“复制按钮”自己，防止把按钮的乱码也复制进去
+                        clone.find('.code_copy').remove();
+                        
+                        let codeText = '';
+
+                        let $dom = clone.find('code');
+                        $dom.each(function() {
+                            // 遍历每一行，获取文本并手动加上换行符
+                            codeText += $(this).text().trimEnd() + '\n';
+                        });
+
+                        // 创建一个临时的 textarea 元素
+                        let textarea = $('<textarea>' + codeText + '</textarea>')
+
+                        // 挂载 -> 选中 -> 执行命令 -> 移除
+                        $('body').append(textarea)
+                        textarea[0].select()
+                        document.execCommand('Copy')
+                        textarea.remove()
+
+                        ElementPlus.ElMessage.success('复制成功！');
+                    });
+
+                })       
+            },
+
+            // 顶部搜索框，点击搜索
+            search(){
+                let box = document.querySelector('.search')
+                // 展开搜索框
+                if(! box.classList.contains('show_search')){
+                    box.classList.add('show_search')
+                    return
+                }
+                // 收起搜索框
+                if (!this.search_key){
+                    box.classList.remove('show_search')
+                    return
+                }
+                // 打开搜索标签页
+                window.open('/search/?key='+this.search_key, name='_blank')
+            },
+            // 初始化搜索词
+            init_search_key(){
+                // let dom = document.querySelector('.search_key_input')
+                // let key = dom.getAttribute('data')
+                // this.search_key = key
+
+                // 直接从 URL 的 ?key=xxx 中获取参数
+                let params = new URLSearchParams(window.location.search);
+                let key = params.get('key'); // 获取 key 参数的值
+                if (key) {
+                    this.search_key = decodeURIComponent(key); // 解码，防止中文乱码
+                }
+            },
         }
     });
+
 
     // ==========================================
     // 【新增】配置 Element Plus 和 图标
     // ==========================================
-    
+
     // 1. 注册 Element Plus 插件
     app.use(ElementPlus);
 
@@ -581,73 +671,78 @@
     for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
         app.component(key, component)
     }
-
+    
     // ==========================================
 
     // 【vue3重要变化】手动挂载到 DOM 元素
     app.mount('#app');
-
-    // 获取需要轮播的div
-    let menu_img = document.querySelectorAll('.dynamic_shuffl')
-
-    // 获取他的长度
-    let menu_length = menu_img.length
-    // 初始位置
-    let index = 0
-    let timer = null;
-    clearInterval(timer)
-    // 配置定时器函数，定时轮播
-    timer = setInterval(()=>{
-        // 
-        index ++
-
-        // 到头了
-        if (index == menu_length){
-            index = 0
-        }
-        // 样式复原
-        for (let i of menu_img) {
-            i.style.opacity = 0
-        }
-        // 设置变化
-        menu_img[index].style.opacity = 1
-    }, 6000)
-
-    // 动态导航条
-    let nav = document.querySelector('.nav_bg')
-
-    // 目录悬浮
-    let path = location.pathname // 文章页
-    let slider;
-    let top1 = 0
-    if (path.indexOf('article') !== -1){
-        slider = document.querySelector('.slider_bar')
-        top1 = $(slider).offset().top - 80
-    }
-    
-
-    window.onscroll = function(){
-        let top = document.documentElement.scrollTop
-        if (top >= 200){
-            nav.classList.add('show')
-        }else{
-            nav.classList.remove('show')
-        }
-
-        // slider存在：文章界面
-        if(slider){
-            if(top >= top1){
-                slider.classList.add('fixed')
-            }else{
-                slider.classList.remove('fixed')
-            }
-        }
-
-    }
 </script>
 
 <!-- 用于重写js -->
 {% block js %}
+    <script>
+    // 获取需要轮播的div
+        let menu_img = document.querySelectorAll('.dynamic_shuffl')
+
+        // 获取他的长度
+        let menu_length = menu_img.length
+        // 初始位置
+        let index = 0
+        let timer = null;
+        clearInterval(timer)
+        // 配置定时器函数，定时轮播
+        timer = setInterval(()=>{
+            // 
+            index ++
+
+            // 到头了
+            if (index == menu_length){
+                index = 0
+            }
+            // 样式复原
+            for (let i of menu_img) {
+                i.style.opacity = 0
+            }
+            // 设置变化
+            menu_img[index].style.opacity = 1
+        }, 6000)
+
+        // 动态导航条
+        let nav = document.querySelector('.nav_bg')
+
+        // 目录悬浮
+        let path = location.pathname // 文章页
+        let slider;
+        let top1 = 0
+        if (path.indexOf('article') !== -1){
+            slider = document.querySelector('.slider_bar')
+            top1 = $(slider).offset().top - 80
+        }
+        
+
+        window.onscroll = function(){
+            let top = document.documentElement.scrollTop
+            if (top >= 200){
+                nav.classList.add('show')
+            }else{
+                nav.classList.remove('show')
+            }
+
+            // slider存在：文章界面
+            if(slider){
+                if(top >= top1){
+                    slider.classList.add('fixed')
+                }else{
+                    slider.classList.remove('fixed')
+                }
+            }
+
+        }
+    </script>
+{% endblock %}
+
+<!-- 用于拓展js -->
+{% block expand_js %}
 
 {% endblock %}
 
