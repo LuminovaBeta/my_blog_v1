@@ -108,7 +108,7 @@ class Articles(models.Model):
     cover：文章封面  一对多
     look_count：浏览量
     comment_count：评论数
-    digg_count：点赞数
+    digg_count: 点赞数
     collects_count：收藏数
     category：文章分类
     tag：文章标签 多对多

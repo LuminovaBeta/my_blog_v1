@@ -58,8 +58,27 @@ ul.pager > li.active a {
 .main .search_box > div:last-child {
   margin-right: 10px;
 }
+.main .search_box .logo {
+  display: flex;
+  align-items: center;
+}
 .main .search_box .logo img {
-  width: 50px;
+  height: 30px;
+  margin-right: 5px;
+}
+.main .search_box .logo span.custom-line {
+  position: relative;
+  padding: 2px 0px 2px 6px;
+}
+.main .search_box .logo span.custom-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%; /* 调整线条垂直位置 */
+  height: 80%; /* 调整线条高度，不一定要撑满 */
+  width: 1px; /* 线条宽度 */
+  background-color: #333;
+  border-radius: 2px; /* 给线条加上圆角 */
 }
 .main .search_box input {
   width: 200px;
@@ -155,15 +174,31 @@ ul.pager > li.active a {
 }
 .main .search_content > ul > li.info .icon {
   font-size: 13px;
+  display: flex; /* 开启 flex 布局 */
+  align-items: center; /* 整体垂直居中 */
 }
 .main .search_content > ul > li.info .icon span {
   margin-right: 10px;
+  display: inline-flex; /* 让 span 内部的图标和文字也垂直居中 */
+  align-items: center; /* 内部对齐 */
 }
 .main .search_content > ul > li.info .icon span:last-child {
   margin-right: 0px;
 }
 .main .search_content > ul > li.info .icon span i {
   margin-right: 2px;
+}
+.main .search_content > ul > li.info .icon span .view {
+  padding-top: 2px;
+}
+.main .search_content > ul > li.info .icon span .star {
+  padding-top: 1px;
+}
+.main .search_content > ul > li.info .icon span .tickets {
+  padding-top: 1px;
+}
+.main .search_content > ul > li.info .icon span .calendar {
+  padding-top: 1px;
 }
 
 /*# sourceMappingURL=search.css.map */

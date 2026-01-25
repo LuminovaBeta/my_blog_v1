@@ -35,10 +35,10 @@ class AddArticleForm(forms.Form):
         abstract = self.cleaned_data['abstract']
         if abstract:
             return abstract
-        # 截取正文的前30字符
+        # 截取正文的前80字符
         content = self.cleaned_data.get('content')
         if content:
-            abstract = PyQuery(markdown(content)).text()[:30]
+            abstract = PyQuery(markdown(content)).text()[:80]
             return abstract
     
     # 文章封面

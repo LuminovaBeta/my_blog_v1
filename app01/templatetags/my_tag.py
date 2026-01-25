@@ -1,4 +1,6 @@
 from django import template
+from app01.utils.search import Search
+from django.utils.safestring import mark_safe
 
 # 注册
 register = template.Library()
@@ -28,3 +30,24 @@ def banner(menu_name, article=None):
         pass
 
     return {"img_list": img_list}
+
+# 搜索界面的排序标签
+@register.simple_tag
+def generate_order_html(request):
+    order = request.GET.get('order', '')
+    query_params = request.GET.copy()
+    # 生成排序标签
+    order = Search(
+        order=order,
+        # 发布 浏览 点赞 收藏 评论
+        order_list=[
+            ('-change_date', '综合排序'), 
+            ('-create_date', '最新发布'), 
+            ('-look_count', '最多浏览'), 
+            ('-digg_count', '最多点赞'), 
+            ('-collects_count', '最多收藏'), 
+            ('-comment_count', '最多评论'), 
+        ],
+        query_params=query_params
+    )
+    return mark_safe(order.order_html())

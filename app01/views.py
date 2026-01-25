@@ -7,12 +7,14 @@ import json
 from app01.utils.random_code import random_code
 from app01.utils.sub_comment import sub_comment_list # 评论列表
 from app01.utils.pagination import Pagination # 分页
+from app01.utils.search import Search # 文章搜索
 
 from django.contrib import auth
 from app01.models import UserInfo # 导入用户表
 from app01.models import Articles # 导入文章表
 from app01.models import Tags # 导入标签
 from app01.models import Cover # 导入文章封面
+from django.db.models import F
 
 
 
@@ -26,8 +28,8 @@ def index(request):
     tech_list = article_list.filter(category=1)[:6]  # 过滤出技术
     project_list = article_list.filter(category=2)[:6]  # 过滤出项目
 
-    query_params = request.GET.copy()
     # 分页
+    query_params = request.GET.copy()
     pager = Pagination(current_page=request.GET.get('page'),
         all_count=article_list.count(),
         base_url='',
@@ -39,14 +41,41 @@ def index(request):
     
     return render(request,'index.html', locals())
 
+# 搜索页面
 def search(request):
-    search_key = request.GET.get('search_key', '')
+    search_key = request.GET.get('key', '')
+    order = request.GET.get('order', '')
+    query_params = request.GET.copy()
+
+    article_list = Articles.objects.filter(title__icontains=search_key)
+    if order:
+        # 用户随意输入搜索条件，跳过
+        try:
+            article_list = article_list.order_by(order)
+        except Exception:
+            pass
+            
+    # 分页器
+    pager = Pagination(current_page=request.GET.get('page'),
+        all_count=article_list.count(),
+        base_url='',
+        query_params=query_params,
+        per_page=4,
+        pager_page_count=7,
+    )
+    article_list = article_list[ pager.start:pager.end ]
+
+
+    # 文章搜索条件
+
     return render(request,'search.html', locals())
 
 # 文章页面
 def article(request, nid):
     # print(nid)
     artitle_query = Articles.objects.filter(nid=nid)
+    # 每刷新一次浏览量加一
+    artitle_query.update(look_count=F('look_count')+1)
     if not artitle_query:
         return redirect('/')     # 找不到对应文章就回首页
     article = artitle_query.first()    # 找到nid为nid的，第一篇文章，

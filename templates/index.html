@@ -43,7 +43,6 @@
     <!--顶部区域-->
     <nav class="nav_bg">
         <div class="left">
-            <i title="copy" class="code_copy"><el-icon size="16px"><document-copy /></el-icon></i>
             <a href="/">首页</a>
             <a href="/news">新闻</a>
             <a href="#">心情</a>
@@ -52,6 +51,10 @@
                 <input type="text" v-model="search_key" class="search_box" placeholder="搜索你想要的内容">
                 <button @click="search"><i class="fa fa-search" aria-hidden="true"></i></button>
             </div>
+            <div class="logo">
+                <img class="logo-white" src="/static/my/img/logo/yt-white.png" alt="">
+                <img class="logo-black" src="/static/my/img/logo/yt-blue.png" alt="">
+            </div> 
         </div>
         <div class="right">
             <img v-show="theme == 'light'" src="/static/my/img/nav/light.svg" @click="setTheme('dark')">
@@ -81,6 +84,7 @@
                 <a href="/sign">注册</a>
             {% endif %}
         </div>
+  
     </nav>
     <!-- 图片 -->
     {% block banner %}

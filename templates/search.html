@@ -13,8 +13,9 @@
     <div class="main">
         <form action="" class="search_box">
             <div class="logo" >
-                <img src="/static/my/img/logo/YT-logo.jpg" alt="">
-                yt | 搜索
+                <img src="/static/my/img/logo/yt-blue.png" alt="">
+                <span class="custom-line">搜索</span>
+                
             </div>
             <div>
                 <input name="key" class="search_key_input" type="text" placeholder="搜索你想要的内容" data="{{ search_key }}"
@@ -29,12 +30,7 @@
         </form>
         <div class="search_criteria">
             <ul>
-                <li class="active"><a href="">综合排序</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
+                {% generate_order_html request %}
             </ul>
             <ul>
                 <li class="active"><a href="">文章字数</a></li>
@@ -45,7 +41,7 @@
                 <li><a href="">最新发布</a></li>
             </ul>
             <ul>
-                <li class="active"><a href="">全部标签</a></li>
+                <li class="active"><a href="">全部分类</a></li>
                 <li><a href="">最新发布</a></li>
                 <li><a href="">最新发布</a></li>
                 <li><a href="">最新发布</a></li>
@@ -55,125 +51,44 @@
         </div>
         <div class="search_content">
             <ul >
-                <li class="info">
-                    <a href="" class="title">标题title</a>
-                    <div class="content">
-                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
-                    </div>
-                    
-                    <div class="icon">
-                        <span>
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                            9999
-                        </span>
-                        <span>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            666
-                        </span>
-                        <span>
-                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            666
-                        </span>
+                {% for article in article_list %}
+                    <li class="info">
+                        <!-- 重新打开页面跳转 -->
+                        <a href="/article/{{ article.nid }}/" target="_blank" class="title">{{ article.title }}</a>
+                        <div class="content">
+                            <span>{{ article.content }}</span>
+                        </div>
+                        
+                        <div class="icon">
+                            <span>
+                                <!-- 浏览量 -->
+                                <!-- 由于view是保留标签，因此不能直接使用 -->
+                                <el-icon class="view"><component :is="'view'" /></el-icon>
+                                <span>{{ article.look_count }}</span>
+                            </span>
+                            <span>
+                                <!-- 收藏数 -->
+                                <el-icon class="star"><star /></el-icon>
+                                <span>666</span>
+                            </span>
+                            <span>
+                                <!-- 文章字数 -->
+                                <el-icon class="tickets"><tickets /></el-icon>
+                                <span>6K</span>
+                            </span>
+                            <span>
+                                <!-- 发布时间 -->
+                                <el-icon class="calendar"><calendar /></el-icon>
+                                <span>{{ article.change_date|date:'Y-m-d' }}</span>
+                            </span>
+                        </div>
+                    </li>
+                {% endfor %}
 
-                    </div>
-                </li>
-                <li class="info">
-                    <a href="" class="title">标题title</a>
-                    <div class="content">
-                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
-                    </div>
-                    
-                    <div class="icon">
-                        <span>
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                            9999
-                        </span>
-                        <span>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            666
-                        </span>
-                        <span>
-                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            666
-                        </span>
-
-                    </div>
-                </li>
-                <li class="info">
-                    <a href="" class="title">标题title</a>
-                    <div class="content">
-                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
-                    </div>
-                    
-                    <div class="icon">
-                        <span>
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                            9999
-                        </span>
-                        <span>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            666
-                        </span>
-                        <span>
-                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            666
-                        </span>
-
-                    </div>
-                </li>
-                <li class="info">
-                    <a href="" class="title">标题title</a>
-                    <div class="content">
-                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
-                    </div>
-                    
-                    <div class="icon">
-                        <span>
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                            9999
-                        </span>
-                        <span>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            666
-                        </span>
-                        <span>
-                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            3K
-                        </span>
-
-                    </div>
-                </li>
-                <li class="info">
-                    <a href="" class="title">标题title</a>
-                    <div class="content">
-                        <span>一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五一二三四五</span>
-                    </div>
-                    
-                    <div class="icon">
-                        <span>
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                            9999
-                        </span>
-                        <span>
-                            <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            666
-                        </span>
-                        <span>
-                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                            666
-                        </span>
-
-                    </div>
-                </li>
             </ul>
         </div>
         <ul class="pager">
             {{ pager.page_html|safe }}
-            <li><a href="">上一页</a></li>
-            <li><a href="">1</a></li>
-            <li class="active"><a href="">2</a></li>
-            <li><a href="">3</a></li>
-            <li><a href="">上一页</a></li>
         </ul>
     </div>
 {% endblock %}

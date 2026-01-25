@@ -35,7 +35,7 @@ class Pagination:
         
 
         self.pager_page_count = pager_page_count
-        print(self.current_page, self.current_count)
+        # print(self.current_page, self.current_count)
 
         # 分页的中值
         self.half_pager_count = int(self.pager_page_count / 2)

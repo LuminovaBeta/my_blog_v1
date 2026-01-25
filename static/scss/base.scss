@@ -61,7 +61,7 @@ nav{
     align-items: center; // 上下居中
     padding: 0 120px;
     position: fixed;// 固定定位
-    z-index: 100;// 图层层级，防止被遮盖
+    z-index: 1;// 图层层级，防止被遮盖
     top: 0;
     left: 0;
 
@@ -69,8 +69,29 @@ nav{
     
     .left{
         width: 60%;
-
-
+        position: relative;
+        .logo{
+            position: absolute;
+            z-index: 2;
+            left: -80px;
+            top: 0px;
+            img{
+                
+            }
+            .logo-white{
+                height: 30px;
+                display: block;
+                /* 参数顺序: X轴偏移 Y轴偏移 模糊半径 颜色 */
+                /* 增加立体感 */
+                filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.5));
+            }
+            .logo-black{
+                height: 30px;
+                display: none;
+                /* 参数顺序: X轴偏移 Y轴偏移 模糊半径 颜色 */
+                filter: drop-shadow(1px 1px 1px rgba(0, 100, 200, 0.5));
+            }
+        }
     }
     .right{
         width: 40%;
@@ -81,8 +102,11 @@ nav{
             margin-right: 20px;
             cursor: pointer;// 小手单击图标
         }
+        .el-dropdown .el-dropdown-link{
+            color: white; 
+        }
     }
-    
+
     a{
         margin-right: 20px;
         color: white;
@@ -96,9 +120,21 @@ nav{
 // 显示
 nav.show{
     background-color: white;
+    opacity: 0.95;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
     a{
         color: #333;
+    }
+    .left .logo{
+        .logo-white{
+            display: none;
+        }
+        .logo-black{
+            display: block;
+        }
+    }
+    .right .el-dropdown .el-dropdown-link{
+        color: #333; 
     }
 }
 

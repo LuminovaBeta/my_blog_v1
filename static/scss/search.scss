@@ -22,10 +22,27 @@
         }
 
         .logo{
-
+            display: flex;
+            align-items: center;
             img{
-                width: 50px;
-            }   
+                height: 30px;
+                margin-right: 5px;
+            }
+            span.custom-line {
+                position: relative;
+                padding: 2px 0px 2px 6px;
+            }
+
+            span.custom-line::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 12%;          /* 调整线条垂直位置 */
+                height: 80%;       /* 调整线条高度，不一定要撑满 */
+                width: 1px;        /* 线条宽度 */
+                background-color: #333;
+                border-radius: 2px; /* 给线条加上圆角 */
+            }
         }
 
         input{
@@ -128,13 +145,31 @@
                 }
                 .icon{
                     font-size: 13px;
+                    display: flex;          /* 开启 flex 布局 */
+                    align-items: center;    /* 整体垂直居中 */
                     span{
                         margin-right: 10px;
+                        display: inline-flex; /* 让 span 内部的图标和文字也垂直居中 */
+                        align-items: center;  /* 内部对齐 */
                         &:last-child{
                             margin-right: 0px;
                         }                        
                         i{
                             margin-right: 2px;
+                        }
+
+                        // 上下居中-微调
+                        .view{
+                            padding-top: 2px;
+                        }
+                        .star{
+                            padding-top: 1px;
+                        }
+                        .tickets{
+                            padding-top: 1px;
+                        }
+                        .calendar{
+                            padding-top: 1px;
                         }
                     }
                 }
