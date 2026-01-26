@@ -36,6 +36,7 @@ def random_code(size=(184, 44), length=4, point_num=100, line_num=15):
         draw.text((42*i + 20, 10), random_char, (0,0,0), font=font)
         valid_code += random_char
 
+    # 测试时用
     print(valid_code)
 
     # 随意生成点

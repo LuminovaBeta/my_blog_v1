@@ -35,7 +35,6 @@ class Pagination:
         
 
         self.pager_page_count = pager_page_count
-        # print(self.current_page, self.current_count)
 
         # 分页的中值
         self.half_pager_count = int(self.pager_page_count / 2)
@@ -80,6 +79,10 @@ class Pagination:
             self.query_params['page'] = self.current_page + 1
             page_list.append(f'<li><a href="{self.base_url}?{self.query_encode}#{self.position}">下一页</a></li>')        
         
+        # 如果分页器长度为1，不显示分页器
+        if len(page_list) == 1:
+            page_list = []
+
         return ''.join(page_list)
 
     # property: 可以不用传参(把括号去掉)

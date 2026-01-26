@@ -40,7 +40,7 @@ ul.pager > li.active a {
 
 .main {
   width: 1000px;
-  min-height: 1000px;
+  min-height: 400px;
   margin-top: 80px;
   display: flex;
   flex-direction: column;
@@ -123,6 +123,7 @@ ul.pager > li.active a {
   display: flex;
   list-style: none;
   margin: 8px 0;
+  flex-wrap: wrap;
 }
 .main .search_criteria > ul > li {
   padding: 3px 8px;
@@ -199,6 +200,13 @@ ul.pager > li.active a {
 }
 .main .search_content > ul > li.info .icon span .calendar {
   padding-top: 1px;
+}
+.main .no_content {
+  width: 100%;
+  background: url("/static/my/svg/undraw_art-lover_orea.svg") no-repeat center center;
+  height: 200px;
+  background-size: contain;
+  margin-top: 50px;
 }
 
 /*# sourceMappingURL=search.css.map */

@@ -120,7 +120,7 @@ class Articles(models.Model):
     """
     nid = models.AutoField(primary_key=True)
     title = models.CharField(verbose_name='标题', max_length=32, null=True, blank=True)
-    abstract = models.CharField(verbose_name='文章简介', max_length=128, null=True, blank=True)
+    abstract = models.CharField(verbose_name='文章简介', max_length=150, null=True, blank=True)
     content = models.TextField(verbose_name='文章内容', null=True, blank=True)
     create_date = models.DateTimeField(verbose_name='文章发布日期', auto_now_add=True, null=True)# 自动选取当前事件
     change_date = models.DateTimeField(verbose_name='文章修改日期', auto_now=True, null=True)# 修改后时间会变

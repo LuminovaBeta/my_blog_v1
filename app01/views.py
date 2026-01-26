@@ -45,16 +45,34 @@ def index(request):
 def search(request):
     search_key = request.GET.get('key', '')
     order = request.GET.get('order', '')
+    word = request.GET.get('word', '')
+    tag = request.GET.get('tag', '')
     query_params = request.GET.copy()
-
     article_list = Articles.objects.filter(title__icontains=search_key)
+
+    # 排序
     if order:
         # 用户随意输入搜索条件，跳过
         try:
             article_list = article_list.order_by(order)
         except Exception:
             pass
-            
+
+    # 字数筛选
+    if word:
+        if word == '1':
+            article_list = article_list.filter(word__range=(0, 1000))
+        elif word == '2':
+            article_list = article_list.filter(word__range=(1000, 3000))
+        elif word == '3':
+            article_list = article_list.filter(word__range=(3000, 5000))
+        elif word == '4':
+            article_list = article_list.filter(word__range=(5000, 9999999))
+
+    # 标签筛选
+    if tag:
+        article_list = article_list.filter(tag__title=tag)
+
     # 分页器
     pager = Pagination(current_page=request.GET.get('page'),
         all_count=article_list.count(),
@@ -67,7 +85,6 @@ def search(request):
 
 
     # 文章搜索条件
-
     return render(request,'search.html', locals())
 
 # 文章页面

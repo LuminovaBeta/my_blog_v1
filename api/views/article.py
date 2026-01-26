@@ -19,6 +19,8 @@ class AddArticleForm(forms.Form):
     pwd = forms.CharField(required=False) # 不进行为空验证
     recommend = forms.BooleanField(required=False)
     status = forms.IntegerField(required=False)
+    word = forms.IntegerField(required=False)
+
 
     # 全局钩子校验分类和密码
     def clean(self):
@@ -33,13 +35,26 @@ class AddArticleForm(forms.Form):
     # 局部钩子-文章简介
     def clean_abstract(self):
         abstract = self.cleaned_data['abstract']
+        # 1. 数据库配置的能存的最大长度
+        db_max_length = 150
         if abstract:
+            # 如果超过长度，直接截取前150个字符
+            if len(abstract) > db_max_length:
+                return abstract[:db_max_length]
             return abstract
         # 截取正文的前80字符
         content = self.cleaned_data.get('content')
         if content:
             abstract = PyQuery(markdown(content)).text()[:80]
             return abstract
+        
+    # 获取文章字数
+    def clean_word(self):
+        word = self.cleaned_data['word']
+        content = self.cleaned_data.get('content')
+        if content:
+            word = len(PyQuery(markdown(content)).text())
+        return word
     
     # 文章封面
     def clean_cover_id(self):
@@ -48,10 +63,10 @@ class AddArticleForm(forms.Form):
             return cover_id
         cover_set = Cover.objects.all().values('nid')
         cover_id = random.choice(cover_set)['nid']
-        # print(cover_id)
         return cover_id
-
+    
 class ArticleView(View):
+    # 发布文章
     def post(self, request):
         res = {
             'msg': '文章发布成功',
@@ -60,13 +75,14 @@ class ArticleView(View):
         }
 
         data = request.data
+
+        # 状态改为已发布
         data['status'] = 1
-        # print(data)
+        
         form = AddArticleForm(data)
         if not form.is_valid():
             res['self'], res['msg'] = clean_form(form)
             return JsonResponse(res)
-        # print(form.cleaned_data)
 
         # 校验通过
         form.cleaned_data['author'] = 'wshsm'
@@ -87,6 +103,7 @@ class ArticleView(View):
         res['data'] = article_obj.nid
         return JsonResponse(res)
     
+    # 编辑文章
     def put(self, request, nid):
         res = {
             'msg': '文章编辑成功',
@@ -99,12 +116,11 @@ class ArticleView(View):
             return JsonResponse(res)# 没有文章直接 return 
         data = request.data
         data['status'] = 1
-        # print(data)
+        
         form = AddArticleForm(data)
         if not form.is_valid():
             res['self'], res['msg'] = clean_form(form)
             return JsonResponse(res)
-        # print(form.cleaned_data)
 
         # 校验通过
         form.cleaned_data['author'] = 'wshsm'

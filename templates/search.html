@@ -33,23 +33,14 @@
                 {% generate_order_html request %}
             </ul>
             <ul>
-                <li class="active"><a href="">文章字数</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
+                {% generate_word_html request %}
             </ul>
             <ul>
-                <li class="active"><a href="">全部分类</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
-                <li><a href="">最新发布</a></li>
+                {% generate_tag_html request %}
             </ul>
         </div>
-        <div class="search_content">
+        <!-- 有内容分类为'search_content', 无内容为'no_content' -->
+        <div class="{{ article_list|is_article_list }}">
             <ul >
                 {% for article in article_list %}
                     <li class="info">
@@ -74,7 +65,7 @@
                             <span>
                                 <!-- 文章字数 -->
                                 <el-icon class="tickets"><tickets /></el-icon>
-                                <span>6K</span>
+                                <span>{{ article.word }}</span>
                             </span>
                             <span>
                                 <!-- 发布时间 -->

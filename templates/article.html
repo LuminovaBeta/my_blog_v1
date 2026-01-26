@@ -91,11 +91,11 @@
         </div>
         {% csrf_token %}
         <div class="body">
-            <textarea name="" id="" ref="comment_content" rows="10" cols="30" v-model="comment_content" placeholder="你举得怎么样, 写下你想说的话吧："></textarea>
+            <textarea name="" id="" ref="comment_content" rows="10" cols="30" v-model="comment_content" placeholder="你觉得怎么样, 写下你想说的话吧："></textarea>
             <button class="submin_comment" @click="add_comment('{{ article.nid }}')">发布评论</button>
         </div>
         <div class="footer">
-            <p><span>{{ article.look_count }}</span>人参与, <span>{{ article.comment_count }}</span>条评论</p>
+            <p><span>{{ article.look_count }}</span>人浏览, <span>{{ article.comment_count }}</span>条评论</p>
         </div>
     </div>
     <!-- 评论列表 -->

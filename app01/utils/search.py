@@ -1,31 +1,47 @@
 from urllib.parse import urlencode
 
+# 通用的 Search 工具类
 class Search:
-    def __init__(self, order, order_list, query_params):
-        self.order_list = order_list
-        self.order = order
+    def __init__(self, key, current_val, data_list, query_params):
+        """
+        __init__ 的 Docstring
+        
+        :param self: 
+        :param key: URL 参数名 (如 'order' 或 'word')
+        :param current_val: 当前激活的值
+        :param data_list: 选项元组列表 [(值, 显示文本), ...]
+        :param query_params: request.GET.copy()
+        """
+        self.key = key
+        self.current_val = current_val
+        self.data_list = data_list
         self.query_params = query_params
 
+    # 生成筛选部分html标签
     def order_html(self):
-        order_list = []
-        # 综合排序
-        # self.query_params['order'] = '-change_date'
-        # order_list.append(f'<li><a href="?{self.query_encode}">综合排序</a></li>')
+        data_list = []
         # 排序列表
-        for li in self.order_list:
-            self.query_params['order'] = li[0]
-            if self.order == li[0]:
+        for li in self.data_list:
+            # 【关键修改】：使用 self.key 而不是硬编码的 'order'
+            self.query_params[self.key] = li[0]
+
+            # 移除分页，防止带页码跳转导致找不到数据
+            if 'page' in self.query_params:
+                self.query_params.pop('page')
+
+            if self.current_val == li[0]:
                 li = f'<li class="active"><a href="?{self.query_encode}">{li[1]}</a></li>'
             else:
                 li = f'<li><a href="?{self.query_encode}">{li[1]}</a></li>'
-            order_list.append(li)
+            data_list.append(li)
 
-        if not self.order:
-            str_li = order_list[0]
+        # 处理默认选中（如果没有传参数，默认第一个高亮）
+        if not self.current_val:
+            str_li = data_list[0]
             new_li = str_li[0:3] + ' class="active"' + str_li[3:]
-            order_list[0] = new_li
+            data_list[0] = new_li
 
-        return ''.join(order_list) 
+        return ''.join(data_list) 
 
     # property: 可以不用传参(把括号去掉)
     @property
