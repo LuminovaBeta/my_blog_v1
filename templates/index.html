@@ -1,7 +1,7 @@
 <!-- vue3版本 -->
 <!DOCTYPE html>
 <html leng="en">
-{% load my_tag %}
+{% load my_tag my_filter %}
 <head>
     <meta charset="UTF-8">
     <title>萤途个人博客</title>
@@ -42,12 +42,17 @@
     <link rel="stylesheet" :href="'/static/theme/' + theme + '.css'">
     <!--顶部区域-->
     <nav class="nav_bg">
-        <div class="left">
-            <a href="/">首页</a>
+        <div class="left" id="dynamic_nav">
+            <!-- 后端添加标签 -->
+            {% dynamic_navigation request %}
+
+            <!-- 前端处理方案 -->
+            <!-- <a href="/">首页</a>
             <a href="/news">新闻</a>
             <a href="/search">搜索</a>
             <a href="#">心情</a>
-            <a href="#">关于</a>
+            <a href="#">关于</a> -->
+
             <div class="search">
                 <input type="text" v-model="search_key" class="search_box" placeholder="搜索你想要的内容">
                 <button @click="search"><i class="fa fa-search" aria-hidden="true"></i></button>
@@ -163,7 +168,7 @@
                                         <h2><a href="/article/{{ article.nid }}/">{{ article.title }}</a></h2>
                                         <p>{{ article.abstract }}</p>
                                         <div class="article_info">
-                                            <span><i class="fa fa-calendar" aria-hidden="true"></i>{{ article.create_date|date:'Y-m-d' }}</span>
+                                            <span><i class="fa fa-calendar" aria-hidden="true"></i>{{ article.create_date|date_humaniz }}</span>
                                             <span><i class="fa fa-thumbs-up" aria-hidden="true"></i>{{ article.digg_count }}</span>
                                             <span><i class="fa fa-comments" aria-hidden="true"></i>{{ article.comment_count }}</span>
                                             <span><i class="fa fa-eye" aria-hidden="true"></i>{{ article.look_count }}</span>
@@ -283,6 +288,20 @@
             return response.data
         }
     )
+
+    // 导航栏active标签，前端函数
+    // function dynamic_navigation(){
+    //     let a_list = document.querySelectorAll('#dynamic_nav > a')
+    //     let path = location.pathname
+    //     for (const a of a_list){
+    //         let a_href = a.getAttribute('href')
+    //         if (a_href === path || a_href + '/' === path){
+    //             a.classList.add('active')
+    //         }
+    //     }
+    // }
+    // dynamic_navigation()
+
     // 解构赋值
     const { ElMessage, ElMessageBox } = ElementPlus;
     const { createApp, ref, markRaw } = Vue;
@@ -317,14 +336,17 @@
             this.init_theme()
             // 初始化分类，持久化存储
             this.init_article_categroy()
+
             // 初始化搜索界面
             if (path.indexOf('search') !== -1){
                 this.init_search_key()
             }
-            // 初始化悬浮目录
-            this.init_slider()
-            
 
+            // 文章页面
+            if (path.indexOf('article') !== -1){
+                // 初始化悬浮目录
+                this.init_slider()
+            }
             setTimeout(()=>{
                 this.get_sidebar()
                 // 初始化文章代码一键复制
@@ -571,7 +593,7 @@
                         c,
                         pos: '#' + tagId,
                     }
-                    console.log(ele);
+                    // console.log(ele);
                     lis.push(ele);
                 }
                 lis.push({
@@ -659,6 +681,13 @@
                 if (key) {
                     this.search_key = decodeURIComponent(key); // 解码，防止中文乱码
                 }
+            },
+
+            // 获取搜索数据
+            get_new_data(id, name){
+                axios.post('https://api.codelife.cc/api/top/list', {id}).then(res => {
+                    console.log(res);
+                })
             },
         }
     });

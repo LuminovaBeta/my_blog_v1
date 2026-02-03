@@ -23,9 +23,11 @@ from django.views.static import serve
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 函数分发
+    # path('admin_home/', views.admin_home), # 自定义admin页面（未开发）
     path('',views.index),
-    path('news/', views.news),
-    path('search/', views.search),
+    path('news/', views.news), # 新闻页面（未开发）
+    path('search/', views.search), 
+    path('moods/', views.moods), # 心情页面（未开发）
     path('login/', views.login),
     path('login/random_code/', views.get_random_code),
     path('sign/', views.sign),

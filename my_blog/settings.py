@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -168,3 +169,17 @@ LOCAL_LINKS = {
     'element_plus_icons': '/static/element-plus/icons-vue@2.3.2/dist/index.iife.min.js',
     'katex': '/static/editor.md-master/lib/KaTeX/0.16.9/katex.min', # 不需要加后缀，js和css都通用
 }
+
+## simpleui
+
+# SIMPLEUI_HOME_INFO = False # 关闭服务器信息
+# SIMPLEUI_HOME_QUICK = False # 关闭快捷操作
+# SIMPLEUI_HOME_ACTION = False # 关闭最近动作
+
+# 自定义主页
+
+# SIMPLEUI_HOME = True
+
+# SIMPLEUI_HOME_PAGE = '/admin_home/' # 链接的页面
+# SIMPLEUI_HOME_TITLE = '首页' 
+# SIMPLEUI_HOME_ICON = 'fa fa-user'

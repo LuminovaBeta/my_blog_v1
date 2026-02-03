@@ -115,6 +115,9 @@ nav{
             margin-right: 0;   // 最后一个右边距置零
         }
     }
+    a.active{
+        color: #26c6e1;
+    }
 }
 
 // 显示
@@ -124,6 +127,9 @@ nav.show{
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
     a{
         color: #333;
+    }
+    a.active{
+        color: #26c6e1;
     }
     .left .logo{
         .logo-white{

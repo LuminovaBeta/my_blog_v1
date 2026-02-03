@@ -94,3 +94,24 @@ def generate_tag_html(request):
         query_params=query_params
     )
     return mark_safe(tag.order_html())
+
+# 生成动态导航a标签
+@register.simple_tag
+def dynamic_navigation(request):
+    path = request.path_info
+    path_dict = {
+        '/': '首页',
+        # '/news/': '新闻',
+        '/moods/': '心情',
+        '/search/': '搜索',
+        '/history/': '回忆录',
+        '/about/': '关于',
+        '/sites/': '网站导航',
+    }
+    nav_list = []
+    for k, v in path_dict.items():
+        if k == path:
+            nav_list.append(f'<a href="{k}" class="active">{v}</a>')
+            continue
+        nav_list.append(f'<a href="{k}">{v}</a>')
+    return mark_safe(''.join(nav_list))

@@ -81,6 +81,13 @@ main .action {
   justify-content: space-around;
   align-items: center;
 }
+main .edit_info > div {
+  margin-bottom: 10px;
+}
+main .edit_info > div label {
+  display: block;
+  margin-bottom: 5px;
+}
 main .collection_article_all {
   margin-top: 20px;
   background-color: white;

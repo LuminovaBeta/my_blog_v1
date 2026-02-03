@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html leng="en">
+{% load my_filter %}
 <head>
     <meta charset="UTF-8">
     <title>后台界面</title>
@@ -8,8 +9,9 @@
     <link rel="stylesheet" href="/static/element-plus/element-plus@2.13.0/dist/index.css" />
 
     {% block css %}
-
+    <!-- 用于继承css -->
     {% endblock %}
+
     <script src="{{ libs.vue }}"></script>
     <script src="{{ libs.element_plus_index }}"></script>
     <script src="{{ libs.element_plus_icons }}"></script>
@@ -37,26 +39,32 @@
         {% block main %}
             <div class="user_info">
                 <div class="left">
-                    <img src="/static/my/img/default/头像1.jpg" alt="">
+                    <img id="user_avatar" src="{{ request.user.avatar.url.url }}" alt="">
                 </div>
                 <div class="right">
                     <div class="item">
-                        <span><b>用户名: </b>wshsm</span>
+                        <span><b>用户名: </b>{{ request.user.username }}</span>
                     </div>
                     <div class="item">
-                        <span><b>注册时间: </b>2026-1-14</span>
+                        <span><b>注册时间: </b>{{ request.user.date_joined }}</span>
                     </div>
                     <div class="item">
-                        <span><b>上次登录时间: </b>2026-1-14</span>
+                        <span><b>上次登录时间: </b>{{ request.user.last_login|date_humaniz }}</span>
                     </div>
                     <div class="item">
-                        <span><b>用户积分: </b>666</span>
+                        <span><b>来源渠道: </b>{{ request.user.get_sign_status_display }}</span>
                     </div>
                     <div class="item">
-                        <span><b>邮箱: </b>yt@gmail.com</span>
+                        <span><b>邮箱: </b>
+                            {% if request.user.email %}
+                                {{ request.user.email }}
+                            {% else %}
+                                <a href="javascript:void (0);" @click="perfect_information_dialogVisible=true">绑定邮箱</a>
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="item">
-                        <span><b>手机号码: </b>66666666666</span>
+                        <span><b>账号状态: </b>{{ request.user.get_account_status_display }}</span>
                     </div>
                 </div>
             </div>
@@ -68,8 +76,35 @@
                 <div class="item">
                     <el-button type="primary" plain>修改头像</el-button>
                 </div>
+                <el-dialog
+                    v-model="edit_pwd_dialogVisible"
+                    title="修改密码"
+                    width="500"
+                    :before-close="handleClose"
+                >
+                    <div class="edit_info">
+                        <div>
+                            <label for="edit_password_old_pwd">原密码:</label>
+                            <el-input id="edit_password_old_pwd" type="password" v-model="edit_password.old_pwd" placeholder="请输入当前密码"></el-input>
+                        </div>
+                        <div>
+                            <label for="edit_password_new_pwd">新密码:</label>
+                            <el-input id="edit_password_new_pwd" type="password" v-model="edit_password.new_pwd" placeholder="请输入新密码"></el-input>
+                        </div>
+                        <div>
+                            <label for="edit_password_re_new_pwd">再次输入新密码:</label>
+                            <el-input id="edit_password_re_new_pwd" type="password" v-model="edit_password.re_new_pwd" placeholder="请再次输入新密码"></el-input>
+                        </div>
+                    </div>
+                    <template #footer>
+                    <div class="dialog-footer">
+                        <el-button @click="edit_pwd_dialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="edit_password_method">确认</el-button>
+                    </div>
+                </template>
+                </el-dialog>
                 <div class="item">
-                    <el-button type="success" plain>修改密码</el-button>
+                    <el-button @click="edit_pwd_dialogVisible=true" type="success" plain>修改密码</el-button>
                 </div>
                 <div class="item">
                     <el-button type="danger" plain>注销退出</el-button>
@@ -123,11 +158,14 @@
     </main>
 </div>
 
+<script src="{{ libs.axios }}"></script>
+<script src="{{ libs.jquery }}"></script>
+
 {% block js %}
 
 {% endblock %}
 
-<script src="{{ libs.axios }}"></script>
+
 
 <script>
     // 请求中间件
@@ -179,11 +217,26 @@
                 title: '',
                 // 文章简介
                 abstract: '',
+
+                // 修改密码弹窗默认false，不显示
+                edit_pwd_dialogVisible: false,
+                // 修改密码
+                edit_password:{
+                    old_pwd: '',
+                    new_pwd: '',
+                    re_new_pwd: '',
+                },
+
+                // 修改头像
+                edit_avatar_id: '',
             }
         },
         // 生命周期钩子用法
         created(){
-
+            // $nextTick 的意思是：等页面彻底画完、DOM 彻底生成了，再执行里面的代码
+            this.$nextTick(() => {
+                this.init_edit_avatar();
+            });
         },
         // 方法定义
         methods: {
@@ -211,6 +264,7 @@
                     }, 1000)
                 })
             },
+
             // 选择图片
             select_cover(val){
                 setTimeout(() => {
@@ -219,6 +273,7 @@
                     cover.src = v
                 }, 1)
             },
+
             // 编辑文章
             edit_article(nid){
                 let data = {
@@ -244,12 +299,69 @@
                     }, 1000)
                 })
             },
+
             // 保存文章内容
             save_content(nid){
                 // 暂时不用
-            }
+            },
+
+            // 修改密码
+            edit_password_method(){
+                axios.post('/api/edit_password/', this.edit_password).then(res => {
+                    if (res.code) {
+                        this.$message.error(res.msg)
+                        $(`#edit_password_${res.self}`)[0].focus()
+                        return
+                    }
+                    // 修改成功
+                    this.$message.success(res.msg)
+                    // 刷新当前页面
+                    setTimeout(() => {
+                        location.reload()
+                    }, 2000)
+                })
+            },
+
+            // 修改头像
+            edit_avatar_method(){
+                // console.log(this.edit_avatar_id);  // id: 整数
+                axios.put('/api/edit_avatar/', {
+                    avatar_id: this.edit_avatar_id,
+                }).then(res => {
+                    if(res.code){
+                        this.$message.error(res.msg)
+                        return 
+                    }
+                    this.$message.success(res.msg)
+                    // 用户修改头像预览
+                    $('#user_avatar').attr('src', res.data)
+                })
+                
+            },
+            
+            // 初始化头像
+            init_edit_avatar() {                
+                let $el = $('.avatar-grid-group'); // 先获取元素
+                
+                // 判断元素是否存在，防止报错
+                if ($el.length > 0) {
+                    // 获取属性值
+                    let nid = $el.attr('avatar_nid');
+                    
+                    // 赋值 (如果 nid 存在)
+                    if (nid && nid.trim() !== '') {
+                        // 注意：eval 有风险，如果是纯数字建议用 parseInt
+                        // 如果你后端传的是 "15"，直接 parseInt 即可
+                        this.edit_avatar_id = parseInt(nid); 
+                    }
+                }
+            },
+
         },
         setup() {
+
+            const { createApp, ref } = Vue;
+
             // 1. 定义 drawer 变量 (解决 Property "drawer" ... not defined)
             const drawer = ref(false);
 

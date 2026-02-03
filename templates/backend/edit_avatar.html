@@ -1,5 +1,40 @@
 {% extends 'backend/backend.html' %}
 
-{% block content %}
+{% block css %}
+<link rel="stylesheet" href="/static/css/backend/edit_avatar.css">
+{% endblock %}
 
+{% block content %}
+<!-- <ul class="avatar_list">
+    {% for avatar in avatar_list %}
+        <li>
+            <el-radio v-model="edit_avatar_id" :label="{{ avatar.nid }}">
+                <img src="{{ avatar.url.url }}" alt="">
+            </el-radio>
+        </li>
+    {% endfor %}
+</ul> -->
+
+<!-- 本项目用的 element plus v2.3.0, 要注意不要用新版本(v2.6.0)的改动 -->
+<el-radio-group v-model="edit_avatar_id" class="avatar-grid-group" avatar_nid="{{ avatar_id }} ">
+    {% for avatar in avatar_list %}
+        <el-radio :label="{{ avatar.nid }}" class="avatar-item">
+            <div class="img-wrapper">
+                <img src="{{ avatar.url.url }}" alt="Avatar">
+                <div class="selected-mask">
+                    <span class="check-mark">✓</span>
+                </div>
+            </div>
+        </el-radio>
+    {% endfor %}
+</el-radio-group>
+<div style="margin-top: 20px;">
+    <el-button
+        type="success"
+        plain
+        @click="edit_avatar_method"
+    >
+        确认修改
+    </el-button>
+</div>
 {% endblock %}

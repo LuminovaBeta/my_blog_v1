@@ -69,6 +69,7 @@ main{
             }
         }
     }
+
     // 按钮
     .action{
         width: 100%;
@@ -81,6 +82,18 @@ main{
         justify-content: space-around;
         align-items: center;
     }
+
+    // 修改密码
+    .edit_info{
+        >div{
+            margin-bottom: 10px;
+            label{
+                display: block;
+                margin-bottom: 5px;
+            }
+        }
+    }
+
     // 收藏的文章
     .collection_article_all{
 

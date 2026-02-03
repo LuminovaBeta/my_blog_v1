@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from api.views import login, article, comment, uploads
+from api.views import login, article, comment, uploads, user
 
 urlpatterns = [
     path('login/', login.LoginView.as_view()), # 登录
@@ -11,4 +11,6 @@ urlpatterns = [
     re_path(r'article/digg/(?P<nid>\d+)/', article.ArticleDiggView.as_view()), # 文章点赞
     re_path(r'article/collects/(?P<nid>\d+)/', article.ArticleCollectsView.as_view()), # 文章收藏
     path('upload_image/', uploads.upload_image, name='upload_image'), # 文章上传图片
+    path('edit_password/', user.EditPasswordView.as_view()), # 修改密码
+    path('edit_avatar/', user.EditAvatarView.as_view()), # 修改密码
 ]

@@ -14,6 +14,7 @@ from app01.models import UserInfo # 导入用户表
 from app01.models import Articles # 导入文章表
 from app01.models import Tags # 导入标签
 from app01.models import Cover # 导入文章封面
+from app01.models import Avatars # 导入头像表
 from django.db.models import F
 
 
@@ -34,7 +35,7 @@ def index(request):
         all_count=article_list.count(),
         base_url='',
         query_params=query_params,
-        per_page=1,
+        per_page=12,
         pager_page_count=7,
     )
     article_list = article_list[ pager.start:pager.end ]
@@ -78,7 +79,7 @@ def search(request):
         all_count=article_list.count(),
         base_url='',
         query_params=query_params,
-        per_page=4,
+        per_page=12,
         pager_page_count=7,
     )
     article_list = article_list[ pager.start:pager.end ]
@@ -145,7 +146,29 @@ def add_article(request):
 
     return render(request, 'backend/add_article.html', locals())
 
+# 编辑修改头像
 def edit_avatar(request):
+    # 拿到所有的头像
+    avatar_list = Avatars.objects.all()
+
+    # 如果是用户名注册
+    avatar_id = request.user.avatar.nid
+
+    # 如果是其他方式注册则查询
+    avatar_url = request.user.avatar_url
+    # 找到当前用户头像，用于初始化
+    for i in avatar_list:
+
+        # --- 调试代码开始 ---
+        print(f"系统头像: {i.url.url} (类型: {type(i.url.url)})")
+        print(f"用户头像: {avatar_url} (类型: {type(avatar_url)})")
+        print("-" * 20)
+        # --- 调试代码结束 ---
+
+        if i.url.url == avatar_url:
+            avatar_id = i.nid
+            break
+
     return render(request, 'backend/edit_avatar.html', locals())
 
 def reset_passward(request):
@@ -170,4 +193,11 @@ def edit_article(request, nid):
     # print(tags)
     # 拿到分类的字段
     categroy_list = Articles.category_choice
-    return render(request, 'backend/edit_article.html', locals())
+    return render(request, '.html', locals())
+
+# simpleui显示自己想显示的页面
+# def admin_home(request):
+#     return render(request, 'admin_home.html', locals())
+
+def moods(request):
+    return render(request, 'moods.html', locals())

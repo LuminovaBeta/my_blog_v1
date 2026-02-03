@@ -1,5 +1,45 @@
 {% extends 'index.html' %}
 
+{% block css %}
+<link rel="stylesheet" href="/static/css/news.css">
+{% endblock %}
+
 {% block main %}
-新闻区域
+<div class="main">
+    <div class="news_content">
+        {% csrf_token %}
+        <div class="left">
+            <ul>
+                <li active="true" @click="get_new_data('KqndgxeLl9', '微博')">
+                    <img src="/static/my/img/news/weibo.png" alt="">
+                    微博
+                </li>
+                <li>
+                    <img src="/static/my/img/news/weixin.png" alt="">
+                    微信
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="title">
+                <img src="/static/my/img/news/weibo.png" alt="">
+                <h2>热搜 热搜榜</h2>
+            </div>
+            <div class="body">
+                <ul>
+                    <li class="wow fadeInUp">
+                        <span class="index">1</span>
+                        <a href="">你好你好111甚至擦</a>
+                        <span class="num">1233123</span>
+                    </li>
+                    <li class="wow fadeInUp">
+                        <span class="index">1</span>
+                        <a href="">你好你好111甚至擦</a>
+                        <span class="num">1233123</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
