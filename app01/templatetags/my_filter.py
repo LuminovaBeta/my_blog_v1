@@ -2,6 +2,9 @@ from django import template
 import pendulum
 import datetime
 
+# 导入需要使用到的类
+from app01.models import Avatars
+
 # 注册
 register = template.Library()
 
@@ -56,3 +59,11 @@ def date_humaniz(date: datetime.datetime):
     time_difference = p_date.diff_for_humans(locale='zh')
 
     return time_difference
+
+# 计算使用头像的总和
+@register.filter
+def to_calculate_avatar(avatar: Avatars):
+    count = avatar.moodcomment_set.count() + avatar.moods_set.count() + avatar.userinfo_set.count()
+    if count:
+        return ''
+    return 'no_avatar'

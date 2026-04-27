@@ -1,0 +1,49 @@
+{% extends 'backend/backend.html' %}
+{% load my_filter %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/viewer/css/viewer.css">
+    <link rel="stylesheet" href="/static/my/css/backend/avatar_list.css">
+{% endblock %}
+
+
+{% block content %}
+    <div id="app">
+        <el-scrollbar style="margin-top: 20px; max-height: 500px;">
+            <ul class="flex avatar_list" id="avatar-gallery">
+                <li v-for="(avatar, index) in avatarList" :key="avatar.nid" class="avatar-item">
+                    
+                    <div class="delete_mask flex center item_center">
+                        <span class="delete_btn" @click.stop="avatar_cover_delete(avatar.nid, index)">
+                            🗑️ </span>
+                    </div>
+
+                    <img :src="avatar.url" :alt="'头像 ' + avatar.nid">
+                </li>
+            </ul>
+        </el-scrollbar>
+
+        <el-upload
+                class="upload-demo"
+                action="/api/upload/avatar/"
+                multiple
+                :on-success="avatar_list_success"
+                :before-upload="avatar_list_upload"
+                :headers="avatar_list_headers"
+                list-type="picture">
+            <el-button size="small" type="primary">上传新头像</el-button>
+            
+            <template #tip>
+                <div class="el-upload__tip">只能上传 jpg/png 文件, 且不超过 2M</div>
+            </template>
+        </el-upload>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script src="/static/viewer/js/viewer.js"></script>
+    <script>
+        $('.avatar_list').viewer();
+    </script>
+{% endblock %}

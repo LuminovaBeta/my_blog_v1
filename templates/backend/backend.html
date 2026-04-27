@@ -29,6 +29,8 @@
             <li><a href="/backend/reset_passward">修改密码</a></li>
             {% if request.user.is_superuser %}
                 <li><a href="/backend/add_article">添加文章</a></li>
+                <li><a href="/backend/avatar_list">头像列表</a></li>
+                <li><a href="/backend/cover_list">文章封面</a></li>
                 <li><a href="/admin">后台管理</a></li>
             {% endif %}
             <li><a href="/logout">注销退出</a></li>
@@ -300,9 +302,25 @@
                 })
             },
 
-            // 保存文章内容
-            save_content(nid){
-                // 暂时不用
+            // 保存文章正文内容
+            save_content(nid) {
+                // 获取内容
+                let data = {
+                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                }
+
+                // 只发送 nid 和 content，不传其他多余字段
+                axios.post(`/api/edit_article_content/${nid}/`, data).then(res => {
+                    // 注意：因为你有拦截器 return response.data，所以这里直接判断 res.code
+                    if (res.code === 0) {
+                        this.$message.success("内容已实时保存");
+                        // 局部保存不需要 location.href 跳转，让用户留在编辑页继续写
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                }).catch(err => {
+                    this.$message.error("网络异常，保存失败");
+                });
             },
 
             // 修改密码
@@ -336,7 +354,6 @@
                     // 用户修改头像预览
                     $('#user_avatar').attr('src', res.data)
                 })
-                
             },
             
             // 初始化头像

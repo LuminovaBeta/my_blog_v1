@@ -6,6 +6,7 @@ urlpatterns = [
     path('sign/', login.SignView.as_view()), # 注册
     path('article/', article.ArticleView.as_view()), # 发布文章
     re_path(r'article/(?P<nid>\d+)/', article.ArticleView.as_view()), # 编辑文章
+    re_path(r'edit_article_content/(?P<nid>\d+)/', article.edit_article_content), # 保存文章内容
     re_path(r'article/comment/(?P<nid>\d+)/', comment.CommentView.as_view()), # 发布评论
     re_path(r'comment/digg/(?P<nid>\d+)/', comment.Comment_DiggView.as_view()), # 评论点赞
     re_path(r'article/digg/(?P<nid>\d+)/', article.ArticleDiggView.as_view()), # 文章点赞

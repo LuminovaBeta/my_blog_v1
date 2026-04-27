@@ -18,6 +18,8 @@ from app01.models import Avatars # 导入头像表
 from django.db.models import F
 
 
+
+
 # Create your views here.
 
 # 主页面
@@ -169,7 +171,7 @@ def edit_avatar(request):
 
     return render(request, 'backend/edit_avatar.html', locals())
 
-# 重置密码
+# 修改密码
 def reset_passward(request):
     return render(request, 'backend/reset_passward.html', locals())
 
@@ -194,27 +196,6 @@ def edit_article(request, nid):
     # 拿到分类的字段
     categroy_list = Articles.category_choice
     return render(request, 'backend/edit_article.html', locals())
-
-# 头像列表 / 编辑头像
-def avatar_list(request):
-    user = request.user
-    sign_status = user.sign_status
-    # 查询所有的头像
-    avatar_list = Avatars.objects.all()
-
-    if sign_status == 0:
-        # 如果是用户名注册
-        avatar_id = request.user.avatar.nid
-    else:
-        avatar_url = request.user.avatar_url
-        for i in avatar_list:
-            if i.url.url == avatar_url:
-                avatar_id = i.nid
-    return render(request, 'backend/avatar_list.html', locals())
-
-# 文章封面
-def cover_list(request):
-    return render(request, 'backend/cover_list.html', locals())
 
 # simpleui显示自己想显示的页面
 # def admin_home(request):

@@ -1,3 +1,6 @@
+import json # 处理前端发来的 JSON 数据
+from django.views.decorators.csrf import csrf_exempt  # 跳过 CSRF 校验
+
 from django.views import View
 from django.http import JsonResponse
 from markdown import markdown
@@ -207,7 +210,44 @@ class ArticleCollectsView(View):
         res['code'] = 0
         return JsonResponse(res)
 
+# ================= 新增：仅保存文章正文内容 =================
+@csrf_exempt
+def edit_article_content(request, nid):
+    res = {
+        "code": 0,
+        "msg": "保存成功"
+    }
+    
+    if request.method == 'POST':
+        try:
+            # 1. 解析前端发来的 JSON 数据
+            data = json.loads(request.body)
+            content = data.get("content")
+            
+            if not content:
+                res["code"] = 1
+                res["msg"] = "内容不能为空"
+                return JsonResponse(res)
+                
+            # 2. 检查文章是否存在
+            article_query = Articles.objects.filter(nid=nid)
+            if not article_query.exists():
+                res["code"] = 1
+                res["msg"] = "文章不存在"
+                return JsonResponse(res)
+                
+            # 3. 仅更新正文，不触发其他校验逻辑
+            article_query.update(content=content)
+            return JsonResponse(res)
+            
+        except Exception as e:
+            res["code"] = 1
+            res["msg"] = f"数据解析失败: {str(e)}"
+            return JsonResponse(res)
 
+    res["code"] = 1
+    res["msg"] = "非法请求方式"
+    return JsonResponse(res)
 
 # # 文章
 # class ArticleView(View):

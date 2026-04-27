@@ -1,0 +1,71 @@
+@charset "UTF-8";
+/* 列表容器布局 */
+.avatar_list {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* 图片之间的间距 */
+  /* 单个头像卡片 */
+}
+.avatar_list .avatar-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  background-color: #f8f8f8;
+  /* 图片展示 */
+}
+.avatar_list .avatar-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 等比例缩放填满，不被拉伸 */
+}
+.avatar_list .avatar-item {
+  /* 删除遮罩层 (默认隐藏，透明度为0) */
+}
+.avatar_list .avatar-item .delete_mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  /* 删除按钮样式 */
+}
+.avatar_list .avatar-item .delete_mask .delete_btn {
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.2s, transform 0.2s;
+  /* 按钮自身的悬浮效果 */
+}
+.avatar_list .avatar-item .delete_mask .delete_btn:hover {
+  color: #f56c6c; /* Element 默认的危险红色 */
+  transform: scale(1.2);
+}
+.avatar_list .avatar-item {
+  /* 鼠标悬浮在卡片 (.avatar-item) 上时的特效 */
+}
+.avatar_list .avatar-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+  /* 联动：卡片被悬浮时，内部的遮罩层显现 */
+}
+.avatar_list .avatar-item:hover .delete_mask {
+  opacity: 1;
+}
+
+/*# sourceMappingURL=avatar_list.css.map */

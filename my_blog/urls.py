@@ -36,6 +36,8 @@ urlpatterns = [
     path('backend/add_article', views.add_article), # 后台添加文章
     path('backend/edit_avatar', views.edit_avatar), # 后台修改头像
     path('backend/reset_passward', views.reset_passward), # 后台重置密码
+    path('backend/avatar_list', views.avatar_list), # 头像列表/上传编辑头像
+    path('backend/cover_list', views.cover_list), # 文章封面
 
     re_path(r'^backend/edit_article/(?P<nid>\d+)/', views.edit_article), # 编辑文章
 
