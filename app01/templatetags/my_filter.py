@@ -3,7 +3,7 @@ import pendulum
 import datetime
 
 # 导入需要使用到的类
-from app01.models import Avatars
+from app01.models import Avatars, Cover, UserInfo
 
 # 注册
 register = template.Library()
@@ -63,7 +63,28 @@ def date_humaniz(date: datetime.datetime):
 # 计算使用头像的总和
 @register.filter
 def to_calculate_avatar(avatar: Avatars):
+    # moodcomment_set: 心情评论头像使用(暂时不用)
+    # moods_set: 心情头像使用(暂时不用)
+    # userinfo_set: 用户头像使用
     count = avatar.moodcomment_set.count() + avatar.moods_set.count() + avatar.userinfo_set.count()
     if count:
         return ''
     return 'no_avatar'
+
+# 计算使用文章封面的总和
+@register.filter
+def to_calculate_cover(cover: Cover):
+    count = cover.articles_set.count()
+    # print(count)
+    if count:
+        return ''
+    return 'no_cover'
+
+# 获取用户头像
+@register.filter
+def get_avatar(user: UserInfo):
+    if user.sign_status in [1, 2]:
+        return user.avatar_url
+    if user.avatar:
+        return user.avatar.url.url
+    return ''

@@ -15,153 +15,168 @@
 
 <!-- 主要区域继承 -->
 {% block main %}
-<!-- 悬浮目录 -->
-<div class="slider_bar" ref="slider">
-    <div class="title">
-        <span>[[ slide_text ]]</span>
-        <el-switch
-            v-model="isShowSlider"
-            class="mt-2"
-            style="margin-left: 6px"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-            @change="sliderChange"
-        ></el-switch>
-    </div>
-    <div class="body">
-        <p :tagName="item.tagName" @click="go_side_bar(item.pos, $event)" v-for="(item, index) in slide_list" :key="index">
-            [[ item.c ]]
-        </p>
-    </div>
-</div>
-<div class="article">
-    <!-- 文章点赞、收藏、回到顶部 -->
-    <div class="article_artions">
-        <div class="item" title="文章点赞">
-            <i class="fa fa-thumbs-up" @click="article_digg($event, '{{ article.nid }}')" aria-hidden="true"></i>
-            <span>{{ article.digg_count }}</span>
+    <!-- 悬浮目录 -->
+    <div class="slider_bar" ref="slider">
+        <div class="title">
+            <span>[[ slide_text ]]</span>
+            <el-switch
+                v-model="isShowSlider"
+                class="mt-2"
+                style="margin-left: 6px"
+                inline-prompt
+                :active-icon="Check"
+                :inactive-icon="Close"
+                @change="sliderChange"
+            ></el-switch>
+        </div>
+
+        <div class="body">
+            <!-- 通过 slide_list 列表存储 item.c -->
+            <p :tagName="item.tagName" @click="go_side_bar(item.pos, $event)" v-for="(item, index) in slide_list" :key="index">
+                [[ item.c ]]
+            </p>
+        </div>
+
+        <!-- 按钮 - (文章点赞、收藏、回到顶部) -->
+        <div class="article_artions">
+            <!-- 1. 点赞 -->
+            <div class="item like_btn" title="文章点赞" @click="article_digg($event, '{{ article.nid }}')">
+                <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                <span>{{ article.digg_count }}</span>
+            </div>
             
+            <div class="divider"></div>
+
+            <!-- 2. 收藏 -->
+            <div class="item collect_btn" title="文章收藏" @click="article_collects($event, '{{ article.nid }}')">
+                <!-- 有登录: 过滤器会返回 show -->
+                <i class="fa fa-star {{ article|is_user_coll:request }}" aria-hidden="true"></i>
+                <span>{{ article.collects_count }}</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 3. 回到顶部 -->
+            <div class="item top_btn" title="回到顶部" @click="go_to_top">
+                <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                <span>顶部</span>  <!-- 视觉对称 -->
+            </div>
         </div>
-        <div class="item" title="文章收藏">
-            <!-- 有登录: 过滤器会返回 show -->
-            <i class="fa fa-star {{ article|is_user_coll:request }}" @click="article_collects($event, '{{ article.nid }}')" aria-hidden="true"></i>
-            <span>{{ article.collects_count }}</span>
-            
-        </div>
-        <div class="item" title="回到顶部">
-            <i class="fa fa-angle-double-up " @click="go_to_top" aria-hidden="true"></i>
-        </div>
-    </div>
-    <div class="article_title">
-        <h2>{{ article.title }}
-            {% if request.user.is_superuser %}
-                <a href="/backend/edit_article/{{ article.nid }}/"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-            {% endif %}
-        </h2>
-        <p>
-            <!-- 发布时间格式化输出，不输出时分秒 -->
-            <span>发布时间: <i>{{ article.create_date|date:'Y-m-d' }}</i></span>
-            <span>作者: <i>{{ article.author }}</i></span>
-            <span>来源: <i>{{ article.source }}</i></span>
-        </p>
-        
-        <div>
-            {% if article.tag.all %}
-            <i class="fa fa-tags" aria-hidden="true"></i>
-            <!-- 正向查询标签（用字段） -->
-            {% for tag in article.tag.all %}
-                <i>{{ tag.title }}</i>
-            {% endfor %}
-            {% endif %}
-        </div>
-        
 
     </div>
-    <!-- 内容 -->
-    <div class="article_content" id="article_content">
-        <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
-        <textarea style="display:none;">{{ article.content }}</textarea>
-        
-    </div>
-    <!-- 发布评论 -->
-    <div class="comment_submit">
-        <div class="title">
-            你觉得文章怎么样
+
+    <!-- 文章区域 -->
+    <div class="article">
+        <!-- 文章发布信息 -->
+        <div class="article_title">
+            <h2>{{ article.title }}
+                {% if request.user.is_superuser %}
+                    <a href="/backend/edit_article/{{ article.nid }}/"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                {% endif %}
+            </h2>
+            <p>
+                <!-- 发布时间格式化输出，不输出时分秒 -->
+                <span>发布时间: <i>{{ article.create_date|date:'Y-m-d' }}</i></span>
+                <span>作者: <i>{{ article.author }}</i></span>
+                <span>来源: <i>{{ article.source }}</i></span>
+            </p>
+            
+            <div>
+                {% if article.tag.all %}
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                <!-- 正向查询标签（用字段） -->
+                {% for tag in article.tag.all %}
+                    <i>{{ tag.title }}</i>
+                {% endfor %}
+                {% endif %}
+            </div>
         </div>
-        {% csrf_token %}
-        <div class="body">
-            <textarea name="" id="" ref="comment_content" rows="10" cols="30" v-model="comment_content" placeholder="你觉得怎么样, 写下你想说的话吧："></textarea>
-            <button class="submin_comment" @click="add_comment('{{ article.nid }}')">发布评论</button>
+
+        <!-- 内容 -->
+        <div class="article_content" id="article_content">
+            <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
+            <textarea style="display:none;">{{ article.content }}</textarea>
         </div>
-        <div class="footer">
-            <p><span>{{ article.look_count }}</span>人浏览, <span>{{ article.comment_count }}</span>条评论</p>
+
+        <!-- 评论部分 -->
+        <div class="comment_submit">
+            <div class="title">
+                你觉得文章怎么样
+            </div>
+            {% csrf_token %}
+            <div class="body">
+                <textarea name="" id="" ref="comment_content" rows="10" cols="30" v-model="comment_content" placeholder="你觉得怎么样, 写下你想说的话吧："></textarea>
+                <button class="submin_comment" @click="add_comment('{{ article.nid }}')">发布评论</button>
+            </div>
+            <div class="footer">
+                <p><span>{{ article.look_count }}</span>人浏览, <span>{{ article.comment_count }}</span>条评论</p>
+            </div>
         </div>
-    </div>
-    <!-- 评论列表 -->
-    <div class="comment_list">
-        <ul>
-            <!-- 父评论 -->
-            {% for comment in comment_list %}
-                <li>
-                    <div class="left">
-                        <img src="{{ comment.user.avatar.url.url }}" alt="">
-                    </div>
-                    <div class="right">
-                        <h4>{{ comment.user.username }}</h4>
-                        <div class="comment_content">
-                            {{ comment.content }}
+
+        <!-- 评论列表 -->
+        <div class="comment_list">
+            <ul>
+                <!-- 父评论 -->
+                {% for comment in comment_list %}
+                    <li>
+                        <div class="left">
+                            <img src="{{ comment.user.avatar.url.url }}" alt="">
                         </div>
-                        <div class="comment_info">
-                            <span>{{ comment.create_time }}</span>
-                            <div>
-                                <span @click="comment_digg($event, '{{ comment.nid }}')">点赞 ({{ comment.digg_count }})</span>
-                                <span @click="show_sub_comment_list($event, '{{ comment.user.username }}', '{{ comment.nid }}')">回复 ({{ comment.comment_count }})</span>
-                                {% if comment.user == request.user or request.user.is_superuser %}
-                                <span @click="delate_sub_comment('{{ comment.nid }}', '{{ article.nid }}', null)" class="deleat">删除</span>
-                                {% endif %}
-                                
+                        <div class="right">
+                            <h4>{{ comment.user.username }}</h4>
+                            <div class="comment_content">
+                                {{ comment.content }}
                             </div>
-                        </div>
-                        <!-- 子评论 -->
-                        <div class="sub_comment_list">
-                            {% for sub in comment.sub_comment %}
+                            <div class="comment_info">
+                                <span>{{ comment.create_time }}</span>
                                 <div>
-                                    <div class="left">
-                                        <img src="{{ sub.user.avatar.url.url }}" alt="">
-                                    </div>
-                                    <div class="right">
-                                        <h4>{{ sub.user.username }} @ {{ sub.parent_comment.user.username }}</h4>
-                                        <div class="sub_comment_content">
-                                            {{ sub.content }}
+                                    <span @click="comment_digg($event, '{{ comment.nid }}')">点赞 ({{ comment.digg_count }})</span>
+                                    <span @click="show_sub_comment_list($event, '{{ comment.user.username }}', '{{ comment.nid }}')">回复 ({{ comment.comment_count }})</span>
+                                    {% if comment.user == request.user or request.user.is_superuser %}
+                                    <span @click="delate_sub_comment('{{ comment.nid }}', '{{ article.nid }}', null)" class="deleat">删除</span>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                            <!-- 子评论 -->
+                            <div class="sub_comment_list">
+                                {% for sub in comment.sub_comment %}
+                                    <div>
+                                        <div class="left">
+                                            <img src="{{ sub.user.avatar.url.url }}" alt="">
                                         </div>
-                                        <div class="sub_comment_info">
-                                            <span>{{ sub.create_time }}</span>
-                                            <div>
-                                                <span @click="comment_digg($event, '{{ sub.nid }}')">点赞({{ sub.digg_count }})</span>
-                                                <span @click="sub_comment_set_placeholder($event, '{{ sub.user.username }}', '{{ sub.nid }}')">回复</span>
-                                                
-                                                {% if sub.user == request.user or request.user.is_superuser %}
-                                                <span @click="delate_sub_comment('{{ sub.nid }}', '{{ article.nid }}', '{{ comment.nid }}')" class="deleat">删除</span>
-                                                {% endif %}
+                                        <div class="right">
+                                            <h4>{{ sub.user.username }} @ {{ sub.parent_comment.user.username }}</h4>
+                                            <div class="sub_comment_content">
+                                                {{ sub.content }}
+                                            </div>
+                                            <div class="sub_comment_info">
+                                                <span>{{ sub.create_time }}</span>
+                                                <div>
+                                                    <span @click="comment_digg($event, '{{ sub.nid }}')">点赞({{ sub.digg_count }})</span>
+                                                    <span @click="sub_comment_set_placeholder($event, '{{ sub.user.username }}', '{{ sub.nid }}')">回复</span>
+                                                    
+                                                    {% if sub.user == request.user or request.user.is_superuser %}
+                                                    <span @click="delate_sub_comment('{{ sub.nid }}', '{{ article.nid }}', '{{ comment.nid }}')" class="deleat">删除</span>
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                {% endfor %}
+                                <div class="sub_comment_textarea">
+                                    <textarea name="" id="" cols="30" ref="sub_comment_content" rows="10" placeholder=""></textarea>
+                                    <button @click="add_sub_comment($event, '{{ article.nid }}')">回复</button>
                                 </div>
-                            {% endfor %}
-                            <div class="sub_comment_textarea">
-                                <textarea name="" id="" cols="30" ref="sub_comment_content" rows="10" placeholder=""></textarea>
-                                <button @click="add_sub_comment($event, '{{ article.nid }}')">回复</button>
                             </div>
                         </div>
-                    </div>
-                </li>            
-            {% endfor %}
+                    </li>            
+                {% endfor %}
 
-        </ul>
+            </ul>
 
+        </div>
     </div>
-</div>
 {% endblock %}
 
 <!-- 拓展js -->

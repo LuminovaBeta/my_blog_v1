@@ -1,4 +1,16 @@
 @charset "UTF-8";
+.flex {
+  display: flex;
+}
+
+.center {
+  justify-content: center;
+}
+
+.item_center {
+  align-items: center;
+}
+
 .card .title {
   display: flex;
   justify-content: space-between;

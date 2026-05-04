@@ -1,3 +1,19 @@
+// ==========================================
+// 1. 全局 Flex 实用类 (Utility Classes)
+// 建议：如果你有 base.scss，请把这部分抽离出去
+// ==========================================
+.flex {
+  display: flex;
+}
+// 主轴居中 (水平)
+.center {
+  justify-content: center;
+}
+// 交叉轴居中 (垂直)
+.item_center {
+  align-items: center;
+}
+
 // 公共标签，优先级最低
 .card{
     
@@ -53,6 +69,7 @@
     }
 }
 
+// 主页通用的顶部区域
 nav{
     width: calc(100% - 240px);
     height: 60px;
@@ -93,15 +110,23 @@ nav{
             }
         }
     }
+
     .right{
         width: 40%;
         display: flex; // 在右面排列
         justify-content: right; // 在右面排列
+
         img{
             width: 20px;// 切换白天黑夜图标大小
             margin-right: 20px;
             cursor: pointer;// 小手单击图标
         }
+
+        // 用户头像
+        // .avatar{
+
+        // }
+
         .el-dropdown .el-dropdown-link{
             color: white; 
         }

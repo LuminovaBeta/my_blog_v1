@@ -1,3 +1,20 @@
+// ==========================================
+// 1. 全局 Flex 实用类 (Utility Classes)
+// 建议：如果你有 base.scss，请把这部分抽离出去
+// ==========================================
+.flex {
+  display: flex;
+}
+// 主轴居中 (水平)
+.center {
+  justify-content: center;
+}
+// 交叉轴居中 (垂直)
+.item_center {
+  align-items: center;
+}
+
+
 #app{
     display: flex;
     flex-direction: row; /* 确保是左右排列 */
@@ -7,6 +24,7 @@
 aside{
     width: 200px;
     height: 100vh;
+    border-right: 1px solid #ebeef5; // 右侧加一条淡淡的分割线，层次感更强
     .clogan{
         width: 100%;
         margin-top: 20px;
@@ -16,23 +34,58 @@ aside{
             width: 80%;
         }
     }
-    >ul{
+
+    // 1. 分割线样式
+    .menu-divider {
+        height: 1px;
+        background-color: #ebeef5; // 非常淡的灰色线条
+        margin: 12px 15px; // 上下留出空间，左右和菜单对齐
+    }
+
+    // 2. 分组标题样式
+    .menu-group-title {
+        font-size: 12px; // 标题要小一点才精致
+        color: #909399; // Element Plus 经典的次要文本灰
+        padding: 0 13px;
+        margin-bottom: 6px;
+        font-weight: 400;
+        cursor: default; // 鼠标移上去保持箭头，不要变成手指
+
+        display: flex;          // 使用 Flexbox 布局
+        justify-content: center; // 水平居中
+        align-items: center;     // 垂直居中（可选，确保如果以后加了高度文字也是居中的）
+        // text-align: center;   // 备用方案：如果不用 display: flex，单用这行也可以实现文本居中
+    }
+
+    > #dynamic_menu {
         width: 100%;
         margin-top: 40px;
-        >li{
+        padding: 0 15px; // 给父容器左右加上内边距，不让菜单项贴边
+        box-sizing: border-box; // 确保内边距不会撑破宽度
+        > a {
             width: 100%;
             height: 40px;
+            border-radius: 8px; // 圆角
+
+            flex-direction: column; // 确保 a 标签垂直排列
 
             display: flex;
             justify-content: center;
             align-items: center;
 
             transition: all 0.3s;
-            a{
-                color: #1890ff;
-            }
+            color: #1890ff;
+
             &:hover{
-                background-color: rgba(0, 0, 0, 0.1);
+                color: #409EFF; // Element Plus 主题蓝
+                background-color: #f5f7fa; // 非常淡的灰色背景
+            }
+
+            // 🌟 通过 Vue 动态添加的 active 激活样式！
+            &.active {
+                color: #409EFF; // 保持蓝色文字
+                background-color: #ecf5ff; // 换成 Element Plus 经典的极浅蓝背景
+                font-weight: bold; // 字体稍微加粗以示区别
             }
         }
     }
@@ -43,6 +96,7 @@ main{
     box-sizing: border-box;
     background-color: #f0eeee;
     padding: 20px;
+    overflow-x: auto;
     .user_info{
         width: 100%;
         display: flex;
@@ -90,6 +144,12 @@ main{
             label{
                 display: block;
                 margin-bottom: 5px;
+            }
+        }
+
+        .send_email{
+            .el-button{
+                width: 150px;
             }
         }
     }

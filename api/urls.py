@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from api.views import login, article, comment, uploads, user
+from api.views import login, article, comment, uploads, user, file, api_email
 
 urlpatterns = [
     path('login/', login.LoginView.as_view()), # 登录
@@ -14,4 +14,13 @@ urlpatterns = [
     path('upload_image/', uploads.upload_image, name='upload_image'), # 文章上传图片
     path('edit_password/', user.EditPasswordView.as_view()), # 修改密码
     path('edit_avatar/', user.EditAvatarView.as_view()), # 修改密码
+
+    path('upload/avatar/', file.AvatarView.as_view()), # 上传头像
+    re_path(r'upload/avatar/(?P<nid>\d+)', file.AvatarView.as_view()), # 删除头像
+    
+    path('upload/cover/', file.CoverView.as_view()), # 上传封面
+    re_path(r'upload/cover/(?P<nid>\d+)', file.CoverView.as_view()), # 删除封面
+
+    path('send_email/', api_email.ApiEmail.as_view()), # 发送邮箱验证码
+    path('perfect_information/', user.EditUserInfoView.as_view()), # 邮箱信息绑定
 ]

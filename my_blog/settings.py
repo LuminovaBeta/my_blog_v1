@@ -183,3 +183,12 @@ LOCAL_LINKS = {
 # SIMPLEUI_HOME_PAGE = '/admin_home/' # 链接的页面
 # SIMPLEUI_HOME_TITLE = '首页' 
 # SIMPLEUI_HOME_ICON = 'fa fa-user'
+
+# 发送邮箱配置
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'wshsm66@qq.com' # 你的QQ号@qq.com
+EMAIL_HOST_PASSWORD = 'mqwbtljreqfzebfa' # 网页端获取的16位授权码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_USE_SSL = True # 🚨 关键：465 端口必须开启 SSL
+EMAIL_USER_TLS = False # 🚨 关键：SSL 和 TLS 不能同时为 True！必须把 TLS 关掉

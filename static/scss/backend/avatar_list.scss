@@ -1,71 +1,124 @@
-/* 列表容器布局 */
+// ==========================================
+// 1. 全局 Flex 实用类 (Utility Classes)
+// 建议：如果你有 base.scss，请把这部分抽离出去
+// ==========================================
+.flex {
+  display: flex;
+}
+
+// 主轴居中 (水平)
+.center {
+  justify-content: center;
+}
+
+// 交叉轴居中 (垂直)
+.item_center {
+  align-items: center;
+}
+
+// 变量定义（可根据你的博客主题色修改）
+$avatar-size: 80px;
+$border-radius: 8px;
+$hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+$mask-bg: rgba(0, 0, 0, 0.6);
+$danger-color: #f56c6c;
+
+/* 头像列表容器 */
 .avatar_list {
   list-style: none;
-  padding: 10px 0;
-  margin: 0;
+  padding: 0;
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; /* 图片之间的间距 */
+  gap: 20px; // 使用 gap 控制间距，非常现代且方便
+  width: 100%;
 
-  /* 单个头像卡片 */
-  .avatar-item {
+  /* 单个头像项 (对应 <li>) */
+  li {
     position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 8px;
+    width: $avatar-size;
+    height: $avatar-size;
+    border-radius: $border-radius;
     overflow: hidden;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    background-color: #f0f2f5;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); // 阴影效果
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-    background-color: #f8f8f8;
 
-    /* 图片展示 */
+    // 优化 2：把 Hover 逻辑放到通用的 li 下面，而不是仅限 no_avatar
+    &:hover {
+      transform: translateY(-3px); // 卡片轻微上浮
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); // 阴影加深
+      
+      .delete_icon {
+        opacity: 1; // 悬浮时显示黑边
+        pointer-events: auto; // 恢复点击事件
+      }
+    }
+
+    // 头像图片
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* 等比例缩放填满，不被拉伸 */
+      object-fit: cover; // 确保图片等比缩放填满，不拉伸变形
+      display: block;
     }
 
-    /* 删除遮罩层 (默认隐藏，透明度为0) */
-    .delete_mask {
-      position: absolute;
-      top: 0;
-      left: 0;
+    // 删除图标
+    .delete_icon{
+      display: none; // 如果没有 no_avatar 类则不显示
+      opacity: 0; // 透明度
+      height: 30px;
       width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      display: flex;
+      background-color: rgba(0, 0, 0, 0.5);
+      position: absolute;
       justify-content: center;
       align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 10;
+      bottom: 0;
 
-      /* 删除按钮样式 */
-      .delete_btn {
-        font-size: 24px;
-        color: #fff;
+      opacity: 0; // 默认完全透明
+      pointer-events: none; // 隐藏时鼠标穿透，防误触
+      transition: opacity 0.3s ease; // 丝滑的透明度渐变
+
+      .delete{
+        color: white;
+        font-size: 18px; // 对于 el-icon，用 font-size 控制更规范
         cursor: pointer;
-        padding: 10px;
-        transition: color 0.2s, transform 0.2s;
 
-        /* 按钮自身的悬浮效果 */
+        // 增加一点细节：鼠标悬浮在垃圾桶上时变红
         &:hover {
-          color: #f56c6c; /* Element 默认的危险红色 */
-          transform: scale(1.2);
+          color: $danger-color;
         }
       }
     }
+  }
 
-    /* 鼠标悬浮在卡片 (.avatar-item) 上时的特效 */
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
-
-      /* 联动：卡片被悬浮时，内部的遮罩层显现 */
-      .delete_mask {
+  > li.no_avatar {
+    opacity: 0.6;
+    &:hover{
+      .delete_icon{
+        display: flex;
         opacity: 1;
       }
+    }
+  }
+}
+
+// /* 上传区域专属容器：强制独占一行 */
+.upload-wrapper {
+  display: block; // 块级元素，天生独占一行
+  width: 100%;    // 撑满父容器宽度
+  margin-top: 20px; // 和上面的头像列表拉开距离
+  padding-top: 20px;
+  border-top: 1px dashed #e0e0f2; // 画一条淡淡的分割线，视觉上更清爽
+
+  .upload-demo {
+    // 限制一下上传列表的最大宽度，不至于拉得太长影响美观
+    max-width: 400px; 
+    
+    .el-upload__tip {
+      font-size: 13px;
+      color: #909399;
+      margin-top: 8px;
     }
   }
 }

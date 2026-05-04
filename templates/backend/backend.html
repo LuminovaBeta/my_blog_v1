@@ -19,26 +19,39 @@
 <body>
 <div id="app">
     <aside>
+        <!-- 左侧logo -->
         <div class="clogan">
             <img src="/static/my/img/backend/FLY-code-2.png" alt="">
         </div>
-        <ul>
-            <li><a href="/">首页</a></li>
-            <li><a href="/backend">个人中心</a></li>
-            <li><a href="/backend/edit_avatar">修改头像</a></li>
-            <li><a href="/backend/reset_passward">修改密码</a></li>
+        
+        <!-- 左侧标签栏 -->
+        <div id="dynamic_menu">
+            <!-- 基础功能 -->
+            <a href="/">首页</a>
+            <a href="/backend">个人中心</a>
+            <a href="/backend/edit_avatar">修改头像</a>
+            <a href="/backend/reset_passward">修改密码</a>
+
             {% if request.user.is_superuser %}
-                <li><a href="/backend/add_article">添加文章</a></li>
-                <li><a href="/backend/avatar_list">头像列表</a></li>
-                <li><a href="/backend/cover_list">文章封面</a></li>
-                <li><a href="/admin">后台管理</a></li>
+                <!-- 💡 管理员专区 -->
+                <div class="menu-divider"></div>
+                <div class="menu-group-title">管理</div>
+
+                <a href="/backend/add_article">添加文章</a>
+                <a href="/backend/avatar_list">头像列表</a>
+                <a href="/backend/cover_list">文章封面</a>
+                <a href="/admin">后台管理</a>
             {% endif %}
-            <li><a href="/logout">注销退出</a></li>
-        </ul>
+
+            <!-- 💡 注销操作区 -->
+            <div class="menu-divider"></div>
+            <a href="/logout">注销退出</a>
+        </div>
     </aside>
     <main>
         {% csrf_token %}
         {% block main %}
+            <!-- 顶部信息栏 -->
             <div class="user_info">
                 <div class="left">
                     <img id="user_avatar" src="{{ request.user.avatar.url.url }}" alt="">
@@ -70,13 +83,63 @@
                     </div>
                 </div>
             </div>
-            <!-- 按钮 -->
+
+             <!-- 按钮 - (完善信息，修改头像，修改密码，注销退出) -->
             <div class="action">
+                <el-dialog
+                    v-model="perfect_information_dialogVisible"
+                    title="完善信息"
+                    width="500"
+                    :before-close="handleClose"
+                >
+                    <div class="edit_info">
+                        <div>
+                            <label for="">邮箱:</label>
+                            <el-input id=""
+                                v-model="perfect_information.email" 
+                                placeholder="请输入邮箱">
+                            </el-input>
+                        </div>
+                        <div>
+                            <label for="">密码:</label>
+                            <el-input id="" 
+                                type="password" 
+                                v-model="perfect_information.pwd" 
+                                placeholder="请输入密码">
+                            </el-input>
+                        </div>
+                        <div>
+                            <label for="">验证码:</label>
+                            <!-- flex布局动态调整 -->
+                            <div class="flex send_email">
+                                <el-input id="" 
+                                    v-model="perfect_information.code" 
+                                    placeholder="请输入邮箱验证码">
+                                </el-input>
+                                <el-button type="info" plain @click="send_email" :disabled="perfect_information_email_disable">
+                                    发送邮箱验证码
+                                </el-button>
+                            </div>
+                        </div>
+                        <p>
+                            绑定邮箱之后可使用邮箱+密码登录
+                        </p>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="perfect_information_dialogVisible = false">取消</el-button>
+                            <el-button type="primary" 
+                                :disabled="perfect_information_method_disable"
+                                @click="perfect_information_method">确认
+                            </el-button>
+                        </div>
+                    </template>
+                </el-dialog>
                 <div class="item">
-                    <el-button type="info" plain>完善信息</el-button>
+                    <el-button type="info" plain @click="perfect_information_dialogVisible=true">完善信息</el-button>
                 </div>
                 <div class="item">
-                    <el-button type="primary" plain>修改头像</el-button>
+                    <el-button type="primary" plain @click="goToEditAvatar">修改头像</el-button>
                 </div>
                 <el-dialog
                     v-model="edit_pwd_dialogVisible"
@@ -99,11 +162,11 @@
                         </div>
                     </div>
                     <template #footer>
-                    <div class="dialog-footer">
-                        <el-button @click="edit_pwd_dialogVisible = false">取消</el-button>
-                        <el-button type="primary" @click="edit_password_method">确认</el-button>
-                    </div>
-                </template>
+                        <div class="dialog-footer">
+                            <el-button @click="edit_pwd_dialogVisible = false">取消</el-button>
+                            <el-button type="primary" @click="edit_password_method">确认</el-button>
+                        </div>
+                    </template>
                 </el-dialog>
                 <div class="item">
                     <el-button @click="edit_pwd_dialogVisible=true" type="success" plain>修改密码</el-button>
@@ -112,49 +175,51 @@
                     <el-button type="danger" plain>注销退出</el-button>
                 </div>
             </div>
+
+            <!-- 主要内容区域 -->
             {% block content %}
-            <!-- 收藏文章 -->
-            <div class="collection_article_all">
-                <p>我收藏的文章</p>
-                <div class="article_list">
-                    <div class="item">
-                        <div class="left">
-                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                <!-- 收藏文章 -->
+                <div class="collection_article_all">
+                    <p>我收藏的文章</p>
+                    <div class="article_list">
+                        <div class="item">
+                            <div class="left">
+                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                            </div>
+                            <div class="right">
+                                <h2>无人机硬件基础</h2>
+                                <p>基于px4的飞行器。</p>
+                            </div>
                         </div>
-                        <div class="right">
-                            <h2>无人机硬件基础</h2>
-                            <p>基于px4的飞行器。</p>
+                        <div class="item">
+                            <div class="left">
+                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                            </div>
+                            <div class="right">
+                                <h2>无人机硬件基础</h2>
+                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="item">
-                        <div class="left">
-                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        <div class="item">
+                            <div class="left">
+                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                            </div>
+                            <div class="right">
+                                <h2>无人机硬件基础</h2>
+                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                            </div>
                         </div>
-                        <div class="right">
-                            <h2>无人机硬件基础</h2>
-                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="left">
-                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
-                        </div>
-                        <div class="right">
-                            <h2>无人机硬件基础</h2>
-                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="left">
-                            <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
-                        </div>
-                        <div class="right">
-                            <h2>无人机硬件基础</h2>
-                            <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                        <div class="item">
+                            <div class="left">
+                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                            </div>
+                            <div class="right">
+                                <h2>无人机硬件基础</h2>
+                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endblock %}
         {% endblock %}
     </main>
@@ -192,6 +257,7 @@
     // vue3
     const app = Vue.createApp({
         delimiters: ['[[', ']]'],// 分割符配置
+
         data(){
             return {
                 // 选中的
@@ -229,10 +295,30 @@
                     re_new_pwd: '',
                 },
 
+                // 完善信息弹窗
+                perfect_information_dialogVisible: false, // 默认不显示 完善信息弹窗
+                perfect_information: {
+                    email: '',
+                    pwd: '',
+                    code: '',
+                },
+                perfect_information_email_disable: false, // 当变量为 true 时（禁用状态）
+                perfect_information_method_disable: true,
+
                 // 修改头像
                 edit_avatar_id: '',
+
+                // avatar_list 的上传头像的请求头 上传封面也可用
+                avatar_or_cover_list_headers: {
+                    // 如果你的后端 Django 开启了 CSRF 保护，可能需要携带 CSRF Token
+                    // 'X-CSRFToken': getCookie('csrftoken'), 
+                    
+                    // 或者如果你的项目使用了 JWT Token 认证，格式通常是这样的：
+                    // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
             }
         },
+
         // 生命周期钩子用法
         created(){
             // $nextTick 的意思是：等页面彻底画完、DOM 彻底生成了，再执行里面的代码
@@ -240,8 +326,38 @@
                 this.init_edit_avatar();
             });
         },
+
+        // 生命周期钩子函数, 挂载阶段
+        mounted() {
+            // 1. 使用了 id，这里用原生 JS 获取 DOM
+            const dynamic_menu = document.getElementById('dynamic_menu');
+            
+            // 2. 依然保留这层“保护罩”，防止找不到元素时报错崩溃
+            if (dynamic_menu) {
+                // 3. 寻找里面所有的 <a> 标签
+                const a_list = dynamic_menu.querySelectorAll('a');
+                const path = location.pathname; 
+                
+                for (const a of a_list) {
+                    const a_href = a.getAttribute('href');
+                    
+                    // 4. 匹配当前路径
+                    if (a_href === path || a_href + '/' === path) {
+                        // 5. 匹配成功，直接给当前的 <a> 标签加上 active 类名
+                        a.classList.add('active');
+                    }
+                }
+            }
+        },
+        
         // 方法定义
         methods: {
+            // 跳转到修改头像页面
+            goToEditAvatar() {
+                // 原生 JS 的页面跳转代码
+                window.location.href = '/backend/edit_avatar'; 
+            },
+
             // 添加文章函数
             add_article(){
                 let data = {
@@ -374,7 +490,107 @@
                 }
             },
 
+            // elementplus上传头像或封面，上传前给 avatar_or_cover_list_headers 写请求头
+            avatar_or_cover_list_upload(){
+                let csrf_token = document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                // console.log(request)
+                this.avatar_or_cover_list_headers['X-CSRFToken'] = csrf_token
+            },
+
+            // 头像 or 封面 上传成功回调
+            avatar_or_cover_list_success(res){
+                if(!res.code){
+                    this.$message.success(res.msg)
+                    return
+                }
+                this.$message.error(res.msg)
+            },
+
+            // 删除头像 or 封面 点击事件声明
+            avatar_or_cover_delete(nid, type, event){
+                // 不同业务的“配置”统一管理
+                const configMap = {
+                    'avatar': { url: `/api/upload/avatar/${nid}/`, name: '头像'},
+                    'cover':  { url: `/api/upload/cover/${nid}/`, name: '封面'},
+                    // 未来你想加什么删除，直接在这里加一行就行，比如：
+                    // 'article': { url: `/api/article/delete/${nid}/`, name: '文章'}
+                };
+                // 获取当前类型的配置信息
+                const target = configMap[type];
+
+                // 弹出二次确认框，防止用户手滑误删
+                // 动态注入文案
+                this.$confirm(`此操作将永久删除该${target.name}, 是否继续?`, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    axios.delete(target.url).then(res => {
+                        if(res.code){
+                            this.$message.error(res.msg)
+                            return 
+                        }
+                        this.$message.success(res.msg)
+
+                        // 后端删除成功后，直接在前端移除这个 li 标签
+                        if (event && event.target) {
+                            // ✨ 核心代码：顺藤摸瓜找到最近的 li 标签
+                            const liElement = event.target.closest('li'); 
+                            
+                            if (liElement) {
+                                liElement.remove(); // 原生 JS 提供的销毁节点方法
+                            }
+                        }
+                    })
+                }).catch(() => {
+                    // 用户点击了取消
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+
+            // 发送邮箱验证码
+            send_email(){
+                axios.post('/api/send_email/', this.perfect_information).then(res => {
+                    if (res.code) {
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    this.$message.success(res.msg)
+                    let num = 60
+                    let span = document.querySelector('.send_email .el-button span') // 选中span
+                    this.perfect_information_email_disable = true  // 禁用状态
+                    this.perfect_information_method_disable = false
+                    let timer = null
+                    // 每秒执行一次
+                    timer = setInterval(() => {
+                        span.innerHTML = num
+                        if (num === 1) {
+                            span.innerHTML = '发送邮箱验证码'
+                            this.perfect_information_email_disable = false // 取消禁用状态
+                            clearInterval(timer) // 清除定时器
+                        }
+                        num--
+                    }, 1000)
+                })
+            },
+
+            // 完善信息，请求后台
+            perfect_information_method() {
+                axios.put('/api/perfect_information/', this.perfect_information).then(res => {
+                    if (res.code) {
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    this.$message.success(res.msg)
+                    this.perfect_information_dialogVisible = false
+                })
+            },
+            
         },
+
         setup() {
 
             const { createApp, ref } = Vue;
@@ -488,8 +704,21 @@
             };
         }
     });
+
+    // ==========================================
+    // 配置 Element Plus 和 图标
+    // ==========================================
+
+    // 1. 注册 Element Plus 插件
     app.use(ElementPlus);
-    // vue3 手动挂载到 DOM 元素
+
+    // 2. 注册所有图标 (因为你引入了 @element-plus/icons-vue CDN)
+    // 这样你就可以直接使用 <arrow-down /> 等所有图标了
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+        app.component(key, component)
+    }
+    
+    // ==========================================
     app.mount('#app');
 </script>
 

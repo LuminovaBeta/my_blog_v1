@@ -1,10 +1,57 @@
 {% extends 'backend/backend.html' %}
-
+{% load my_filter %}
 
 {% block css %}
-
+    <!-- <link rel="stylesheet" href="/static/viewer/css/viewer.css"> -->
+    <link rel="stylesheet" href="/static/css/backend/cover_list.css">
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
+    <div style="display: block; width: 100%;">
+        <!-- scrollbar 超过一定高度展示滚动条 -->
+        <el-scrollbar max-height="400px">
+            <ul class="flex cover_list" style="width: 100%;">
+                {% for cover in cover_query %}
+                    <li class="{{ cover|to_calculate_cover }}">
+                        <div class="delete_icon">
+                            <!-- <i @click="avatar_cover_delete('{{ cover.nid }}', 'cover', $event)" 
+                            class="el-icon-delete-solid"></i> -->
+                            <el-icon class="delete" @click="avatar_or_cover_delete('{{ cover.nid }}', 'cover', $event)"><delete /></el-icon>
+                        </div>
+
+                        <img src="{{ cover.url.url }}" alt="">
+                    </li>
+                {% endfor %}
+            </ul>            
+        </el-scrollbar>
+
+        <!-- 上传封面 -->
+        <!-- 使用一个专门的 wrapper div 包裹，确保它独占一行 -->
+        <div class="upload-wrapper">
+            <el-upload
+                    class="upload-demo"
+                    action="/api/upload/cover/"
+                    multiple
+                    :on-success="avatar_or_cover_list_success"
+                    :before-upload="avatar_or_cover_list_upload"
+                    :headers="avatar_or_cover_list_headers"
+                    list-type="picture">
+                <el-button size="small" type="primary">上传新的封面</el-button>
+
+                    <!-- Vue 3 的 <template #tip> 语法 -->
+                    <template #tip>
+                        <div class="el-upload__tip">只能上传 jpg/png 文件，且不超过 2M</div>
+                    </template>
+            </el-upload>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <!-- <script src="/static/viewer/js/viewer.js"></script>
+    <script>
+        $('.avatar_list').viewer();
+    </script> -->
 {% endblock %}

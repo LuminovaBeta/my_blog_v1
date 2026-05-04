@@ -14,6 +14,7 @@
             margin-bottom: 20px;// left和right下的div边距，也就是card的边距
         }
 
+        // 文章位置
         .left{
             width: 69%;
             .selected_articles > .title{
@@ -146,6 +147,7 @@
                                 }
                             }
                         }
+
                         .right{
                             width: 70%;
                             padding: 20px 20px 20px 10px;
@@ -177,16 +179,23 @@
                                 }
                             }
                         }
+
+                        // 展示分类标识 - 拓展接口
+                        // .category_flag{
+
+                        // }
                     }
                 }
             }
 
         }
 
+        // 其他功能卡片位置
         .right{
             width: 29%;
         }
         
+        // 标签云
         .tags > .body{
             position: relative;
             ul{
