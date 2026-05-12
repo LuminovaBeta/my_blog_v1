@@ -7,3 +7,8 @@
 ```bash
 python manage.py clean_zombie_images
 ```
+
+## 文件备份
+
+当前还没有进行开发此功能
+
