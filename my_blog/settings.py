@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-)s9b5ek1pq)ms-t8b=bum3s&c%mh5#+$ct-!31h=5yki)wyq#7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -90,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'my_blog',  # 数据库的名字
-        'USER': 'root',     # 用户名
+        'USER': 'my_blog_user',     # 用户名
         'PASSWORD': 'root', # 密码
         'HOST': '127.0.0.1',# 地址
         'PORT': 3306        # 端口

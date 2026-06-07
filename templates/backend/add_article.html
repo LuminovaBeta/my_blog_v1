@@ -165,6 +165,67 @@
             
             // 2. 指向 Django 的上传接口，然后再django的urls.py里面配置
             imageUploadURL : "/api/upload_image/", 
+
+            // 3. 利用 onload 钩子实现粘贴上传 (Axios 黄金版)
+            onload: function() {
+                // console.log("🟢 [阶段 1] Editor.md 加载完毕，开始绑定粘贴事件...");
+                var cm = this.cm;       // 获取底层的 CodeMirror 实例
+                var _editor = this;     // 保存当前 editormd 的引用
+
+                // 监听 CodeMirror 的粘贴事件
+                document.addEventListener('paste', function(e) {
+                    // console.log("====================================");
+                    // console.log("🟡 [阶段 2] 检测到键盘按下 Ctrl+V (粘贴动作)");
+                    var clipboardData = e.clipboardData || window.clipboardData;
+                    if (!clipboardData || !clipboardData.items) return;
+
+                    var items = clipboardData.items;
+                    var file = null;
+
+                    // 遍历剪贴板，寻找图片类型
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            file = items[i].getAsFile();
+                            break;
+                        }
+                    }
+
+                    // 如果没找到图片（纯文本），直接 return 交给系统默认处理
+                    if (!file) return;
+
+                    // 阻止默认的粘贴行为
+                    e.preventDefault();
+
+                    // 打包成表单数据
+                    var formData = new FormData();
+                    formData.append('editormd-image-file', file); 
+
+                    console.log('📸 检测到图片粘贴，正在上传...');
+
+                    // 🚀 发送 Axios 请求
+                    axios.post('/api/upload_image/', formData, {
+                        headers: {
+                            // 文件上传必须强行指定这个 header，否则后端解析不到文件
+                            'Content-Type': 'multipart/form-data' 
+                        }
+                    })
+                    .then(res => {
+                        // 💡 重点：因为你的响应拦截器直接返回了 response.data
+                        // 所以这里的 res 已经是后端返回的那个字典了，不用再写 res.data.success
+                        if (res.success === 1) {
+                            // 自动在光标处插入 Markdown 图片语法
+                            _editor.insertValue("![](" + res.url + ")\n");
+                            console.log('✅ 图片上传成功！');
+                        } else {
+                            alert('❌ 图片上传失败: ' + res.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('🌐 网络请求出错！请按 F12 检查控制台。');
+                        console.error('上传异常:', error);
+                    });
+                });
+            }
         });
 
         editormd.katexURL = {
