@@ -2,7 +2,6 @@
 
 #app{
     width: 100%;
-    
 
     .main{
         width: 1200px;
@@ -195,73 +194,118 @@
             width: 29%;
         }
         
-        // 标签云
+        // 标签云 ----------------------------------------------------------------
         .tags > .body{
-            position: relative;
-            ul{
+            padding: 15px 10px; // 给云朵容器一点呼吸空间
+
+            ul {
                 display: flex;
-                flex-wrap: wrap;// 空间不够时，允许自动换行
-                margin-top: 10px;
-                
-                @keyframes move_box {
-                    0%{
-                        left: 0;
-                        top: 0;
-                    }
-                    25%{
-                        left: calc(100% - 20px);
-                        top: 0;
-                    }
-                    50%{
-                        left: calc(100% - 20px);
-                        top: calc(100% - 20px);
-                    }
-                    75%{
-                        left: 0;;
-                        top: calc(100% - 20px);
-                    }
-                    100%{
-                        left: 0;
-                        top: 0;
-                    }
-                }
+                flex-wrap: wrap;         // 核心1：空间不够自动换行
+                justify-content: center; // 核心2：整体居中聚拢，形成云团效果
+                align-items: baseline;   // 核心3：按文字基线对齐，让不同大小的字错落有致
+                gap: 10px 12px;          // 核心4：设置垂直和水平间距，彻底替代原有的固定 width
+                margin: 0;
+                padding: 0;
 
-                // ul的伪元素
-                &::before{
-                    display: block;
-                    width: 20px;
-                    height: 20px;
-                    content: "";
-                    background-color: #ff9800;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
+                // 注：移除了原本绕着矩形跑的 move_box 动画，因为它会破坏云团自由散落的视觉感
 
-                    // -webkit-兼容旧版本浏览器
-                    -webkit-animation-name: move_box;
-                    animation-name: move_box;
-                    -webkit-animation-duration: 5s;
-                    animation-duration: 5s;
-                    -webkit-animation-iteration-count: infinite;
-                    animation-iteration-count: infinite;
-                }
-                li{
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: calc(100% / 3);// 中间留间隔竖线
-                    height: 35px;
-                    box-sizing: border-box;
+                li {
+                    list-style: none;
+                    display: inline-block; // 让宽度由内部的文字自动撑开
+                    
+                    a {
+                        display: inline-block;
+                        padding: 4px 14px;
+                        text-decoration: none;
+                        background-color: #f4f4f5; // 默认浅灰色背景
+                        color: #666;
+                        border-radius: 20px;       // 核心5：大圆角，看起来像椭圆形的胶囊/小云朵
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); // Q弹的过渡动画曲线
+                        
+                        // 继承你在 HTML 模板中写在 <li> 上的动态 font-size
+                        font-size: inherit;        
+                        
+                        &:hover {
+                            transform: translateY(-4px) scale(1.05); // 悬浮时上浮并微微放大
+                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); // 浮空阴影
+                        }
+                    }
 
-                    &:nth-child(6n+1), &:nth-child(6n+2), &:nth-child(6n+3){
-                        background-color: #f5f5f5;
-                    }
-                    &:nth-child(3n+1), &:nth-child(3n+2){
-                        border-right: 1px solid #f5f5f5; // 中间留间隔竖线
-                    }
+                    // 利用 nth-child 循环赋予标签不同的悬浮主题色，让“云”变得五颜六色
+                    &:nth-child(5n+1) a:hover { background-color: #409eff; color: #fff; } // Element蓝
+                    &:nth-child(5n+2) a:hover { background-color: #67c23a; color: #fff; } // Element绿
+                    &:nth-child(5n+3) a:hover { background-color: #e6a23c; color: #fff; } // Element橙
+                    &:nth-child(5n+4) a:hover { background-color: #f56c6c; color: #fff; } // Element红
+                    &:nth-child(5n+5) a:hover { background-color: #909399; color: #fff; } // Element灰
                 }
             }
+
+            // position: relative;
+            // ul{
+            //     display: flex;
+            //     flex-wrap: wrap;// 空间不够时，允许自动换行
+            //     margin-top: 10px;
+                
+            //     @keyframes move_box {
+            //         0%{
+            //             left: 0;
+            //             top: 0;
+            //         }
+            //         25%{
+            //             left: calc(100% - 20px);
+            //             top: 0;
+            //         }
+            //         50%{
+            //             left: calc(100% - 20px);
+            //             top: calc(100% - 20px);
+            //         }
+            //         75%{
+            //             left: 0;;
+            //             top: calc(100% - 20px);
+            //         }
+            //         100%{
+            //             left: 0;
+            //             top: 0;
+            //         }
+            //     }
+
+            //     // ul的伪元素
+            //     &::before{
+            //         display: block;
+            //         width: 20px;
+            //         height: 20px;
+            //         content: "";
+            //         background-color: #ff9800;
+            //         position: absolute;
+            //         top: 0;
+            //         left: 0;
+
+            //         // -webkit-兼容旧版本浏览器
+            //         -webkit-animation-name: move_box;
+            //         animation-name: move_box;
+            //         -webkit-animation-duration: 5s;
+            //         animation-duration: 5s;
+            //         -webkit-animation-iteration-count: infinite;
+            //         animation-iteration-count: infinite;
+            //     }
+            //     li{
+            //         display: flex;
+            //         align-items: center;
+            //         justify-content: center;
+            //         width: calc(100% / 3);// 中间留间隔竖线
+            //         height: 35px;
+            //         box-sizing: border-box;
+
+            //         &:nth-child(6n+1), &:nth-child(6n+2), &:nth-child(6n+3){
+            //             background-color: #f5f5f5;
+            //         }
+            //         &:nth-child(3n+1), &:nth-child(3n+2){
+            //             border-right: 1px solid #f5f5f5; // 中间留间隔竖线
+            //         }
+            //     }
+            // }
         }
+        // 标签云end -------------------------------------------------------------------------------
     }
 
 }

@@ -2,6 +2,7 @@ from django import template
 from app01.utils.search import Search # 通用的 Search 工具类
 from django.utils.safestring import mark_safe
 from app01.models import Tags
+from django.db.models import Count
 
 # 注册
 register = template.Library()
@@ -115,3 +116,14 @@ def dynamic_navigation(request):
             continue
         nav_list.append(f'<a href="{k}">{v}</a>')
     return mark_safe(''.join(nav_list))
+
+# 新增：获取标签云数据的标签
+@register.simple_tag
+def get_tag_cloud_data():
+    """
+    获取所有包含文章的标签，并统计文章数量。
+    按文章数量从多到少排序。
+    """
+    # annotate(count=Count('articles')) 会为每个标签对象动态增加一个 count 属性
+    tags = Tags.objects.annotate(count=Count('articles')).filter(count__gt=0).order_by('-count')
+    return tags

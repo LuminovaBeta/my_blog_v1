@@ -204,23 +204,20 @@
                     </div>
                     <div class="body">
                         <!-- 主要内容区域 -->
-                         <ul>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                            <li>python</li>
-                         </ul>
+                        <!-- 极其重要：必须有这一句，才能去 my_tag.py 里拿到数据！ -->
+                        {% get_tag_cloud_data as tag_list %}
+                        
+                        <ul>
+                            {% for tag in tag_list %}
+                                <!-- 动态计算字号：基础12px，每多一篇文章加2px。你也可以根据喜好调整倍数 -->
+                                <li style="font-size: calc(12px + {{ tag.count }} * 2px);">
+                                    <!-- 绑定点击跳转，附带你想展示的标签名和文章数 -->
+                                    <a href="/search/?tag={{ tag.title }}">
+                                        {{ tag.title }} ({{ tag.count }})
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
                 <div class="site_info card">
