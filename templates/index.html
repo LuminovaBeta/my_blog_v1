@@ -206,7 +206,7 @@
                         <!-- 主要内容区域 -->
                         <!-- 极其重要：必须有这一句，才能去 my_tag.py 里拿到数据！ -->
                         {% get_tag_cloud_data as tag_list %}
-                        
+
                         <ul>
                             {% for tag in tag_list %}
                                 <!-- 动态计算字号：基础12px，每多一篇文章加2px。你也可以根据喜好调整倍数 -->
@@ -220,29 +220,61 @@
                         </ul>
                     </div>
                 </div>
+
                 <div class="site_info card">
                     <div class="title">
                         <h2>站点信息</h2>
                     </div>
                     <div class="body">
                         <!-- 主要内容区域 -->
+                         <div class="info-item">
+                            <div class="num">128</div>
+                            <div class="text">文章总数</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="num">35</div>
+                            <div class="text">建站天数</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="num">12.5k</div>
+                            <div class="text">总访问量</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="num">42</div>
+                            <div class="text">标签总数</div>
+                        </div>
                     </div>
                 </div>
-                <div class="links card">
+
+                <div class="reading_rank links card">
                     <div class="title">
-                        <h2>阅读排行榜</h2>
+                        <h2>48小时阅读排行榜</h2>
                     </div>
                     <div class="body">
                         <!-- 主要内容区域 -->
+                         <ul>
+                            <!-- 演示数据：前三名使用特殊类名 index-1, index-2, index-3 实现金银铜牌颜色 -->
+                            <li><span class="rank index-1">1</span><a href="#">手把手教你部署Django项目</a></li>
+                            <li><span class="rank index-2">2</span><a href="#">Vue3组合式API最佳实践</a></li>
+                            <li><span class="rank index-3">3</span><a href="#">MySQL高级查询与性能调优</a></li>
+                            <li><span class="rank">4</span><a href="#">如何设计优雅的RESTful API</a></li>
+                            <li><span class="rank">5</span><a href="#">Git进阶使用技巧与分支管理</a></li>
+                        </ul>
                     </div>
                 </div>
-                <div class="links card">
+
+                <div class="friend_links links card">
                     <div class="title">
                         <h2>友情链接</h2>
                         <a href="#">申请</a>
                     </div>
                     <div class="body">
                         <!-- 主要内容区域 -->
+                        <ul>
+                            <li><a href="#" target="_blank"><i class="fa fa-link"></i> 萤途官网</a></li>
+                            <li><a href="#" target="_blank"><i class="fa fa-link"></i> Django官方文档</a></li>
+                            <li><a href="#" target="_blank"><i class="fa fa-link"></i> Vue.js中文网</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>

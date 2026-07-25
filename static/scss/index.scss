@@ -306,6 +306,156 @@
             // }
         }
         // 标签云end -------------------------------------------------------------------------------
+
+        // 站点信息
+        // 站点信息卡片：使用网格/弹性盒子做成 2x2 的数据看板
+        .site_info > .body {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 15px 10px;
+            
+            .info-item {
+                width: 50%; // 一行两个
+                text-align: center;
+                margin-bottom: 15px;
+                
+                .num {
+                    font-size: 22px;
+                    font-weight: bold;
+                    color: #409eff; // 蓝色数字，突出数据
+                    font-family: Arial, sans-serif;
+                }
+                .text {
+                    font-size: 13px;
+                    color: #909399; // 灰色辅助文字
+                    margin-top: 5px;
+                }
+            }
+        }
+        // 站点信息end -----------------------------------------------------------------------------
+
+        // 48小时阅读排行榜
+        // 阅读排行榜卡片：前三名高亮，超出文字自动省略
+        .reading_rank > .body {
+            padding: 15px 15px;
+            
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                
+                li {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 14px;
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    // 排名数字的基础样式
+                    .rank {
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        line-height: 20px;
+                        text-align: center;
+                        background-color: #f0f2f5;
+                        color: #909399;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        margin-right: 12px;
+                        font-weight: bold;
+                    }
+                    
+                    // 金银铜牌的颜色设置
+                    .index-1 { background-color: #f56c6c; color: white; } // 红
+                    .index-2 { background-color: #e6a23c; color: white; } // 橙
+                    .index-3 { background-color: #67c23a; color: white; } // 绿
+                    
+                    // 文章标题样式
+                    a {
+                        flex: 1;
+                        color: #555;
+                        text-decoration: none;
+                        font-size: 14px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap; // 单行显示，超出省略号
+                        transition: color 0.3s;
+                        
+                        &:hover {
+                            color: #409eff; // 悬浮变成主题蓝
+                        }
+                    }
+                }
+            }
+        }
+        // 48小时阅读排行榜end ---------------------------------------------------------------------
+
+        // 友情链接
+        // 友情链接卡片：悬浮出现边框与小位移
+        .friend_links {
+            // 美化右上角的“申请”按钮
+            .title .apply-btn {
+                font-size: 13px;
+                color: #e6a23c;
+                text-decoration: none;
+                transition: color 0.3s;
+                &:hover {
+                    color: #d38c2a;
+                }
+            }
+
+            > .body {
+                padding: 15px;
+                
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 12px; // 链接之间的间距
+                    
+                    li {
+                        width: 100%; // 单栏列表模式，如果想一行两个可以改成 48%
+                        
+                        a {
+                            display: flex;
+                            align-items: center;
+                            padding: 10px 12px;
+                            background-color: #f9fafc; // 极浅的灰色背景
+                            border: 1px solid #ebeef5; // 淡淡的边框
+                            border-radius: 6px;
+                            color: #606266;
+                            font-size: 13px;
+                            text-decoration: none;
+                            transition: all 0.3s ease;
+                            
+                            i {
+                                color: #c0c4cc; // 图标默认颜色
+                                margin-right: 8px;
+                                font-size: 14px;
+                            }
+                            
+                            // 鼠标悬浮：边框亮起、文字变色、整体右移
+                            &:hover {
+                                border-color: #b3d8ff;
+                                background-color: #ecf5ff;
+                                color: #409eff;
+                                transform: translateX(4px); // 向右微微平移
+                                
+                                i { 
+                                    color: #409eff; 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // 友情链接end ----------------------------------------------------------------------------
     }
 
 }
