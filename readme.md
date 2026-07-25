@@ -4,6 +4,22 @@ axios, editor.md,
 
 ## 二、项目运行
 
+1. 创建数据库
+
+   [mysql 安装](https://dev.mysql.com/downloads/installer/)
+
+   ```bash
+   mysql -u root -p -e "CREATE DATABASE my_blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER 'my_blog_user'@'%' IDENTIFIED BY 'root'; GRANT ALL PRIVILEGES ON my_blog.* TO 'my_blog_user'@'%'; FLUSH PRIVILEGES;"
+   uv run manage.py migrate  // 生成所有数据表
+   uv run manage.py createsuperuser   // 创建超级管理员
+   ```
+
+2. 运行博客
+
+   ```bash
+   uv sync
+   uv run manage.py runserver
+   ```
 
 ## 扫地机器人脚本
 

@@ -150,7 +150,14 @@ def edit_avatar(request):
     avatar_list = Avatars.objects.all()
 
     # 如果是用户名注册
-    avatar_id = request.user.avatar.nid
+    # avatar_id = request.user.avatar.nid
+    # 检查用户是否有头像
+    if request.user.avatar:
+        avatar_id = request.user.avatar.nid
+    else:
+        # 如果没有头像，给它指定一个默认头像的 nid，或者直接设为 None
+        # 具体取决于你前端逻辑的需要，通常设为 None 即可
+        avatar_id = None
 
     # 如果是其他方式注册则查询
     avatar_url = request.user.avatar_url
@@ -204,7 +211,12 @@ def avatar_list(request):
 
     if sign_status == 0:
         # 如果是用户名注册
-        avatar_id = request.user.avatar.nid
+        # avatar_id = request.user.avatar.nid
+        # 增加容错判断
+        if request.user.avatar:
+            avatar_id = request.user.avatar.nid
+        else:
+            avatar_id = None  # 或者设置成你数据库里默认头像的真实 ID
     else:
         avatar_url = request.user.avatar_url
         for i in avatar_list:
