@@ -21,6 +21,7 @@
 aside {
   width: 200px;
   height: 100vh;
+  overflow-y: auto;
   border-right: 1px solid #ebeef5;
 }
 aside .clogan {
@@ -82,6 +83,7 @@ main {
   background-color: #f0eeee;
   padding: 20px;
   overflow-x: auto;
+  overflow-y: auto;
 }
 main .user_info {
   width: 100%;
@@ -118,6 +120,220 @@ main .action {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+main .account-dialog-host {
+  display: contents;
+}
+main .dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+main .dashboard-stats .stat-card {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 8px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+}
+main .dashboard-stats .stat-card .stat-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 21px;
+}
+main .dashboard-stats .stat-card > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+main .dashboard-stats .stat-card strong {
+  color: #303133;
+  font-size: 24px;
+  line-height: 1;
+}
+main .dashboard-stats .stat-card span:last-child {
+  color: #909399;
+  font-size: 13px;
+  white-space: nowrap;
+}
+main .dashboard-stats .stat-blue .stat-icon {
+  color: #409eff;
+  background-color: #ecf5ff;
+}
+main .dashboard-stats .stat-orange .stat-icon {
+  color: #e6a23c;
+  background-color: #fdf6ec;
+}
+main .dashboard-stats .stat-green .stat-icon {
+  color: #67c23a;
+  background-color: #f0f9eb;
+}
+main .dashboard-stats .stat-purple .stat-icon {
+  color: #8e6bbd;
+  background-color: #f5f0fb;
+}
+main .dashboard-stats .stat-red .stat-icon {
+  color: #f56c6c;
+  background-color: #fef0f0;
+}
+main .dashboard-panel {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 5px;
+  background-color: white;
+  box-sizing: border-box;
+}
+main .dashboard-panel .panel-header {
+  min-height: 42px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+main .dashboard-panel .panel-header h2 {
+  margin: 0 0 5px;
+  color: #303133;
+  font-size: 18px;
+  font-weight: 500;
+}
+main .dashboard-panel .panel-header p {
+  margin: 0;
+  color: #909399;
+  font-size: 12px;
+}
+main .dashboard-panel .panel-header > a {
+  color: #409eff;
+  font-size: 13px;
+}
+main .quick-actions-panel .quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding-top: 16px;
+}
+main .quick-actions-panel .quick-actions a, main .quick-actions-panel .quick-actions .el-button {
+  width: 100%;
+}
+main .quick-actions-panel .quick-actions .el-button {
+  height: 40px;
+  gap: 5px;
+}
+main .dashboard-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+main .dashboard-workspace .workspace-list {
+  min-height: 250px;
+}
+main .dashboard-workspace .workspace-list > .el-empty {
+  padding: 30px 0;
+}
+main .dashboard-workspace .workspace-row,
+main .dashboard-workspace .comment-row {
+  min-height: 66px;
+  padding: 12px 0;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+}
+main .dashboard-workspace .workspace-row:last-child,
+main .dashboard-workspace .comment-row:last-child {
+  border-bottom: 0;
+}
+main .dashboard-workspace .workspace-main,
+main .dashboard-workspace .comment-info {
+  min-width: 0;
+  flex: 1;
+}
+main .dashboard-workspace .workspace-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+main .dashboard-workspace .workspace-title strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #303133;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+main .dashboard-workspace .workspace-meta {
+  margin-top: 7px;
+  display: flex;
+  gap: 14px;
+  color: #909399;
+  font-size: 12px;
+}
+main .dashboard-workspace .comment-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background-color: #ecf5ff;
+  color: #409eff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+main .dashboard-workspace .comment-title {
+  min-width: 0;
+  overflow: hidden;
+  color: #606266;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+main .dashboard-workspace .comment-title strong {
+  margin-right: 5px;
+  color: #303133;
+}
+main .dashboard-workspace .comment-info p {
+  margin: 6px 0;
+  overflow: hidden;
+  color: #606266;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+main .dashboard-workspace .comment-time {
+  color: #909399;
+  font-size: 12px;
+}
+main .account-settings-panel .account-setting-row {
+  min-height: 78px;
+  padding: 14px 0;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+main .account-settings-panel .account-setting-row:last-child {
+  border-bottom: 0;
+}
+main .account-settings-panel .account-setting-row strong {
+  color: #303133;
+  font-size: 15px;
+}
+main .account-settings-panel .account-setting-row p {
+  margin: 7px 0 0;
+  color: #909399;
+  font-size: 13px;
 }
 main .edit_info > div {
   margin-bottom: 10px;
@@ -209,6 +425,26 @@ main .collection_article_all .article_list .collection-empty {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media screen and (max-width: 1200px) {
+  main .dashboard-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  main .dashboard-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+@media screen and (max-width: 900px) {
+  main .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  main .quick-actions-panel .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  main .collection_article_all .article_list .item {
+    width: 50%;
+  }
 }
 
 /*# sourceMappingURL=backend_base.css.map */

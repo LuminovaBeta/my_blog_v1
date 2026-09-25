@@ -1,0 +1,69 @@
+{% extends 'backend/backend.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/backend/draft_list.css">
+{% endblock %}
+
+{% block content %}
+    <section class="draft-page">
+        <div class="draft-page-header">
+            <div>
+                <h2>文章管理</h2>
+                <p>共 {{ article_count }} 篇，按最近修改时间排序</p>
+            </div>
+            <a href="/backend/add_article">
+                <el-button type="primary" plain>新建文章</el-button>
+            </a>
+        </div>
+
+        {% if article_query %}
+            <div class="draft-list">
+                {% for article in article_query %}
+                    <article class="draft-item">
+                        <div class="draft-cover">
+                            {% if article.cover %}
+                                <img src="{{ article.cover.url.url }}" alt="{{ article.title|default:'未命名文章' }}">
+                            {% else %}
+                                <div class="draft-cover-empty">
+                                    <el-icon><document /></el-icon>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="draft-info">
+                            <div class="draft-title-row">
+                                <h3>{{ article.title|default:'未命名文章' }}</h3>
+                                {% if article.status == 1 %}
+                                    <el-tag type="success" effect="plain">已发布</el-tag>
+                                {% else %}
+                                    <el-tag type="info" effect="plain">未发布</el-tag>
+                                {% endif %}
+                            </div>
+                            <p class="draft-summary">{{ article.abstract|default:'暂无文章简介'|truncatechars:90 }}</p>
+                            <div class="draft-meta">
+                                <span>最后修改：{{ article.change_date|date:'Y-m-d H:i' }}</span>
+                                <span>阅读：{{ article.look_count }}</span>
+                                <span>评论：{{ article.comment_count }}</span>
+                            </div>
+                        </div>
+
+                        <div class="draft-actions">
+                            <a href="/article/{{ article.nid }}/" target="_blank">
+                                <el-button plain>查看</el-button>
+                            </a>
+                            <a href="/backend/edit_article/{{ article.nid }}/">
+                                <el-button type="primary" plain>编辑</el-button>
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <el-empty description="暂无文章">
+                <a href="/backend/add_article">
+                    <el-button type="primary">开始写文章</el-button>
+                </a>
+            </el-empty>
+        {% endif %}
+    </section>
+{% endblock %}

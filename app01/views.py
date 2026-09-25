@@ -16,7 +16,9 @@ from app01.models import Tags # 导入标签
 from app01.models import Cover # 导入文章封面
 from app01.models import Avatars # 导入头像表
 from app01.models import ArticleDraft # 导入文章草稿表
-from django.db.models import F
+from app01.models import Comment # 导入评论表
+from django.db.models import F, Sum
+from django.db.models.functions import Coalesce
 
 
 # Create your views here.
@@ -148,10 +150,58 @@ def backend(request):
     if not request.user.username:
         return redirect('/')
 
+    published_articles = Articles.objects.filter(status=1)
+    published_count = published_articles.count()
+    draft_count = ArticleDraft.objects.filter(owner=request.user).count()
+    received_comment_count = Comment.objects.filter(
+        article__status=1,
+    ).count()
+    total_reads = published_articles.aggregate(
+        total=Coalesce(Sum('look_count'), 0),
+    )['total']
+
     collected_articles = request.user.collects.filter(status=1).select_related(
         'cover',
     ).order_by('-change_date')
     collected_count = collected_articles.count()
+
+    recent_article_items = [
+        {
+            'title': article.title or '未命名文章',
+            'status': '已发布',
+            'status_type': 'success',
+            'updated_at': article.change_date,
+            'look_count': article.look_count,
+            'edit_url': f'/backend/edit_article/{article.nid}/',
+        }
+        for article in published_articles.order_by('-change_date')[:5]
+    ]
+    recent_draft_items = [
+        {
+            'title': draft.title or '未命名草稿',
+            'status': '修改草稿' if draft.article_id else '新文章草稿',
+            'status_type': 'warning' if draft.article_id else 'info',
+            'updated_at': draft.updated_at,
+            'look_count': draft.article.look_count if draft.article_id else 0,
+            'edit_url': (
+                f'/backend/edit_article/{draft.article_id}/'
+                if draft.article_id
+                else f'/backend/add_article?draft={draft.nid}'
+            ),
+        }
+        for draft in ArticleDraft.objects.filter(owner=request.user).select_related(
+            'article',
+        ).order_by('-updated_at')[:5]
+    ]
+    recent_edit_items = sorted(
+        recent_article_items + recent_draft_items,
+        key=lambda item: item['updated_at'].timestamp() if item['updated_at'] else 0,
+        reverse=True,
+    )[:5]
+
+    recent_comments = Comment.objects.filter(
+        article__status=1,
+    ).select_related('article', 'user').order_by('-create_time')[:5]
     return render(request, 'backend/backend.html', locals())
 
 def add_article(request):
@@ -196,6 +246,18 @@ def draft_list(request):
     ).prefetch_related('tags')
     draft_count = draft_query.count()
     return render(request, 'backend/draft_list.html', locals())
+
+
+# 文章管理列表
+def article_list(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    article_query = Articles.objects.select_related('cover').prefetch_related(
+        'tag',
+    ).order_by('-change_date')
+    article_count = article_query.count()
+    return render(request, 'backend/article_list.html', locals())
 
 # 编辑修改头像
 def edit_avatar(request):

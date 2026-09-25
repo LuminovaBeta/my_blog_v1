@@ -30,27 +30,31 @@
         
         <!-- 左侧标签栏 -->
         <div id="dynamic_menu">
-            <!-- 基础功能 -->
-            <a href="/">首页</a>
+            <div class="menu-group-title">个人</div>
             <a href="/backend">个人中心</a>
             <a href="/backend/edit_avatar">修改头像</a>
-            <a href="/backend/reset_passward">修改密码</a>
+            <a href="/backend/reset_passward">账号设置</a>
 
             {% if request.user.is_superuser %}
-                <!-- 💡 管理员专区 -->
                 <div class="menu-divider"></div>
-                <div class="menu-group-title">管理</div>
-
+                <div class="menu-group-title">内容管理</div>
                 <a href="/backend/add_article">添加文章</a>
                 <a href="/backend/draft_list">文章草稿</a>
+                <a href="/backend/article_list">文章管理</a>
+
+                <div class="menu-divider"></div>
+                <div class="menu-group-title">资源管理</div>
                 <a href="/backend/avatar_list">头像列表</a>
                 <a href="/backend/cover_list">文章封面</a>
-                <a href="/admin">后台管理</a>
             {% endif %}
 
-            <!-- 💡 注销操作区 -->
             <div class="menu-divider"></div>
-            <a href="/logout">注销退出</a>
+            <div class="menu-group-title">系统</div>
+            <a href="/">博客首页</a>
+            {% if request.user.is_superuser %}
+                <a href="/admin">Django 后台</a>
+            {% endif %}
+            <a href="/logout">退出登录</a>
         </div>
     </aside>
     <main>
@@ -89,8 +93,8 @@
                 </div>
             </div>
 
-             <!-- 按钮 - (完善信息，修改头像，修改密码，注销退出) -->
-            <div class="action">
+            <!-- 账号相关弹窗，由“账号设置”页面触发 -->
+            <div class="account-dialog-host">
                 <el-dialog
                     v-model="perfect_information_dialogVisible"
                     title="完善信息"
@@ -140,12 +144,6 @@
                         </div>
                     </template>
                 </el-dialog>
-                <div class="item">
-                    <el-button type="info" plain @click="perfect_information_dialogVisible=true">完善信息</el-button>
-                </div>
-                <div class="item">
-                    <el-button type="primary" plain @click="goToEditAvatar">修改头像</el-button>
-                </div>
                 <el-dialog
                     v-model="edit_pwd_dialogVisible"
                     title="修改密码"
@@ -173,16 +171,115 @@
                         </div>
                     </template>
                 </el-dialog>
-                <div class="item">
-                    <el-button @click="edit_pwd_dialogVisible=true" type="success" plain>修改密码</el-button>
-                </div>
-                <div class="item">
-                    <el-button type="danger" plain>注销退出</el-button>
-                </div>
             </div>
 
             <!-- 主要内容区域 -->
             {% block content %}
+                {% if request.user.is_superuser %}
+                    <!-- 数据概览 -->
+                    <section class="dashboard-stats">
+                        <div class="stat-card stat-blue">
+                            <span class="stat-icon"><el-icon><document-checked /></el-icon></span>
+                            <div><strong>{{ published_count }}</strong><span>已发布文章</span></div>
+                        </div>
+                        <div class="stat-card stat-orange">
+                            <span class="stat-icon"><el-icon><files /></el-icon></span>
+                            <div><strong>{{ draft_count }}</strong><span>草稿数量</span></div>
+                        </div>
+                        <div class="stat-card stat-green">
+                            <span class="stat-icon"><el-icon><chat-dot-round /></el-icon></span>
+                            <div><strong>{{ received_comment_count }}</strong><span>收到的评论</span></div>
+                        </div>
+                        <div class="stat-card stat-purple">
+                            <span class="stat-icon"><el-icon><star /></el-icon></span>
+                            <div><strong>{{ collected_count }}</strong><span>收藏文章</span></div>
+                        </div>
+                        <div class="stat-card stat-red">
+                            <span class="stat-icon"><el-icon><view /></el-icon></span>
+                            <div><strong>{{ total_reads }}</strong><span>总阅读量</span></div>
+                        </div>
+                    </section>
+
+                    <!-- 快捷操作 -->
+                    <section class="dashboard-panel quick-actions-panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>快捷操作</h2>
+                                <p>常用内容管理入口</p>
+                            </div>
+                        </div>
+                        <div class="quick-actions">
+                            <a href="/backend/add_article"><el-button type="primary" plain><el-icon><edit-pen /></el-icon>新建文章</el-button></a>
+                            <a href="/backend/draft_list"><el-button type="warning" plain><el-icon><files /></el-icon>查看草稿</el-button></a>
+                            <a href="/backend/article_list"><el-button type="success" plain><el-icon><document /></el-icon>管理文章</el-button></a>
+                            <a href="/backend/cover_list"><el-button type="info" plain><el-icon><picture-filled /></el-icon>管理封面</el-button></a>
+                        </div>
+                    </section>
+
+                    <!-- 内容工作台 -->
+                    <div class="dashboard-workspace">
+                        <section class="dashboard-panel recent-edits">
+                            <div class="panel-header">
+                                <div>
+                                    <h2>最近编辑</h2>
+                                    <p>最近修改的文章和草稿</p>
+                                </div>
+                                <a href="/backend/article_list">查看全部</a>
+                            </div>
+                            <div class="workspace-list">
+                                {% for item in recent_edit_items %}
+                                    <div class="workspace-row">
+                                        <div class="workspace-main">
+                                            <div class="workspace-title">
+                                                <strong>{{ item.title }}</strong>
+                                                <el-tag type="{{ item.status_type }}" effect="plain" size="small">{{ item.status }}</el-tag>
+                                            </div>
+                                            <div class="workspace-meta">
+                                                <span>{{ item.updated_at|date:'Y-m-d H:i' }}</span>
+                                                <span>阅读 {{ item.look_count }}</span>
+                                            </div>
+                                        </div>
+                                        <a href="{{ item.edit_url }}">
+                                            <el-button type="primary" plain size="small">继续编辑</el-button>
+                                        </a>
+                                    </div>
+                                {% empty %}
+                                    <el-empty description="暂无编辑记录" :image-size="90"></el-empty>
+                                {% endfor %}
+                            </div>
+                        </section>
+
+                        <section class="dashboard-panel recent-comments">
+                            <div class="panel-header">
+                                <div>
+                                    <h2>最近互动</h2>
+                                    <p>最新收到的文章评论</p>
+                                </div>
+                            </div>
+                            <div class="workspace-list">
+                                {% for comment in recent_comments %}
+                                    <div class="comment-row">
+                                        <div class="comment-icon"><el-icon><chat-dot-round /></el-icon></div>
+                                        <div class="comment-info">
+                                            <div class="comment-title">
+                                                <strong>{{ comment.user.username|default:'已注销用户' }}</strong>
+                                                <span>评论了《{{ comment.article.title|default:'未命名文章' }}》</span>
+                                            </div>
+                                            <p>{{ comment.content|truncatechars:55 }}</p>
+                                            <span class="comment-time">{{ comment.create_time|date:'Y-m-d H:i' }}</span>
+                                        </div>
+                                        <a href="/article/{{ comment.article_id }}/#comments">
+                                            <el-button plain size="small">回复</el-button>
+                                        </a>
+                                    </div>
+                                {% empty %}
+                                    <el-empty description="暂无评论互动" :image-size="90"></el-empty>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    </div>
+                {% endif %}
+
                 <!-- 收藏文章 -->
                 <div class="collection_article_all">
                     <p>我收藏的文章（{{ collected_count }}）</p>
