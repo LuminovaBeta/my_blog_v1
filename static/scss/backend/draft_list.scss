@@ -1,0 +1,137 @@
+.draft-page {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+
+    .draft-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #ebeef5;
+
+        h2 {
+            margin: 0 0 6px;
+            font-size: 19px;
+            color: #303133;
+        }
+
+        p {
+            margin: 0;
+            font-size: 13px;
+            color: #909399;
+        }
+    }
+
+    .draft-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .draft-item {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid #ebeef5;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .draft-cover {
+        flex: 0 0 144px;
+        width: 144px;
+        height: 81px;
+        overflow: hidden;
+        border-radius: 8px;
+        background-color: #f5f7fa;
+
+        img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .draft-cover-empty {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #c0c4cc;
+            font-size: 28px;
+        }
+    }
+
+    .draft-info {
+        min-width: 0;
+        flex: 1;
+
+        .draft-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            h3 {
+                min-width: 0;
+                margin: 0;
+                overflow: hidden;
+                font-size: 17px;
+                font-weight: 500;
+                color: #303133;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .draft-summary {
+            min-height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+            color: #606266;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .draft-meta {
+            display: flex;
+            gap: 18px;
+            color: #909399;
+            font-size: 12px;
+        }
+    }
+
+    .draft-actions {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .draft-page {
+        padding: 15px;
+
+        .draft-item {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .draft-cover {
+            flex-basis: 112px;
+            width: 112px;
+            height: 63px;
+        }
+
+        .draft-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+}

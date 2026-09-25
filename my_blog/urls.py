@@ -34,6 +34,7 @@ urlpatterns = [
     path('logout/', views.logout),
     path('backend/', views.backend),
     path('backend/add_article', views.add_article), # 后台添加文章
+    path('backend/draft_list', views.draft_list), # 文章草稿列表
     path('backend/edit_avatar', views.edit_avatar), # 后台修改头像
     path('backend/reset_passward', views.reset_passward), # 后台重置密码
     path('backend/avatar_list', views.avatar_list), # 头像列表/上传编辑头像

@@ -51,6 +51,22 @@ class ArticleAdmin(admin.ModelAdmin):
 
     actions = [action_word]
 
+
+@admin.register(ArticleDraft)
+class ArticleDraftAdmin(admin.ModelAdmin):
+    list_display = [
+        'title',
+        'owner',
+        'article',
+        'version',
+        'updated_at',
+    ]
+    list_filter = ['category', 'recommend', 'updated_at']
+    search_fields = ['title', 'abstract', 'content', 'owner__username']
+    readonly_fields = ['version', 'created_at', 'updated_at']
+    filter_horizontal = ['tags']
+
+
 admin.site.register(Articles, ArticleAdmin)
 admin.site.register(Tags)
 admin.site.register(Cover)

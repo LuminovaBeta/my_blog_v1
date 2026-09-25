@@ -15,10 +15,32 @@ from app01.models import Articles # 导入文章表
 from app01.models import Tags # 导入标签
 from app01.models import Cover # 导入文章封面
 from app01.models import Avatars # 导入头像表
+from app01.models import ArticleDraft # 导入文章草稿表
 from django.db.models import F
 
 
 # Create your views here.
+
+
+def article_draft_data(draft):
+    """生成编辑器初始化所需的草稿数据。"""
+    if not draft:
+        return None
+    return {
+        'nid': draft.nid,
+        'article_id': draft.article_id,
+        'title': draft.title,
+        'abstract': draft.abstract,
+        'content': draft.content,
+        'category': str(draft.category) if draft.category is not None else '',
+        'cover_id': str(draft.cover_id) if draft.cover_id else '',
+        'cover_url': draft.cover.url.url if draft.cover_id else '',
+        'tags': [str(tag.nid) for tag in draft.tags.all()],
+        'pwd': draft.pwd,
+        'recommend': draft.recommend,
+        'version': draft.version,
+        'updated_at': draft.updated_at.isoformat(),
+    }
 
 # 主页面
 def index(request):
@@ -128,6 +150,9 @@ def backend(request):
     return render(request, 'backend/backend.html', locals())
 
 def add_article(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
     # 拿到所有的分类、标签
     tag_list = Tags.objects.all()
     # 拿到所有的文章封面
@@ -142,7 +167,30 @@ def add_article(request):
     # 拿到分类的字段
     categroy_list = Articles.category_choice
 
+    draft_obj = None
+    draft_id = request.GET.get('draft')
+    if draft_id and draft_id.isdigit():
+        draft_obj = ArticleDraft.objects.filter(
+            nid=draft_id,
+            owner=request.user,
+            article__isnull=True,
+        ).prefetch_related('tags').first()
+    draft_data = article_draft_data(draft_obj)
+
     return render(request, 'backend/add_article.html', locals())
+
+
+# 文章草稿列表
+def draft_list(request):
+    if not request.user.is_superuser:
+        return redirect('/')
+
+    draft_query = ArticleDraft.objects.filter(owner=request.user).select_related(
+        'article',
+        'cover',
+    ).prefetch_related('tags')
+    draft_count = draft_query.count()
+    return render(request, 'backend/draft_list.html', locals())
 
 # 编辑修改头像
 def edit_avatar(request):
@@ -182,6 +230,9 @@ def reset_passward(request):
 
 # 编辑文章
 def edit_article(request, nid):
+    if not request.user.is_superuser:
+        return redirect('/')
+
     # 拿到所有的分类、标签
     tag_list = Tags.objects.all()
     # 拿到所有的文章封面
@@ -200,6 +251,11 @@ def edit_article(request, nid):
     # print(tags)
     # 拿到分类的字段
     categroy_list = Articles.category_choice
+    draft_obj = ArticleDraft.objects.filter(
+        article=article_obj,
+        owner=request.user,
+    ).prefetch_related('tags').first()
+    draft_data = article_draft_data(draft_obj)
     return render(request, 'backend/edit_article.html', locals())
 
 # 头像列表 / 编辑头像

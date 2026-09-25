@@ -42,6 +42,7 @@
                 <div class="menu-group-title">管理</div>
 
                 <a href="/backend/add_article">添加文章</a>
+                <a href="/backend/draft_list">文章草稿</a>
                 <a href="/backend/avatar_list">头像列表</a>
                 <a href="/backend/cover_list">文章封面</a>
                 <a href="/admin">后台管理</a>
@@ -290,6 +291,13 @@
                 // 文章简介
                 abstract: '',
 
+                // 文章草稿
+                draftId: window.articleDraftData ? window.articleDraftData.nid : null,
+                draftVersion: window.articleDraftData ? window.articleDraftData.version : null,
+                draftSaving: false,
+                draftSaveText: window.articleDraftData ? '已恢复暂存草稿' : '',
+                draftSaveStatus: window.articleDraftData ? 'saved' : '',
+
                 // 修改密码弹窗默认false，不显示
                 edit_pwd_dialogVisible: false,
                 // 修改密码
@@ -333,6 +341,12 @@
 
         // 生命周期钩子函数, 挂载阶段
         mounted() {
+            this.init_article_draft();
+            if (document.getElementById('editor')) {
+                // 编辑器页面在抽屉未打开时也初始化文章信息，确保直接暂存不会丢失元数据。
+                this.handleOpen();
+            }
+
             // 1. 使用了 id，这里用原生 JS 获取 DOM
             const dynamic_menu = document.getElementById('dynamic_menu');
             
@@ -356,6 +370,79 @@
         
         // 方法定义
         methods: {
+            // 使用暂存草稿恢复文章表单
+            init_article_draft() {
+                const draft = window.articleDraftData;
+                if (!draft) return;
+
+                this.title = draft.title || '';
+                this.abstract = draft.abstract || '';
+                this.category_id = draft.category || '';
+                this.cover_id = draft.cover_id || '';
+                this.tags = draft.tags || [];
+                this.pwd = draft.pwd || '';
+                this.pwd_active = Boolean(draft.pwd);
+                this.recommend = Boolean(draft.recommend);
+            },
+
+            // 获取编辑器当前 Markdown 正文
+            get_article_content() {
+                if (window.articleEditor && typeof window.articleEditor.getMarkdown === 'function') {
+                    return window.articleEditor.getMarkdown();
+                }
+                const textarea = document.querySelector('#editor .editormd-markdown-textarea');
+                return textarea ? textarea.value : '';
+            },
+
+            // 将当前编辑内容暂存到独立草稿表，不影响已发布文章
+            save_draft(articleNid = null) {
+                const data = {
+                    article_id: articleNid,
+                    title: this.title,
+                    cover_id: this.cover_id,
+                    tags: this.tags,
+                    category: this.category_id,
+                    recommend: this.recommend,
+                    pwd: this.pwd_active ? this.pwd : '',
+                    abstract: this.abstract,
+                    content: this.get_article_content(),
+                };
+                if (this.draftVersion !== null) {
+                    data.version = this.draftVersion;
+                }
+
+                const url = this.draftId
+                    ? `/api/article/draft/${this.draftId}/`
+                    : '/api/article/draft/';
+
+                this.draftSaving = true;
+                this.draftSaveText = '正在暂存...';
+                this.draftSaveStatus = '';
+
+                axios.post(url, data).then(res => {
+                    this.draftId = res.data.nid;
+                    this.draftVersion = res.data.version;
+                    this.draftSaveText = `已暂存 ${new Date(res.data.updated_at).toLocaleTimeString()}`;
+                    this.draftSaveStatus = 'saved';
+                    window.articleDraftData = res.data;
+
+                    // 新文章保存后把草稿编号保留在地址中，刷新页面仍可恢复。
+                    if (!articleNid) {
+                        const currentUrl = new URL(window.location.href);
+                        currentUrl.searchParams.set('draft', this.draftId);
+                        window.history.replaceState({}, '', currentUrl);
+                    }
+                    this.$message.success(res.msg);
+                }).catch(error => {
+                    const message = error.response?.data?.msg || '草稿暂存失败，请稍后重试';
+                    this.draftSaveText = '暂存失败';
+                    this.draftSaveStatus = 'error';
+                    this.$message.error(message);
+                }).finally(() => {
+                    this.draftSaving = false;
+                });
+            },
+
             // 跳转到修改头像页面
             goToEditAvatar() {
                 // 原生 JS 的页面跳转代码
@@ -365,6 +452,7 @@
             // 添加文章函数
             add_article(){
                 let data = {
+                    draft_id: this.draftId,
                     title: this.title,
                     cover_id: this.cover_id,
                     tags: this.tags,
@@ -372,7 +460,7 @@
                     recommend: this.recommend,
                     pwd: this.pwd,
                     abstract: this.abstract,
-                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                    content: this.get_article_content(),
                 }
                 
                 axios.post('/api/article/', data).then(res => {
@@ -399,6 +487,7 @@
             // 编辑文章
             edit_article(nid){
                 let data = {
+                    draft_id: this.draftId,
                     title: this.title,
                     cover_id: this.cover_id,
                     tags: this.tags,
@@ -406,7 +495,7 @@
                     recommend: this.recommend,
                     pwd: this.pwd,
                     abstract: this.abstract,
-                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                    content: this.get_article_content(),
                 }
                 
                 axios.put(`/api/article/${nid}/`, data).then(res => {
@@ -555,6 +644,28 @@
                 });
             },
 
+            // 删除文章草稿
+            delete_draft(nid) {
+                this.$confirm('此操作将永久删除该草稿，是否继续？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    axios.delete(`/api/article/draft/${nid}/`).then(res => {
+                        this.$message.success(res.msg);
+                        setTimeout(() => location.reload(), 300);
+                    }).catch(error => {
+                        const message = error.response?.data?.msg || '草稿删除失败';
+                        this.$message.error(message);
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除',
+                    });
+                });
+            },
+
             // 发送邮箱验证码
             send_email(){
                 axios.post('/api/send_email/', this.perfect_information).then(res => {
@@ -638,6 +749,23 @@
 
                 // nextTick 用来等待 DOM 更新完成的
                 nextTick(() => {
+                    const draft = window.articleDraftData;
+                    if (draft) {
+                        title.value = draft.title || '';
+                        abstract.value = draft.abstract || '';
+                        category_id.value = draft.category || '';
+                        cover_id.value = draft.cover_id || '';
+                        tags.value = draft.tags || [];
+                        pwd.value = draft.pwd || '';
+                        pwd_active.value = Boolean(draft.pwd);
+                        recommend.value = Boolean(draft.recommend);
+                        const draftCover = document.getElementById('cover_img');
+                        if (draftCover && draft.cover_url) {
+                            draftCover.setAttribute('src', draft.cover_url);
+                        }
+                        return;
+                    }
+
                     // add_article
                     if (index !== -1){/* 添加文章 */
                         // 随机封面

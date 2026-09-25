@@ -8,7 +8,7 @@ from pyquery import PyQuery
 from django import forms
 from api.views.login import clean_form
 
-from app01.models import Tags, Articles, Cover
+from app01.models import Tags, Articles, Cover, ArticleDraft
 import random
 from django.db.models import F
 
@@ -67,7 +67,7 @@ class AddArticleForm(forms.Form):
         cover_set = Cover.objects.all().values('nid')
         cover_id = random.choice(cover_set)['nid']
         return cover_id
-    
+
 class ArticleView(View):
     # 发布文章
     def post(self, request):
@@ -76,6 +76,9 @@ class ArticleView(View):
             'code': 412,
             "data": None,
         }
+
+        if not request.user.is_superuser:
+            return JsonResponse({'code': 403, 'msg': '没有文章管理权限', 'data': None}, status=403)
 
         data = request.data
 
@@ -104,6 +107,9 @@ class ArticleView(View):
                 article_obj.tag.add(tag_obj.nid)
         res['code'] = 0
         res['data'] = article_obj.nid
+        draft_id = data.get('draft_id')
+        if draft_id:
+            ArticleDraft.objects.filter(nid=draft_id, owner=request.user).delete()
         return JsonResponse(res)
     
     # 编辑文章
@@ -113,6 +119,9 @@ class ArticleView(View):
             'code': 412,
             "data": None,
         }
+        if not request.user.is_superuser:
+            return JsonResponse({'code': 403, 'msg': '没有文章管理权限', 'data': None}, status=403)
+
         article_query = Articles.objects.filter(nid=nid) # 检查有没有文章,如果有则取这篇文章
         if not article_query:
             res['msg'] = '请求错误'
@@ -145,6 +154,13 @@ class ArticleView(View):
 
         res['code'] = 0
         res['data'] = article_query.first().nid
+        draft_id = data.get('draft_id')
+        if draft_id:
+            ArticleDraft.objects.filter(
+                nid=draft_id,
+                owner=request.user,
+                article_id=nid,
+            ).delete()
         return JsonResponse(res)
 
 # 文章点赞
@@ -181,8 +197,6 @@ class ArticleCollectsView(View):
         if not request.user.username:
             res['msg'] = '请先登录'
             return JsonResponse(res)
-        
-        
         
         # 判断是否已经收藏
         flag = request.user.collects.filter(nid=nid)

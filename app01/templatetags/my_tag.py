@@ -12,10 +12,11 @@ register = template.Library()
 # def add1(item):
 #     return int(item) + 1
 
+# 轮播图
 @register.inclusion_tag('my_tag/headers.html')
 def banner(menu_name, article=None):
     img_list = [
-        "/static/my/img/header/index_小汽车.png",
+        "/static/my/img/header/index_car.png",
         "/static/my/img/header/index_1.jpg",
         "/static/my/img/header/index_2.jpg"        
     ]

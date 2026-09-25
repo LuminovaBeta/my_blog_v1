@@ -17,6 +17,12 @@
         </el-button>
     </div>
     <div class="item">
+        <el-button type="info" plain :loading="draftSaving" @click="save_draft('{{ article_obj.nid }}')">
+            暂存草稿
+        </el-button>
+    </div>
+    <span v-if="draftSaveText" class="draft-save-status" :class="draftSaveStatus">[[ draftSaveText ]]</span>
+    <div class="item">
         <el-button type="success" plain @click="save_content('{{ article_obj.nid }}')">
             保存文章内容
         </el-button>

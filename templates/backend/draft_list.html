@@ -1,0 +1,82 @@
+{% extends 'backend/backend.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/backend/draft_list.css">
+{% endblock %}
+
+{% block content %}
+    <section class="draft-page">
+        <div class="draft-page-header">
+            <div>
+                <h2>文章草稿</h2>
+                <p>共 {{ draft_count }} 篇，按最近保存时间排序</p>
+            </div>
+            <a href="/backend/add_article">
+                <el-button type="primary" plain>新建文章</el-button>
+            </a>
+        </div>
+
+        {% if draft_query %}
+            <div class="draft-list">
+                {% for draft in draft_query %}
+                    <article class="draft-item">
+                        <div class="draft-cover">
+                            {% if draft.cover %}
+                                <img src="{{ draft.cover.url.url }}" alt="{{ draft.title|default:'未命名草稿' }}">
+                            {% else %}
+                                <div class="draft-cover-empty">
+                                    <el-icon><document /></el-icon>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="draft-info">
+                            <div class="draft-title-row">
+                                <h3>{{ draft.title|default:'未命名草稿' }}</h3>
+                                {% if draft.article_id %}
+                                    <el-tag type="warning" effect="plain">文章修改草稿</el-tag>
+                                {% else %}
+                                    <el-tag type="info" effect="plain">新文章草稿</el-tag>
+                                {% endif %}
+                            </div>
+
+                            <p class="draft-summary">
+                                {% if draft.abstract %}
+                                    {{ draft.abstract|truncatechars:90 }}
+                                {% elif draft.content %}
+                                    {{ draft.content|truncatechars:90 }}
+                                {% else %}
+                                    暂无文章内容
+                                {% endif %}
+                            </p>
+
+                            <div class="draft-meta">
+                                <span>最后保存：{{ draft.updated_at|date:'Y-m-d H:i' }}</span>
+                                <span>版本：{{ draft.version }}</span>
+                            </div>
+                        </div>
+
+                        <div class="draft-actions">
+                            {% if draft.article_id %}
+                                <a href="/backend/edit_article/{{ draft.article_id }}/">
+                                    <el-button type="primary" plain>继续编辑</el-button>
+                                </a>
+                            {% else %}
+                                <a href="/backend/add_article?draft={{ draft.nid }}">
+                                    <el-button type="primary" plain>继续编辑</el-button>
+                                </a>
+                            {% endif %}
+                            <el-button type="danger" plain @click="delete_draft('{{ draft.nid }}')">删除</el-button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <el-empty description="暂无文章草稿">
+                <a href="/backend/add_article">
+                    <el-button type="primary">开始写文章</el-button>
+                </a>
+            </el-empty>
+        {% endif %}
+    </section>
+{% endblock %}

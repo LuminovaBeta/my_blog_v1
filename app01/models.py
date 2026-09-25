@@ -247,6 +247,70 @@ class Tags(models.Model):
         verbose_name_plural = '文章标签'
 
 
+# 文章草稿
+class ArticleDraft(models.Model):
+    """文章编辑过程中的工作副本。
+
+    新文章的草稿不关联正式文章；编辑已发布文章时，通过 ``article``
+    关联原文章，避免自动保存直接修改线上内容。
+    """
+
+    nid = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(
+        to='UserInfo',
+        on_delete=models.CASCADE,
+        related_name='article_drafts',
+        verbose_name='草稿所有者',
+    )
+    article = models.OneToOneField(
+        to='Articles',
+        on_delete=models.CASCADE,
+        related_name='draft',
+        null=True,
+        blank=True,
+        verbose_name='关联的正式文章',
+    )
+    title = models.CharField(max_length=32, blank=True, verbose_name='标题')
+    abstract = models.CharField(max_length=150, blank=True, verbose_name='文章简介')
+    content = models.TextField(blank=True, verbose_name='文章内容')
+    category = models.IntegerField(
+        choices=Articles.category_choice,
+        null=True,
+        blank=True,
+        verbose_name='文章分类',
+    )
+    cover = models.ForeignKey(
+        to='Cover',
+        on_delete=models.SET_NULL,
+        related_name='article_drafts',
+        null=True,
+        blank=True,
+        verbose_name='文章封面',
+    )
+    tags = models.ManyToManyField(
+        to='Tags',
+        related_name='article_drafts',
+        blank=True,
+        verbose_name='文章标签',
+    )
+    pwd = models.CharField(max_length=32, blank=True, verbose_name='文章访问密码')
+    recommend = models.BooleanField(default=False, verbose_name='是否推荐')
+    version = models.PositiveIntegerField(default=1, verbose_name='草稿版本')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='最后保存时间')
+
+    def __str__(self):
+        return self.title or f'未命名草稿 #{self.pk}'
+
+    class Meta:
+        ordering = ('-updated_at',)
+        indexes = [
+            models.Index(fields=('owner', '-updated_at'), name='draft_owner_updated_idx'),
+        ]
+        verbose_name = '文章草稿'
+        verbose_name_plural = '文章草稿'
+
+
 # 回忆录
 class History(models.Model):
     nid = models.AutoField(primary_key=True)

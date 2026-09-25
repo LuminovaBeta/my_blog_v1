@@ -375,4 +375,114 @@ ul.pager > li.active a {
   color: #409eff;
 }
 
+/* ====================================================
+   📱 移动端精简版样式 (仅保留博客文章、导航与底部)
+==================================================== */
+@media screen and (max-width: 768px) {
+  /* 1. 彻底删除/隐藏轮播图 header */
+  header {
+    display: none !important;
+  }
+  /* 2. 彻底删除/隐藏 精选文章 和 右侧边栏（包含标签云、站点信息等） */
+  .selected_articles,
+  #app .main > .right,
+  .right,
+  .site_info,
+  .reading_rank,
+  .tags,
+  .friend_links,
+  .links {
+    display: none !important;
+  }
+  /* 1. 顶部白色标签栏（固定在顶部，永远为白色，文字或图标使用深色） */
+  .nav_bg {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 56px !important;
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+    z-index: 1000 !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+    /* 左侧：三条杠菜单按钮 + Logo/标题 */
+  }
+  .nav_bg .left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    /* 模拟三条杠按钮样式（如果你的HTML里有对应元素或图标类名） */
+  }
+  .nav_bg .left .menu_toggle_btn, .nav_bg .left .fa-bars {
+    font-size: 20px !important;
+    color: #333333 !important;
+    cursor: pointer !important;
+  }
+  .nav_bg .left > a:not(:first-child) {
+    display: none !important;
+  }
+  .nav_bg .left > a:first-child {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #333333 !important;
+    text-decoration: none !important;
+  }
+  .nav_bg .left .search {
+    display: none !important;
+  }
+  .nav_bg .left .logo img {
+    height: 26px !important;
+    width: auto !important;
+  }
+  .nav_bg {
+    /* 右侧：头像展示及其他图标 */
+  }
+  .nav_bg .right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .nav_bg .right img, .nav_bg .right .avatar {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+  .nav_bg .right a {
+    color: #333333 !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+  }
+  /* 2. 主体区域向下挤开空间，避免被固定的白色标签栏遮挡 */
+  #app .main {
+    margin-top: 72px !important; /* 留出标签栏的高度加间距 */
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 12px !important;
+  }
+  /* 3. 左侧弹出抽屉菜单样式适配 (配合 Element Plus 的 el-drawer 或自定义抽屉) */
+  .el-drawer, .mobile_drawer {
+    width: 75% !important; /* 抽屉宽度占屏幕 75% */
+    background-color: #ffffff !important;
+  }
+  .el-drawer .el-drawer__body, .mobile_drawer .el-drawer__body {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .el-drawer .el-drawer__body a, .mobile_drawer .el-drawer__body a {
+    font-size: 16px !important;
+    color: #333333 !important;
+    text-decoration: none !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+  }
+}
+
 /*# sourceMappingURL=index.css.map */

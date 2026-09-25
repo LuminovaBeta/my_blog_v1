@@ -8,6 +8,17 @@
 .add_article_action .item {
   margin: 0 5px;
 }
+.add_article_action .draft-save-status {
+  margin-left: 6px;
+  font-size: 13px;
+  color: #909399;
+}
+.add_article_action .draft-save-status.saved {
+  color: #67c23a;
+}
+.add_article_action .draft-save-status.error {
+  color: #f56c6c;
+}
 
 .add_article {
   flex: 1; /* 让它自动占据剩余空间 */
