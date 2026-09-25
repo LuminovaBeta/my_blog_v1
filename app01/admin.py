@@ -67,6 +67,14 @@ class ArticleDraftAdmin(admin.ModelAdmin):
     filter_horizontal = ['tags']
 
 
+@admin.register(ArticleView)
+class ArticleViewAdmin(admin.ModelAdmin):
+    list_display = ['article', 'viewed_at']
+    list_filter = ['viewed_at']
+    search_fields = ['article__title']
+    readonly_fields = ['article', 'viewed_at']
+
+
 admin.site.register(Articles, ArticleAdmin)
 admin.site.register(Tags)
 admin.site.register(Cover)

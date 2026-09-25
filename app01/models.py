@@ -165,6 +165,25 @@ class Articles(models.Model):
         verbose_name_plural = '文章'
 
 
+# 文章阅读记录，用于按时间范围统计阅读排行
+class ArticleView(models.Model):
+    article = models.ForeignKey(
+        to='Articles',
+        on_delete=models.CASCADE,
+        related_name='view_records',
+        verbose_name='文章',
+    )
+    viewed_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='阅读时间')
+
+    class Meta:
+        ordering = ('-viewed_at',)
+        indexes = [
+            models.Index(fields=('article', '-viewed_at'), name='article_view_time_idx'),
+        ]
+        verbose_name = '文章阅读记录'
+        verbose_name_plural = '文章阅读记录'
+
+
 # 项目分类
 class Project(models.Model):
     """

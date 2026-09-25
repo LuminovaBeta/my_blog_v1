@@ -4,6 +4,7 @@ from django.shortcuts import redirect # 重定向
 from django.http import JsonResponse
 from django import forms
 import json
+from datetime import timedelta
 from app01.utils.random_code import random_code
 from app01.utils.sub_comment import sub_comment_list # 评论列表
 from app01.utils.pagination import Pagination # 分页
@@ -17,8 +18,10 @@ from app01.models import Cover # 导入文章封面
 from app01.models import Avatars # 导入头像表
 from app01.models import ArticleDraft # 导入文章草稿表
 from app01.models import Comment # 导入评论表
-from django.db.models import F, Sum
+from app01.models import ArticleView
+from django.db.models import Count, F, Min, Sum
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 
 
 # Create your views here.
@@ -47,6 +50,30 @@ def article_draft_data(draft):
 # 主页面
 def index(request):
     article_list = Articles.objects.filter(status=1).order_by('-change_date') # 过滤出已发布的文章
+    published_articles = Articles.objects.filter(status=1)
+
+    site_article_count = published_articles.count()
+    site_total_views = published_articles.aggregate(
+        total=Coalesce(Sum('look_count'), 0),
+    )['total']
+    site_tag_count = Tags.objects.filter(articles__status=1).distinct().count()
+    first_publish_date = published_articles.aggregate(
+        first=Min('create_date'),
+    )['first']
+    if first_publish_date:
+        site_days = max(
+            (timezone.localdate() - timezone.localtime(first_publish_date).date()).days + 1,
+            1,
+        )
+    else:
+        site_days = 0
+
+    forty_eight_hours_ago = timezone.now() - timedelta(hours=48)
+    reading_rank = published_articles.filter(
+        view_records__viewed_at__gte=forty_eight_hours_ago,
+    ).annotate(
+        recent_views=Count('view_records'),
+    ).order_by('-recent_views', '-look_count', '-change_date')[:5]
     # 过滤分类
     tech_list = article_list.filter(category=1)[:6]  # 过滤出技术
     project_list = article_list.filter(category=2)[:6]  # 过滤出项目
@@ -119,6 +146,7 @@ def article(request, nid):
     if not artitle_query:
         return redirect('/')     # 找不到对应文章就回首页
     article = artitle_query.first()    # 找到nid为nid的，第一篇文章，
+    ArticleView.objects.create(article=article)
 
     comment_list = sub_comment_list(nid) # 拿到文章评论列表
     print(comment_list) 
