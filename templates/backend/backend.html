@@ -185,44 +185,32 @@
             {% block content %}
                 <!-- 收藏文章 -->
                 <div class="collection_article_all">
-                    <p>我收藏的文章</p>
+                    <p>我收藏的文章（{{ collected_count }}）</p>
                     <div class="article_list">
-                        <div class="item">
-                            <div class="left">
-                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
+                        {% for article in collected_articles %}
+                            <div class="item">
+                                <a class="left" href="/article/{{ article.nid }}/">
+                                    {% if article.cover %}
+                                        <img src="{{ article.cover.url.url }}" alt="{{ article.title|default:'收藏文章' }}">
+                                    {% else %}
+                                        <span class="cover-placeholder">
+                                            <el-icon><document /></el-icon>
+                                        </span>
+                                    {% endif %}
+                                </a>
+                                <div class="right">
+                                    <h2>
+                                        <a href="/article/{{ article.nid }}/">{{ article.title|default:'未命名文章' }}</a>
+                                    </h2>
+                                    <p>{{ article.abstract|default:'暂无文章简介' }}</p>
+                                    <span class="article-date">更新于 {{ article.change_date|date:'Y-m-d' }}</span>
+                                </div>
                             </div>
-                            <div class="right">
-                                <h2>无人机硬件基础</h2>
-                                <p>基于px4的飞行器。</p>
+                        {% empty %}
+                            <div class="collection-empty">
+                                <el-empty description="还没有收藏文章"></el-empty>
                             </div>
-                        </div>
-                        <div class="item">
-                            <div class="left">
-                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
-                            </div>
-                            <div class="right">
-                                <h2>无人机硬件基础</h2>
-                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="left">
-                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
-                            </div>
-                            <div class="right">
-                                <h2>无人机硬件基础</h2>
-                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="left">
-                                <img src="/static/my/img/temp/无人机文章测试图片.png" alt="">
-                            </div>
-                            <div class="right">
-                                <h2>无人机硬件基础</h2>
-                                <p>本章看完相信你能够从零开始搭建出来一个最简单的基于px4的飞行器。</p>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             {% endblock %}

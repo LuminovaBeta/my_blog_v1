@@ -152,22 +152,45 @@ main .collection_article_all .article_list .item {
   padding: 20px;
 }
 main .collection_article_all .article_list .item .left {
-  width: 27%;
+  flex: 0 0 120px;
+  width: 120px;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 5px;
 }
 main .collection_article_all .article_list .item .left img {
   width: 100%;
   height: 100%;
-  border-radius: 5px;
   object-fit: cover;
   object-position: center;
+  display: block;
+}
+main .collection_article_all .article_list .item .left .cover-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 main .collection_article_all .article_list .item .right {
-  width: 73%;
+  flex: 1;
+  min-width: 0;
   box-sizing: border-box;
   padding-left: 20px;
 }
 main .collection_article_all .article_list .item .right h2 {
   font-size: 18px;
+}
+main .collection_article_all .article_list .item .right h2 a {
+  color: #303133;
+  transition: color 0.2s;
+}
+main .collection_article_all .article_list .item .right h2 a:hover {
+  color: #409eff;
 }
 main .collection_article_all .article_list .item .right p {
   display: -webkit-box; /* 必须结合的属性，将对象作为弹性伸缩盒子模型显示 */
@@ -175,6 +198,17 @@ main .collection_article_all .article_list .item .right p {
   -webkit-line-clamp: 2; /* 限制显示的行数 */
   overflow: hidden; /* 隐藏超出的内容 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+main .collection_article_all .article_list .item .right .article-date {
+  color: #909399;
+  font-size: 12px;
+}
+main .collection_article_all .article_list .collection-empty {
+  width: 100%;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /*# sourceMappingURL=backend_base.css.map */

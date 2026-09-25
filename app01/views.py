@@ -147,6 +147,11 @@ def logout(request):
 def backend(request):
     if not request.user.username:
         return redirect('/')
+
+    collected_articles = request.user.collects.filter(status=1).select_related(
+        'cover',
+    ).order_by('-change_date')
+    collected_count = collected_articles.count()
     return render(request, 'backend/backend.html', locals())
 
 def add_article(request):
