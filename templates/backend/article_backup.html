@@ -1,0 +1,82 @@
+{% extends 'backend/backend.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/backend/draft_list.css">
+    <link rel="stylesheet" href="/static/css/backend/article_backup.css">
+{% endblock %}
+
+{% block content %}
+    <article-backup></article-backup>
+{% endblock %}
+
+{% block js %}
+{{ backup_articles|json_script:"backup-article-data" }}
+<script type="text/x-template" id="article-backup-template">
+    <section class="draft-page backup-page" v-cloak>
+        <div class="draft-page-header">
+            <div>
+                <h2>文章备份</h2>
+                <p>共 [[ articles.length ]] 篇文章 · 将正文、文章信息和本地图片下载到电脑</p>
+            </div>
+            <el-button type="primary" plain :disabled="!articles.length || busy" @click="download('all')">导出全部</el-button>
+        </div>
+
+        <div class="backup-notice">
+            <el-icon><info-filled /></el-icon>
+            <p>导出已保存的正式文章（含未发布文章），不包含暂存草稿。ZIP 内含 Markdown、文章信息和上传图片；外链图片保留链接，缺失图片记录在 README 中。</p>
+        </div>
+
+        <div class="backup-toolbar" v-if="articles.length">
+            <el-input v-model="search" placeholder="搜索文章标题" clearable :disabled="busy" aria-label="搜索文章标题">
+                <template #prefix><el-icon><search /></el-icon></template>
+            </el-input>
+            <span class="backup-result">找到 [[ filtered.length ]] 篇</span>
+        </div>
+        <div class="backup-selection" v-if="articles.length">
+            <el-checkbox :model-value="pageSelected" :indeterminate="pageIndeterminate" :disabled="!pageItems.length || busy" @change="togglePage">全选本页</el-checkbox>
+            <span>已选择 [[ selected.length ]] 篇<span v-if="selectedProtected">（含 [[ selectedProtected ]] 篇密码文章）</span></span>
+            <el-button text :disabled="!selected.length || busy" @click="selected = []">清空选择</el-button>
+            <el-button type="primary" :disabled="!selected.length || busy" @click="download('selected')">导出所选</el-button>
+        </div>
+
+        <div class="backup-progress" v-if="busy" role="status">正在打包并下载，请保持页面打开…</div>
+        <div class="backup-error" v-if="error" role="alert">[[ error ]]</div>
+
+        <div class="draft-list" v-if="pageItems.length">
+            <article class="draft-item" v-for="article in pageItems" :key="article.id">
+                <el-checkbox v-model="selected" :value="article.id" :disabled="busy" :aria-label="'选择文章：' + article.title"></el-checkbox>
+                <div class="draft-cover">
+                    <img v-if="article.cover" :src="article.cover" :alt="article.title" loading="lazy">
+                    <div v-else class="draft-cover-empty"><el-icon><document /></el-icon></div>
+                </div>
+                <div class="draft-info">
+                    <div class="draft-title-row">
+                        <h3 :title="article.title">[[ article.title ]]</h3>
+                        <el-tag :type="article.status === 1 ? 'success' : 'info'" effect="plain">[[ article.status === 1 ? '已发布' : '未发布' ]]</el-tag>
+                        <el-tag v-if="article.has_password" type="warning" effect="plain">密码文章</el-tag>
+                    </div>
+                    <p class="draft-summary">[[ article.abstract ]]</p>
+                    <div class="draft-meta"><span>最后修改：[[ article.updated_at || '暂无时间' ]]</span></div>
+                </div>
+                <div class="draft-actions">
+                    <el-button plain :disabled="busy" @click="download('selected', [article.id])"><el-icon><download /></el-icon>下载 ZIP</el-button>
+                </div>
+            </article>
+        </div>
+        <el-empty v-else :description="articles.length ? '未找到匹配的文章' : '暂无可备份的文章'">
+            <el-button v-if="articles.length" plain @click="search = ''">清空搜索</el-button>
+            <a v-else href="/backend/add_article"><el-button type="primary">开始写文章</el-button></a>
+        </el-empty>
+
+        <div class="backup-footer" v-if="filtered.length">
+            <span>本页 [[ pageItems.length ]] 篇 · 跨页保留选择 · 导出全部包含所有文章</span>
+            <el-pagination small background layout="prev, pager, next" :total="filtered.length" :page-size="pageSize" v-model:current-page="page" :disabled="busy"></el-pagination>
+        </div>
+    </section>
+</script>
+<script src="/static/js/article_backup.js"></script>
+{% endblock %}
+
+{% block components %}
+    app.component('article-backup', window.ArticleBackup);
+{% endblock %}

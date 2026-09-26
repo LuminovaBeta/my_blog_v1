@@ -1,0 +1,98 @@
+.backup-page [v-cloak] {
+  display: none;
+}
+.backup-page .draft-page-header {
+  gap: 16px;
+}
+.backup-page .backup-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 5px;
+  background: #f5f7fa;
+  color: #606266;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.backup-page .backup-notice p {
+  margin: 0;
+}
+.backup-page .backup-notice .el-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.backup-page .backup-toolbar, .backup-page .backup-selection, .backup-page .backup-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: #909399;
+  font-size: 13px;
+}
+.backup-page .backup-toolbar {
+  margin: 18px 0 8px;
+}
+.backup-page .backup-toolbar .el-input {
+  width: 320px;
+  max-width: 100%;
+}
+.backup-page .backup-selection {
+  padding: 8px 0 12px;
+  border-bottom: 1px solid #ebeef5;
+}
+.backup-page .backup-selection > .el-button:last-child {
+  margin-left: auto;
+}
+.backup-page .backup-progress, .backup-page .backup-error {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  background: #ecf5ff;
+  color: #409eff;
+}
+.backup-page .backup-error {
+  background: #fef0f0;
+  color: #f56c6c;
+}
+.backup-page .draft-title-row {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.backup-page .draft-item > .el-checkbox {
+  margin-right: 0;
+}
+.backup-page .draft-actions .el-icon {
+  margin-right: 5px;
+}
+.backup-page .backup-footer {
+  padding-top: 18px;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+  .backup-page .draft-page-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .backup-page .draft-info {
+    flex-basis: calc(100% - 170px);
+  }
+  .backup-page .backup-toolbar .el-input {
+    width: 100%;
+  }
+  .backup-page .backup-selection {
+    gap: 8px;
+  }
+  .backup-page .backup-footer {
+    justify-content: center;
+  }
+  .backup-page .backup-footer > span {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/*# sourceMappingURL=article_backup.css.map */

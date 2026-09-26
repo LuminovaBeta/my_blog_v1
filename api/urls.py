@@ -1,10 +1,11 @@
 from django.urls import path, re_path
-from api.views import login, article, comment, uploads, user, file, api_email, draft
+from api.views import login, article, comment, uploads, user, file, api_email, draft, backup
 
 urlpatterns = [
     path('login/', login.LoginView.as_view()), # 登录
     path('sign/', login.SignView.as_view()), # 注册
     path('article/', article.ArticleView.as_view()), # 发布文章
+    path('article/export/', backup.export_articles, name='export_articles'),
     path('article/draft/', draft.ArticleDraftView.as_view()), # 创建文章草稿
     path('article/draft/<int:nid>/', draft.ArticleDraftView.as_view()), # 读取、更新文章草稿
     path('article/<int:nid>/unlock/', article.ArticleUnlockView.as_view()), # 解锁受密码保护的文章

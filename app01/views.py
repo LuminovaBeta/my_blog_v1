@@ -295,6 +295,22 @@ def article_list(request):
     article_count = article_query.count()
     return render(request, 'backend/article_list.html', locals())
 
+def article_backup(request):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return redirect('/')
+    articles = Articles.objects.select_related('cover').defer('content').order_by('-change_date', '-nid')
+    backup_articles = [{
+        'id': article.pk,
+        'title': article.title or '未命名文章',
+        'abstract': article.abstract or '暂无文章简介',
+        'cover': article.cover.url.url if article.cover_id and article.cover.url else '',
+        'status': article.status,
+        'has_password': bool(article.pwd),
+        'updated_at': timezone.localtime(article.change_date).strftime('%Y-%m-%d %H:%M') if article.change_date else '',
+    } for article in articles]
+    return render(request, 'backend/article_backup.html', {'backup_articles': backup_articles})
+
+
 # 编辑修改头像
 def edit_avatar(request):
     # 拿到所有的头像
