@@ -1,6 +1,5 @@
 import json # 处理前端发来的 JSON 数据
 from django.contrib.auth.hashers import check_password, make_password
-from django.views.decorators.csrf import csrf_exempt  # 跳过 CSRF 校验
 
 from django.views import View
 from django.http import JsonResponse
@@ -331,7 +330,6 @@ class ArticleCollectsView(View):
         return JsonResponse(res)
 
 # ================= 新增：仅保存文章正文内容 =================
-@csrf_exempt
 def edit_article_content(request, nid):
     res = {
         "code": 0,
@@ -339,53 +337,67 @@ def edit_article_content(request, nid):
         "data": None,
     }
     
-    if request.method == 'POST':
-        try:
-            # 1. 解析前端发来的 JSON 数据
-            data = json.loads(request.body)
-            content = data.get("content")
-            
-            if not content:
-                res["code"] = 1
-                res["msg"] = "内容不能为空"
-                return JsonResponse(res)
-                
-            # 2. 检查文章是否存在
-            article_query = Articles.objects.filter(nid=nid)
-            if not article_query.exists():
-                res["code"] = 1
-                res["msg"] = "文章不存在"
-                return JsonResponse(res)
-                
-            # 3. 更新正式正文，并同步关联草稿，避免再次编辑时恢复旧内容。
-            now = timezone.now()
-            with transaction.atomic():
-                article_query.update(content=content, change_date=now)
+    if request.method != 'POST':
+        res['code'] = 405
+        res['msg'] = '非法请求方式'
+        return JsonResponse(res, status=405)
 
-                draft_query = ArticleDraft.objects.filter(article_id=nid)
-                draft_version = None
-                if draft_query.exists():
-                    draft_query.update(
-                        content=content,
-                        version=F('version') + 1,
-                        updated_at=now,
-                    )
-                    draft_version = draft_query.values_list('version', flat=True).first()
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {'code': 401, 'msg': '请先登录', 'data': None},
+            status=401,
+        )
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {'code': 403, 'msg': '没有文章管理权限', 'data': None},
+            status=403,
+        )
 
-            res['data'] = {
-                'draft_version': draft_version,
-                'updated_at': now.isoformat(),
-            }
-            return JsonResponse(res)
-            
-        except Exception as e:
+    try:
+        # 1. 解析前端发来的 JSON 数据
+        data = json.loads(request.body)
+        content = data.get("content")
+
+        if not content:
             res["code"] = 1
-            res["msg"] = f"数据解析失败: {str(e)}"
+            res["msg"] = "内容不能为空"
             return JsonResponse(res)
 
-    res["code"] = 1
-    res["msg"] = "非法请求方式"
-    return JsonResponse(res)
+        # 2. 检查文章是否存在
+        article_query = Articles.objects.filter(nid=nid)
+        if not article_query.exists():
+            res["code"] = 1
+            res["msg"] = "文章不存在"
+            return JsonResponse(res)
+
+        # 3. 更新正式正文，并同步关联草稿，避免再次编辑时恢复旧内容。
+        now = timezone.now()
+        with transaction.atomic():
+            article_query.update(content=content, change_date=now)
+
+            draft_query = ArticleDraft.objects.filter(
+                article_id=nid,
+                owner=request.user,
+            )
+            draft_version = None
+            if draft_query.exists():
+                draft_query.update(
+                    content=content,
+                    version=F('version') + 1,
+                    updated_at=now,
+                )
+                draft_version = draft_query.values_list('version', flat=True).first()
+
+        res['data'] = {
+            'draft_version': draft_version,
+            'updated_at': now.isoformat(),
+        }
+        return JsonResponse(res)
+
+    except Exception as e:
+        res["code"] = 1
+        res["msg"] = f"数据解析失败: {str(e)}"
+        return JsonResponse(res)
 
 # # 文章
 # class ArticleView(View):
