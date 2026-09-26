@@ -7,6 +7,7 @@ urlpatterns = [
     path('article/', article.ArticleView.as_view()), # 发布文章
     path('article/draft/', draft.ArticleDraftView.as_view()), # 创建文章草稿
     path('article/draft/<int:nid>/', draft.ArticleDraftView.as_view()), # 读取、更新文章草稿
+    path('article/<int:nid>/unlock/', article.ArticleUnlockView.as_view()), # 解锁受密码保护的文章
     re_path(r'article/(?P<nid>\d+)/', article.ArticleView.as_view()), # 编辑文章
     re_path(r'edit_article_content/(?P<nid>\d+)/', article.edit_article_content), # 保存文章内容
     re_path(r'article/comment/(?P<nid>\d+)/', comment.CommentView.as_view()), # 发布评论

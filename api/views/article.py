@@ -1,9 +1,10 @@
 import json # 处理前端发来的 JSON 数据
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.views.decorators.csrf import csrf_exempt  # 跳过 CSRF 校验
 
 from django.views import View
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from markdown import markdown
 from pyquery import PyQuery
 from django import forms
@@ -14,6 +15,12 @@ import random
 from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
+from app01.utils.article_access import (
+    has_article_access,
+    record_unlock_failure,
+    unlock_article,
+    unlock_retry_after,
+)
 
 class AddArticleForm(forms.Form):
     title = forms.CharField(error_messages={'required': '请输入文章标题'})
@@ -216,6 +223,44 @@ class ArticleView(View):
             ).delete()
         return JsonResponse(res)
 
+class ArticleUnlockView(View):
+    """验证文章访问密码，并将限时解锁凭据写入当前 Session。"""
+
+    def post(self, request, nid):
+        article = get_object_or_404(Articles, nid=nid, status=1)
+        if has_article_access(request, article):
+            return JsonResponse({'code': 0, 'msg': '文章已解锁', 'data': None})
+
+        retry_after = unlock_retry_after(request, article.nid)
+        if retry_after:
+            return JsonResponse(
+                {
+                    'code': 429,
+                    'msg': f'尝试次数过多，请在{retry_after}秒后重试',
+                    'data': {'retry_after': retry_after},
+                },
+                status=429,
+            )
+
+        data = getattr(request, 'data', {})
+        password = str(data.get('password') or '')
+        if not password or not check_password(password, article.pwd):
+            retry_after = record_unlock_failure(request, article.nid)
+            if retry_after:
+                return JsonResponse(
+                    {
+                        'code': 429,
+                        'msg': f'尝试次数过多，请在{retry_after}秒后重试',
+                        'data': {'retry_after': retry_after},
+                    },
+                    status=429,
+                )
+            return JsonResponse({'code': 403, 'msg': '文章密码错误', 'data': None})
+
+        unlock_article(request, article)
+        return JsonResponse({'code': 0, 'msg': '解锁成功', 'data': None})
+
+
 # 文章点赞
 class ArticleDiggView(View):
     def post(self, request, nid):
@@ -225,6 +270,10 @@ class ArticleDiggView(View):
             'data': 0,
         }
 
+
+        article = get_object_or_404(Articles, nid=nid)
+        if not has_article_access(request, article):
+            return JsonResponse({'code': 403, 'msg': '请先解锁文章', 'data': 0}, status=403)
 
         comment_query = Articles.objects.filter(nid=nid)
         comment_query.update(digg_count=F('digg_count')+1)
@@ -250,6 +299,10 @@ class ArticleCollectsView(View):
         if not request.user.username:
             res['msg'] = '请先登录'
             return JsonResponse(res)
+
+        article = get_object_or_404(Articles, nid=nid)
+        if not has_article_access(request, article):
+            return JsonResponse({'code': 403, 'msg': '请先解锁文章', 'data': 0}, status=403)
         
         # 判断是否已经收藏
         flag = request.user.collects.filter(nid=nid)

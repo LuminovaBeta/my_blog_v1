@@ -132,8 +132,8 @@
                                         </div>
                                     </div>
                                     <div class="right">
-                                        <h2><a href="/article/{{ tech.nid }}/">{{ tech.title }}</a></h2>
-                                        <p>{{ tech.abstract }}</p>
+                                        <h2><a href="/article/{{ tech.nid }}/">{{ tech.title }}{% if tech.pwd %} <i class="fa fa-lock" title="密码保护"></i>{% endif %}</a></h2>
+                                        <p>{% if tech.pwd %}此文章受密码保护{% else %}{{ tech.abstract }}{% endif %}</p>
                                         <span>{{ tech.create_date|date:'Y-m-d' }}</span>
                                     </div>
                                 </li>
@@ -150,8 +150,8 @@
                                         </div>
                                     </div>
                                     <div class="right">
-                                        <h2><a href="/article/{{ project.nid }}/">{{ project.title }}</a></h2>
-                                        <p>{{ project.abstract }}</p>
+                                        <h2><a href="/article/{{ project.nid }}/">{{ project.title }}{% if project.pwd %} <i class="fa fa-lock" title="密码保护"></i>{% endif %}</a></h2>
+                                        <p>{% if project.pwd %}此文章受密码保护{% else %}{{ project.abstract }}{% endif %}</p>
                                         <span>{{ project.create_date|date:'Y-m-d' }}</span>
                                     </div>
                                 </li>
@@ -179,8 +179,8 @@
                                         </div>
                                     </div>
                                     <div class="right">
-                                        <h2><a href="/article/{{ article.nid }}/">{{ article.title }}</a></h2>
-                                        <p>{{ article.abstract }}</p>
+                                        <h2><a href="/article/{{ article.nid }}/">{{ article.title }}{% if article.pwd %} <i class="fa fa-lock" title="密码保护"></i>{% endif %}</a></h2>
+                                        <p>{% if article.pwd %}此文章受密码保护{% else %}{{ article.abstract }}{% endif %}</p>
                                         <div class="article_info">
                                             <span><i class="fa fa-calendar" aria-hidden="true"></i>{{ article.create_date|date_humaniz }}</span>
                                             <span><i class="fa fa-thumbs-up" aria-hidden="true"></i>{{ article.digg_count }}</span>
@@ -360,6 +360,8 @@
                 theme: 'light',// 默认主题
                 this_category: 'tech',  // 当前所在的位置
                 comment_content: '', // 评论内容
+                articlePassword: '',
+                articleUnlocking: false,
 
                 // 开关 
                 // 定义图标变量
@@ -411,6 +413,29 @@
         },
         // 方法定义不变
         methods: {
+            unlock_article(nid) {
+                if (!this.articlePassword) {
+                    this.$message.error('请输入文章访问密码')
+                    return
+                }
+                this.articleUnlocking = true
+                axios.post(`/api/article/${nid}/unlock/`, {
+                    password: this.articlePassword,
+                }).then(res => {
+                    if (res.code) {
+                        this.articlePassword = ''
+                        this.$message.error(res.msg)
+                        return
+                    }
+                    this.$message.success(res.msg)
+                    window.location.reload()
+                }).catch(error => {
+                    this.articlePassword = ''
+                    this.$message.error(error.response?.data?.msg || '解锁失败，请稍后重试')
+                }).finally(() => {
+                    this.articleUnlocking = false
+                })
+            },
             // 初始化主题
             init_theme() {
                 let theme = localStorage.getItem('theme')
@@ -456,6 +481,8 @@
                     setTimeout(() => {
                         location.reload()
                     }, 200)
+                }).catch(error => {
+                    this.$message.error(error.response?.data?.msg || '评论失败，请稍后重试')
                 })
             },
 
@@ -501,6 +528,8 @@
                     setTimeout(() => {
                         location.reload()
                     }, 200)
+                }).catch(error => {
+                    this.$message.error(error.response?.data?.msg || '回复失败，请稍后重试')
                 })
             },
             // 删除子评论, nid评论id, aid文章id, root_comment_id根评论id
@@ -547,6 +576,8 @@
                     // 成功
                     e.target.innerHTML = `点赞(${res.data})`
                     this.$message.success(res.msg)
+                }).catch(error => {
+                    this.$message.error(error.response?.data?.msg || '点赞失败，请稍后重试')
                 })
             },
 
@@ -561,6 +592,8 @@
                     // 成功
                     $(dom).next().text(res.data)
                     this.$message.success(res.msg)
+                }).catch(error => {
+                    this.$message.error(error.response?.data?.msg || '点赞失败，请稍后重试')
                 })
                 dom.classList.add('show')
                 let timer = null
@@ -591,6 +624,8 @@
                     }
                     dom.classList.remove('show')
                     
+                }).catch(error => {
+                    this.$message.error(error.response?.data?.msg || '收藏操作失败，请稍后重试')
                 })
             },
 
@@ -865,7 +900,9 @@
         let top1 = 0
         if (path.indexOf('article') !== -1){
             slider = document.querySelector('.slider_bar')
-            top1 = $(slider).offset().top - 80
+            if (slider) {
+                top1 = $(slider).offset().top - 80
+            }
         }
         
 

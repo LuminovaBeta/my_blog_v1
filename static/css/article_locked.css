@@ -1,0 +1,55 @@
+main {
+  align-items: flex-start;
+}
+
+.article-lock-card {
+  width: min(460px, 100% - 40px);
+  margin: 40px auto;
+  padding: 38px 42px;
+  box-sizing: border-box;
+  text-align: center;
+}
+.article-lock-card .lock-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #409eff;
+  background: rgba(64, 158, 255, 0.12);
+  font-size: 30px;
+}
+.article-lock-card h1 {
+  margin: 0 0 12px;
+  color: #303133;
+  font-size: 24px;
+  line-height: 1.4;
+}
+.article-lock-card > p {
+  margin: 0 0 24px;
+  color: #606266;
+  line-height: 1.7;
+}
+.article-lock-card .el-input {
+  margin-bottom: 14px;
+}
+.article-lock-card .el-button {
+  width: 100%;
+}
+.article-lock-card .unlock-note {
+  display: block;
+  margin-top: 14px;
+  color: #909399;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .article-lock-card {
+    margin: 24px auto;
+    padding: 30px 22px;
+  }
+}
+
+/*# sourceMappingURL=article_locked.css.map */

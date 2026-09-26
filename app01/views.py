@@ -9,6 +9,7 @@ from app01.utils.random_code import random_code
 from app01.utils.sub_comment import sub_comment_list # 评论列表
 from app01.utils.pagination import Pagination # 分页
 from app01.utils.search import Search # 文章搜索
+from app01.utils.article_access import has_article_access
 
 from django.contrib import auth
 from app01.models import UserInfo # 导入用户表
@@ -100,7 +101,7 @@ def search(request):
     word = request.GET.get('word', '')
     tag = request.GET.get('tag', '')
     query_params = request.GET.copy()
-    article_list = Articles.objects.filter(title__icontains=search_key)
+    article_list = Articles.objects.filter(status=1, title__icontains=search_key)
 
     # 排序
     if order:
@@ -141,13 +142,18 @@ def search(request):
 
 # 文章页面
 def article(request, nid):
-    # print(nid)
     artitle_query = Articles.objects.filter(nid=nid)
-    # 每刷新一次浏览量加一
-    artitle_query.update(look_count=F('look_count')+1)
     if not artitle_query:
         return redirect('/')     # 找不到对应文章就回首页
     article = artitle_query.first()    # 找到nid为nid的，第一篇文章，
+
+    # 受保护文章在 Session 解锁前不渲染正文，也不记录阅读量。
+    if not has_article_access(request, article):
+        return render(request, 'article_locked.html', {'article': article})
+
+    # 每刷新一次浏览量加一
+    artitle_query.update(look_count=F('look_count')+1)
+    article.refresh_from_db(fields=['look_count'])
     ArticleView.objects.create(article=article)
 
     comment_list = sub_comment_list(nid) # 拿到文章评论列表

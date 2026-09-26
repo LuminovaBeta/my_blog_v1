@@ -6,6 +6,7 @@ from app01.models import Comment, Articles
 from django.db.models import F# 查询
 from api.utils.find_root_comment import find_root_comment
 from app01.utils.sub_comment import find_root_sub_comment # 找所有的子评论
+from app01.utils.article_access import has_article_access
 
 class CommentView(View):
     # 发布评论
@@ -23,6 +24,11 @@ class CommentView(View):
         if not request.user.username:
             res['msg'] = '请先登录'
             return JsonResponse(res)
+        article = Articles.objects.filter(nid=nid).first()
+        if not article:
+            return JsonResponse({'code': 404, 'msg': '文章不存在', 'self': None}, status=404)
+        if not has_article_access(request, article):
+            return JsonResponse({'code': 403, 'msg': '请先解锁文章', 'self': None}, status=403)
         content = data.get('content')
         if not content:
             res['msg'] = '请输入内容！'
@@ -118,6 +124,11 @@ class Comment_DiggView(View):
         
         
         comment_query = Comment.objects.filter(nid=nid)
+        comment_obj = comment_query.select_related('article').first()
+        if not comment_obj:
+            return JsonResponse({'code': 404, 'msg': '评论不存在', 'data': 0}, status=404)
+        if not has_article_access(request, comment_obj.article):
+            return JsonResponse({'code': 403, 'msg': '请先解锁文章', 'data': 0}, status=403)
         comment_query.update(digg_count=F('digg_count')+1)
         digg_count = comment_query.first().digg_count
         

@@ -45,9 +45,11 @@
                 {% for article in article_list %}
                     <li class="info">
                         <!-- 重新打开页面跳转 -->
-                        <a href="/article/{{ article.nid }}/" target="_blank" class="title">{{ article.title }}</a>
+                        <a href="/article/{{ article.nid }}/" target="_blank" class="title">
+                            {{ article.title }}{% if article.pwd %} <i class="fa fa-lock" title="密码保护"></i>{% endif %}
+                        </a>
                         <div class="content">
-                            <span>{{ article.content }}</span>
+                            <span>{% if article.pwd %}此文章受密码保护{% else %}{{ article.content }}{% endif %}</span>
                         </div>
                         
                         <div class="icon">
