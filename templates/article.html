@@ -32,7 +32,13 @@
 
         <div class="body">
             <!-- 通过 slide_list 列表存储 item.c -->
-            <p :tagName="item.tagName" @click="go_side_bar(item.pos, $event)" v-for="(item, index) in slide_list" :key="index">
+            <p
+                :tagName="item.tagName"
+                :class="{ active: activeHeading === item.key }"
+                @click="go_side_bar(item)"
+                v-for="(item, index) in slide_list"
+                :key="item.key"
+            >
                 [[ item.c ]]
             </p>
         </div>

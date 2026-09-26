@@ -10,7 +10,9 @@ from api.views.login import clean_form
 
 from app01.models import Tags, Articles, Cover, ArticleDraft
 import random
+from django.db import transaction
 from django.db.models import F
+from django.utils import timezone
 
 class AddArticleForm(forms.Form):
     title = forms.CharField(error_messages={'required': '请输入文章标题'})
@@ -229,7 +231,8 @@ class ArticleCollectsView(View):
 def edit_article_content(request, nid):
     res = {
         "code": 0,
-        "msg": "保存成功"
+        "msg": "保存成功",
+        "data": None,
     }
     
     if request.method == 'POST':
@@ -250,8 +253,25 @@ def edit_article_content(request, nid):
                 res["msg"] = "文章不存在"
                 return JsonResponse(res)
                 
-            # 3. 仅更新正文，不触发其他校验逻辑
-            article_query.update(content=content)
+            # 3. 更新正式正文，并同步关联草稿，避免再次编辑时恢复旧内容。
+            now = timezone.now()
+            with transaction.atomic():
+                article_query.update(content=content, change_date=now)
+
+                draft_query = ArticleDraft.objects.filter(article_id=nid)
+                draft_version = None
+                if draft_query.exists():
+                    draft_query.update(
+                        content=content,
+                        version=F('version') + 1,
+                        updated_at=now,
+                    )
+                    draft_version = draft_query.values_list('version', flat=True).first()
+
+            res['data'] = {
+                'draft_version': draft_version,
+                'updated_at': now.isoformat(),
+            }
             return JsonResponse(res)
             
         except Exception as e:

@@ -370,6 +370,9 @@
 
                 slide_list: [],
                 slide_text: '显示文章目录',
+                activeHeading: '',
+                headingScrollTick: null,
+                headingScrollBound: false,
 
                 search_key: '',
             }
@@ -397,6 +400,14 @@
                 // 初始化文章代码一键复制
                 this.code_copy()
             }, 1000)
+        },
+        beforeUnmount() {
+            if (this.headingScrollBound) {
+                window.removeEventListener('scroll', this.handle_heading_scroll)
+            }
+            if (this.headingScrollTick) {
+                cancelAnimationFrame(this.headingScrollTick)
+            }
         },
         // 方法定义不变
         methods: {
@@ -627,33 +638,92 @@
             // 悬浮目录
             get_sidebar(){
                 let content = $('#article_content')
+                if (!content.length) {
+                    return
+                }
                 let h_list = content.children('h1, h2, h3, h4')
                 let lis = []
+                const usedHeadingIds = new Set()
                 for(let i = 0; i<h_list.length; i++){
                     let c = h_list[i].innerText
                     let tagName = h_list[i].tagName
-                    let tagId = h_list[i].id
+                    const baseId = h_list[i].id || `article-heading-${i + 1}`
+                    let tagId = baseId
+                    let suffix = 2
+                    while (usedHeadingIds.has(tagId)) {
+                        tagId = `${baseId}-${suffix}`
+                        suffix += 1
+                    }
+                    usedHeadingIds.add(tagId)
+                    h_list[i].id = tagId
                     let ele = {
+                        key: `heading-${i}`,
                         tagName,
                         c,
-                        pos: '#' + tagId,
+                        targetId: tagId,
                     }
                     // console.log(ele);
                     lis.push(ele);
                 }
                 lis.push({
+                    key: 'comments',
                     tagName: 'H1',
                     c: '去评论吧',
-                    pos: '.comment_submit',
+                    selector: '.comment_submit',
                 })
                 this.slide_list = lis
+                this.$nextTick(() => {
+                    this.update_active_heading()
+                    if (!this.headingScrollBound) {
+                        window.addEventListener('scroll', this.handle_heading_scroll, { passive: true })
+                        this.headingScrollBound = true
+                    }
+                })
             },
-            // 参数1：位置  参数2：标签自身
-            go_side_bar(selector, e){
-                $('.slider_bar .body>p').css('color', '')
-                e.target.style.color = '#ff9800'
-                let box = $(selector)
-                let pos = box.offset()
+            // 阅读时根据当前滚动位置高亮对应目录项
+            handle_heading_scroll(){
+                if (this.headingScrollTick) {
+                    return
+                }
+                this.headingScrollTick = requestAnimationFrame(() => {
+                    this.update_active_heading()
+                    this.headingScrollTick = null
+                })
+            },
+            update_active_heading(){
+                if (!this.slide_list.length) {
+                    return
+                }
+                const activationLine = 100
+                const firstHeading = this.slide_list.find(item => item.targetId)
+                let currentHeading = firstHeading ? firstHeading.key : ''
+                for (const item of this.slide_list) {
+                    const target = this.get_sidebar_target(item)
+                    if (!target) {
+                        continue
+                    }
+                    if (target.getBoundingClientRect().top <= activationLine) {
+                        currentHeading = item.key
+                    } else {
+                        break
+                    }
+                }
+                this.activeHeading = currentHeading
+            },
+            get_sidebar_target(item){
+                if (item.targetId) {
+                    return document.getElementById(item.targetId)
+                }
+                return item.selector ? document.querySelector(item.selector) : null
+            },
+            // 参数1：目录项
+            go_side_bar(item){
+                const target = this.get_sidebar_target(item)
+                if (!target) {
+                    return
+                }
+                this.activeHeading = item.key
+                let pos = $(target).offset()
                 pos.top = pos.top - 80
                 $('html,body').animate({scrollTop: pos.top}, 800)
                 

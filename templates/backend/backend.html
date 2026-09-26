@@ -599,14 +599,23 @@
             // 保存文章正文内容
             save_content(nid) {
                 // 获取内容
+                const content = this.get_article_content();
                 let data = {
-                    content: editor.querySelector('.editormd-markdown-textarea').value,
+                    content: content,
                 }
 
                 // 只发送 nid 和 content，不传其他多余字段
                 axios.post(`/api/edit_article_content/${nid}/`, data).then(res => {
                     // 注意：因为你有拦截器 return response.data，所以这里直接判断 res.code
                     if (res.code === 0) {
+                        if (res.data?.draft_version !== null && res.data?.draft_version !== undefined) {
+                            this.draftVersion = res.data.draft_version;
+                            if (window.articleDraftData) {
+                                window.articleDraftData.content = content;
+                                window.articleDraftData.version = res.data.draft_version;
+                                window.articleDraftData.updated_at = res.data.updated_at;
+                            }
+                        }
                         this.$message.success("内容已实时保存");
                         // 局部保存不需要 location.href 跳转，让用户留在编辑页继续写
                     } else {
