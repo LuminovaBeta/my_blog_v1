@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -18,7 +19,9 @@ def draft_data(draft):
         'cover_id': str(draft.cover_id) if draft.cover_id else '',
         'cover_url': draft.cover.url.url if draft.cover_id else '',
         'tags': [str(tag.nid) for tag in draft.tags.all()],
-        'pwd': draft.pwd,
+        'has_password': bool(draft.pwd) or bool(draft.article and draft.article.pwd),
+        'has_saved_draft_password': draft.password_action == 'set' and bool(draft.pwd),
+        'password_action': draft.password_action,
         'recommend': draft.recommend,
         'version': draft.version,
         'updated_at': draft.updated_at.isoformat(),
@@ -110,13 +113,20 @@ class ArticleDraftView(View):
         title = str(data.get('title') or '')
         abstract = str(data.get('abstract') or '')
         content = str(data.get('content') or '')
-        pwd = str(data.get('pwd') or '')
+        password_action = str(data.get('password_action') or 'keep')
+        new_password = str(data.get('new_password') or '')
         if len(title) > 32:
             return JsonResponse({'code': 400, 'msg': '文章标题不能超过32字', 'data': None}, status=400)
         if len(abstract) > 150:
             return JsonResponse({'code': 400, 'msg': '文章简介不能超过150字', 'data': None}, status=400)
-        if len(pwd) > 32:
-            return JsonResponse({'code': 400, 'msg': '文章密码不能超过32字', 'data': None}, status=400)
+        if password_action not in dict(ArticleDraft.password_action_choice):
+            return JsonResponse({'code': 400, 'msg': '密码操作类型错误', 'data': None}, status=400)
+        if new_password and not 4 <= len(new_password) <= 32:
+            return JsonResponse({'code': 400, 'msg': '文章密码长度应为4至32位', 'data': None}, status=400)
+        if password_action == 'set' and not new_password:
+            has_saved_password = bool(draft.pk and draft.password_action == 'set' and draft.pwd)
+            if not has_saved_password:
+                return JsonResponse({'code': 400, 'msg': '请输入新的文章密码', 'data': None}, status=400)
 
         category = data.get('category')
         if category in (None, ''):
@@ -157,7 +167,11 @@ class ArticleDraftView(View):
         draft.content = content
         draft.category = category
         draft.cover = cover
-        draft.pwd = pwd
+        if password_action == 'set' and new_password:
+            draft.pwd = make_password(new_password)
+        elif password_action != 'set':
+            draft.pwd = ''
+        draft.password_action = password_action
         draft.recommend = bool(data.get('recommend', False))
         if draft.pk:
             draft.version += 1

@@ -1,4 +1,5 @@
 import json # 处理前端发来的 JSON 数据
+from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt  # 跳过 CSRF 校验
 
 from django.views import View
@@ -21,21 +22,16 @@ class AddArticleForm(forms.Form):
     cover_id = forms.IntegerField(required=False) # 不进行为空验证
 
     category = forms.IntegerField(required=False) # 不进行为空验证
-    pwd = forms.CharField(required=False) # 不进行为空验证
     recommend = forms.BooleanField(required=False)
     status = forms.IntegerField(required=False)
     word = forms.IntegerField(required=False)
 
 
-    # 全局钩子校验分类和密码
+    # 全局钩子校验分类
     def clean(self):
         category = self.cleaned_data['category']
         if not category:
-            self.cleaned_data.pop('category')        
-
-        pwd = self.cleaned_data['pwd']
-        if not pwd:
-            self.cleaned_data.pop('pwd')
+            self.cleaned_data.pop('category')
 
     # 局部钩子-文章简介
     def clean_abstract(self):
@@ -70,6 +66,41 @@ class AddArticleForm(forms.Form):
         cover_id = random.choice(cover_set)['nid']
         return cover_id
 
+
+def resolve_article_password(data, user, current_password='', article_id=None):
+    """根据前端的三态操作返回待保存的密码哈希，绝不回传或复用明文。"""
+    password_action = str(data.get('password_action') or 'keep')
+    if password_action not in {'keep', 'set', 'remove'}:
+        return None, '密码操作类型错误'
+
+    if password_action == 'keep':
+        return current_password, None
+    if password_action == 'remove':
+        return '', None
+
+    new_password = str(data.get('new_password') or '')
+    if new_password:
+        if not 4 <= len(new_password) <= 32:
+            return None, '文章密码长度应为4至32位'
+        return make_password(new_password), None
+
+    draft_id = data.get('draft_id')
+    if draft_id:
+        draft_query = ArticleDraft.objects.filter(
+            nid=draft_id,
+            owner=user,
+            password_action='set',
+        )
+        if article_id is None:
+            draft_query = draft_query.filter(article__isnull=True)
+        else:
+            draft_query = draft_query.filter(article_id=article_id)
+        draft_password = draft_query.values_list('pwd', flat=True).first()
+        if draft_password:
+            return draft_password, None
+
+    return None, '请输入新的文章密码'
+
 class ArticleView(View):
     # 发布文章
     def post(self, request):
@@ -92,9 +123,16 @@ class ArticleView(View):
             res['self'], res['msg'] = clean_form(form)
             return JsonResponse(res)
 
+        password_value, password_error = resolve_article_password(data, request.user)
+        if password_error:
+            res['msg'] = password_error
+            res['self'] = 'password'
+            return JsonResponse(res)
+
         # 校验通过
         form.cleaned_data['author'] = 'wshsm'
         form.cleaned_data['source'] = 'yt'
+        form.cleaned_data['pwd'] = password_value or None
         article_obj = Articles.objects.create(**form.cleaned_data)
         tags = data.get('tags')
         # print(tags)
@@ -136,9 +174,22 @@ class ArticleView(View):
             res['self'], res['msg'] = clean_form(form)
             return JsonResponse(res)
 
+        current_article = article_query.first()
+        password_value, password_error = resolve_article_password(
+            data,
+            request.user,
+            current_password=current_article.pwd or '',
+            article_id=nid,
+        )
+        if password_error:
+            res['msg'] = password_error
+            res['self'] = 'password'
+            return JsonResponse(res)
+
         # 校验通过
         form.cleaned_data['author'] = 'wshsm'
         form.cleaned_data['source'] = 'yt'
+        form.cleaned_data['pwd'] = password_value or None
         article_query.update(**form.cleaned_data)# 更新
 
         # 标签修改

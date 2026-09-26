@@ -7,6 +7,7 @@ from pyquery import PyQuery
 # Register your models here.
 
 class ArticleAdmin(admin.ModelAdmin):
+    exclude = ['pwd']
     def get_cover(self):
         if self.cover:
             return mark_safe(f'<img src="{self.cover.url.url}" style="height:60px; border-radius:5px;">')
@@ -64,6 +65,7 @@ class ArticleDraftAdmin(admin.ModelAdmin):
     list_filter = ['category', 'recommend', 'updated_at']
     search_fields = ['title', 'abstract', 'content', 'owner__username']
     readonly_fields = ['version', 'created_at', 'updated_at']
+    exclude = ['pwd']
     filter_horizontal = ['tags']
 
 

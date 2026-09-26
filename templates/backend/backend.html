@@ -365,10 +365,12 @@
                 tags: [],
                 // 是否上推荐
                 recommend: true,
-                // 是否需要密码
-                pwd_active: false,
-                // 文章密码
-                pwd: '',
+                isEditingArticle: window.location.pathname.includes('/backend/edit_article/'),
+                hasPassword: Boolean(window.articleDraftData?.has_password),
+                passwordAction: window.articleDraftData?.password_action || 'keep',
+                newPassword: '',
+                confirmPassword: '',
+                hasSavedDraftPassword: Boolean(window.articleDraftData?.has_saved_draft_password),
                 // 文章封面id
                 cover_id: '',
                 // 文章标题
@@ -465,9 +467,37 @@
                 this.category_id = draft.category || '';
                 this.cover_id = draft.cover_id || '';
                 this.tags = draft.tags || [];
-                this.pwd = draft.pwd || '';
-                this.pwd_active = Boolean(draft.pwd);
+                this.hasPassword = Boolean(draft.has_password);
+                this.passwordAction = draft.password_action || 'keep';
+                this.hasSavedDraftPassword = Boolean(draft.has_saved_draft_password);
+                this.newPassword = '';
+                this.confirmPassword = '';
                 this.recommend = Boolean(draft.recommend);
+            },
+
+            handle_password_action_change(action) {
+                if (action !== 'set') {
+                    this.newPassword = '';
+                    this.confirmPassword = '';
+                }
+            },
+
+            validate_password_setting() {
+                if (this.passwordAction !== 'set') {
+                    return true;
+                }
+                if (!this.newPassword && this.hasSavedDraftPassword) {
+                    return true;
+                }
+                if (this.newPassword.length < 4 || this.newPassword.length > 32) {
+                    this.$message.error('文章密码长度应为4至32位');
+                    return false;
+                }
+                if (this.newPassword !== this.confirmPassword) {
+                    this.$message.error('两次输入的文章密码不一致');
+                    return false;
+                }
+                return true;
             },
 
             // 获取编辑器当前 Markdown 正文
@@ -481,6 +511,9 @@
 
             // 将当前编辑内容暂存到独立草稿表，不影响已发布文章
             save_draft(articleNid = null) {
+                if (!this.validate_password_setting()) {
+                    return;
+                }
                 const data = {
                     article_id: articleNid,
                     title: this.title,
@@ -488,7 +521,8 @@
                     tags: this.tags,
                     category: this.category_id,
                     recommend: this.recommend,
-                    pwd: this.pwd_active ? this.pwd : '',
+                    password_action: this.passwordAction,
+                    new_password: this.newPassword,
                     abstract: this.abstract,
                     content: this.get_article_content(),
                 };
@@ -510,6 +544,11 @@
                     this.draftSaveText = `已暂存 ${new Date(res.data.updated_at).toLocaleTimeString()}`;
                     this.draftSaveStatus = 'saved';
                     window.articleDraftData = res.data;
+                    this.hasPassword = Boolean(res.data.has_password);
+                    this.passwordAction = res.data.password_action || 'keep';
+                    this.hasSavedDraftPassword = Boolean(res.data.has_saved_draft_password);
+                    this.newPassword = '';
+                    this.confirmPassword = '';
 
                     // 新文章保存后把草稿编号保留在地址中，刷新页面仍可恢复。
                     if (!articleNid) {
@@ -536,6 +575,9 @@
 
             // 添加文章函数
             add_article(){
+                if (!this.validate_password_setting()) {
+                    return;
+                }
                 let data = {
                     draft_id: this.draftId,
                     title: this.title,
@@ -543,7 +585,8 @@
                     tags: this.tags,
                     category: this.category_id,
                     recommend: this.recommend,
-                    pwd: this.pwd,
+                    password_action: this.passwordAction,
+                    new_password: this.newPassword,
                     abstract: this.abstract,
                     content: this.get_article_content(),
                 }
@@ -571,6 +614,9 @@
 
             // 编辑文章
             edit_article(nid){
+                if (!this.validate_password_setting()) {
+                    return;
+                }
                 let data = {
                     draft_id: this.draftId,
                     title: this.title,
@@ -578,7 +624,8 @@
                     tags: this.tags,
                     category: this.category_id,
                     recommend: this.recommend,
-                    pwd: this.pwd,
+                    password_action: this.passwordAction,
+                    new_password: this.newPassword,
                     abstract: this.abstract,
                     content: this.get_article_content(),
                 }
@@ -831,8 +878,12 @@
             const title = ref(''); // 定义 title
             const abstract = ref(''); // 简介
             const category_id = ref(undefined); // 分类，默认为 undefined
-            const pwd = ref(''); // 密码
-            const pwd_active = ref(false); // 密码状态，默认为 boolean
+            const isEditingArticle = window.location.pathname.includes('/backend/edit_article/');
+            const hasPassword = ref(Boolean(window.articleDraftData?.has_password));
+            const passwordAction = ref(window.articleDraftData?.password_action || 'keep');
+            const newPassword = ref('');
+            const confirmPassword = ref('');
+            const hasSavedDraftPassword = ref(Boolean(window.articleDraftData?.has_saved_draft_password));
             const tags = ref([]); // 标签，默认为空数组
             const recommend = ref(undefined); // 上推荐，默认为 boolean
 
@@ -850,8 +901,11 @@
                         category_id.value = draft.category || '';
                         cover_id.value = draft.cover_id || '';
                         tags.value = draft.tags || [];
-                        pwd.value = draft.pwd || '';
-                        pwd_active.value = Boolean(draft.pwd);
+                        hasPassword.value = Boolean(draft.has_password);
+                        passwordAction.value = draft.password_action || 'keep';
+                        hasSavedDraftPassword.value = Boolean(draft.has_saved_draft_password);
+                        newPassword.value = '';
+                        confirmPassword.value = '';
                         recommend.value = Boolean(draft.recommend);
                         const draftCover = document.getElementById('cover_img');
                         if (draftCover && draft.cover_url) {
@@ -889,15 +943,12 @@
                         }else{
                             recommend.value = false
                         }
-                        // 密码
-                        let raw_pwd = box.getAttribute('data_pwd');
-                        if(raw_pwd !== 'None'){
-                            pwd.value = box.getAttribute('data_pwd')
-                            pwd_active.value = true
-                        }else{
-                            pwd.value = ''
-                            pwd_active.value = false
-                        }
+                        // 只读取密码设置状态，绝不把原密码写入页面。
+                        hasPassword.value = box.getAttribute('data_has_password') === 'true'
+                        passwordAction.value = 'keep'
+                        hasSavedDraftPassword.value = false
+                        newPassword.value = ''
+                        confirmPassword.value = ''
                         // 封面
                         cover_id.value = box.getAttribute('data_cover_id') // 拿到图片id
                         cover_url.value = box.getAttribute('data_cover_url') // 拿到图片url
@@ -923,8 +974,12 @@
                 title,
                 abstract, // 文章简介
                 category_id, // 文章分类
-                pwd,
-                pwd_active,
+                isEditingArticle,
+                hasPassword,
+                passwordAction,
+                newPassword,
+                confirmPassword,
+                hasSavedDraftPassword,
                 tags,
                 recommend,
             };

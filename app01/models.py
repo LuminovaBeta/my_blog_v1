@@ -151,7 +151,7 @@ class Articles(models.Model):
         verbose_name='文章标签',
         blank=True
     )# 多对多字段
-    pwd = models.CharField(max_length=32, verbose_name='文章密码', null=True, blank=True)
+    pwd = models.CharField(max_length=128, verbose_name='文章密码', null=True, blank=True)
     author = models.CharField(max_length=16, verbose_name='作者', null=True, blank=True)
     source = models.CharField(max_length=32, verbose_name='来源', null=True, blank=True)
 
@@ -312,7 +312,18 @@ class ArticleDraft(models.Model):
         blank=True,
         verbose_name='文章标签',
     )
-    pwd = models.CharField(max_length=32, blank=True, verbose_name='文章访问密码')
+    password_action_choice = (
+        ('keep', '保持原密码'),
+        ('set', '设置新密码'),
+        ('remove', '移除密码'),
+    )
+    pwd = models.CharField(max_length=128, blank=True, verbose_name='文章访问密码')
+    password_action = models.CharField(
+        max_length=10,
+        choices=password_action_choice,
+        default='keep',
+        verbose_name='密码操作',
+    )
     recommend = models.BooleanField(default=False, verbose_name='是否推荐')
     version = models.PositiveIntegerField(default=1, verbose_name='草稿版本')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')

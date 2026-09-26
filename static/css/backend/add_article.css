@@ -85,6 +85,36 @@
   flex: 1; /* 核心：让输入框自动填满右边剩余的所有空间 */
   /* 如果不想占满，可以删掉上一行，改成 width: 200px; */
 }
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting {
+  padding-top: 4px;
+}
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting .password-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting .password-status .label-text {
+  font-size: 14px;
+}
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting .password-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting .password-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add_el_drawer_content .can_choose .el-collapse-item__content .password-setting .password-inputs .password-hint {
+  margin: 0;
+  color: #909399;
+  font-size: 12px;
+  line-height: 1.5;
+}
 .add_el_drawer_content .article_btn_list {
   position: absolute;
   bottom: 30px;

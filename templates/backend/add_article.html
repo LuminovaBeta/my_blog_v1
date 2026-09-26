@@ -110,23 +110,40 @@
                             inactive-text="否"
                         ></el-switch>
                     </div>
-                    <div class="password-row">
-                        <div class="pwd_active">
-                            <span class="label-text">是否加密</span>
-                            <el-switch
-                                v-model="pwd_active"
-                                inline-prompt
-                                active-text="是"
-                                inactive-text="否"
-                            ></el-switch>                            
+                    <div class="password-setting">
+                        <div class="password-status">
+                            <span class="label-text">文章访问密码</span>
+                            <el-tag :type="hasPassword ? 'success' : 'info'" effect="plain" size="small">
+                                [[ hasPassword ? '已设置，密码不会显示' : '未设置' ]]
+                            </el-tag>
                         </div>
-                        <div class="pwd">
+                        <el-radio-group v-model="passwordAction" class="password-actions" @change="handle_password_action_change">
+                            <el-radio value="keep">[[ isEditingArticle ? '保持当前设置' : '不设置密码' ]]</el-radio>
+                            <el-radio value="set">设置新密码</el-radio>
+                            <el-radio v-if="isEditingArticle && (hasPassword || passwordAction === 'remove')" value="remove">移除密码</el-radio>
+                        </el-radio-group>
+                        <div v-if="passwordAction === 'set'" class="password-inputs">
                             <el-input
-                                v-if="pwd_active"
-                                v-model="pwd"
-                                placeholder="请输入文章密码"
+                                v-model="newPassword"
+                                type="password"
+                                show-password
+                                maxlength="32"
+                                autocomplete="new-password"
+                                placeholder="请输入4至32位新密码"
                                 clearable
-                            ></el-input>                            
+                            ></el-input>
+                            <el-input
+                                v-model="confirmPassword"
+                                type="password"
+                                show-password
+                                maxlength="32"
+                                autocomplete="new-password"
+                                placeholder="请再次输入新密码"
+                                clearable
+                            ></el-input>
+                            <p v-if="hasSavedDraftPassword && !newPassword" class="password-hint">
+                                草稿中已安全保存新密码，留空将保持该设置
+                            </p>
                         </div>
                     </div>
 
