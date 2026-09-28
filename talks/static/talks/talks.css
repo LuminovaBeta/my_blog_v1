@@ -1,0 +1,16 @@
+#app > nav.nav_bg {
+    box-sizing: border-box;
+    width: 100%;
+    background: var(--nav_bg, #fff);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
+}
+
+#app > nav.nav_bg a,
+#app > nav.nav_bg .right .el-dropdown .el-dropdown-link {
+    color: var(--nav_color, #303133);
+}
+
+#app > nav.nav_bg .left .logo .logo-white { display: none; }
+#app > nav.nav_bg .left .logo .logo-black { display: block; }
+#app > nav.nav_bg .search button { color: var(--nav_color, #303133); }
+#app > main { box-sizing: border-box; padding-top: 92px; }

@@ -1,38 +1,29 @@
 {% extends 'library/base.html' %}
-
 {% block library_content %}
-    <div class="library-breadcrumb" role="navigation" aria-label="页面位置">
-        <a href="{% url 'library:bookshelf' %}">我的书库</a><span>/</span><span>添加书籍草图</span>
-    </div>
-
-    <section class="library-panel library-form-panel">
-        <div class="library-section-heading">
-            <div><h1>添加书籍</h1><p>先记录书籍信息，纸质书和电子书都能放进书库。</p></div>
-            <span class="library-preview-badge">页面草图</span>
-        </div>
-        <p class="library-form-notice">这是表单布局预览，目前不会保存内容或上传文件。</p>
-
+<div class="library-breadcrumb"><a href="{% url 'library:bookshelf' %}">我的书库</a><span>/</span><span>{% if is_edit %}编辑书籍{% else %}添加书籍{% endif %}</span></div>
+<section class="library-panel library-form-panel">
+    <div class="library-section-heading"><div><h1>{% if is_edit %}编辑书籍{% else %}添加书籍{% endif %}</h1><p>记录书籍信息与阅读进度；书中好句在书籍详情中添加。</p></div></div>
+    <p class="library-form-notice">电子书 PDF / EPUB 上传暂未开放；这里仅保留前端入口，不会保存文件。</p>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="library-form-errors">{{ form.non_field_errors }}</div>{% endif %}
         <div class="library-form-grid">
-            <div class="library-form-field library-form-wide">
-                <label for="library-title">书名 <span aria-hidden="true">*</span></label>
-                <input id="library-title" type="text" placeholder="例如：Django 入门" autocomplete="off">
+            {% for field in form %}
+            <div class="library-form-field{% if field.name == 'description' %} library-form-wide{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span>{% endif %}</label>
+                {{ field }}
+                {% for error in field.errors %}<small class="library-field-error">{{ error }}</small>{% endfor %}
             </div>
-            <div class="library-form-field"><label for="library-author">作者</label><input id="library-author" type="text" placeholder="输入作者姓名"></div>
-            <div class="library-form-field"><label for="library-translator">译者</label><input id="library-translator" type="text" placeholder="选填"></div>
-            <div class="library-form-field"><label for="library-category">分类</label><select id="library-category" disabled><option>分类接入后可选择</option></select></div>
-            <div class="library-form-field"><label for="library-publisher">出版社</label><input id="library-publisher" type="text" placeholder="选填"></div>
-            <div class="library-form-field"><label for="library-isbn">ISBN</label><input id="library-isbn" type="text" placeholder="选填"></div>
-            <div class="library-form-field"><label for="library-published">出版日期</label><input id="library-published" type="date"></div>
-            <div class="library-form-field library-form-wide"><label for="library-description">书籍简介</label><textarea id="library-description" rows="5" placeholder="写一点关于这本书的介绍"></textarea></div>
+            {% endfor %}
         </div>
-
         <div class="library-upload-grid">
-            <div class="library-upload-placeholder"><i class="fa fa-picture-o" aria-hidden="true"></i><strong>书籍封面</strong><span>后续支持上传图片</span></div>
-            <div class="library-upload-placeholder"><i class="fa fa-file-pdf-o" aria-hidden="true"></i><strong>电子书文件</strong><span>后续支持 PDF、EPUB；纸质书可不上传</span></div>
+            <div class="library-upload-placeholder"><i class="fa fa-picture-o" aria-hidden="true"></i><strong>书籍封面</strong><span>封面上传将在后续接入</span></div>
+            <div class="library-upload-placeholder"><i class="fa fa-file-pdf-o" aria-hidden="true"></i><strong>电子书文件</strong><label for="library-ebook-file">PDF / EPUB 文件（暂不可用）</label><input id="library-ebook-file" type="file" accept=".pdf,.epub,application/pdf,application/epub+zip" disabled><span>仅预留入口，不上传、不保存</span></div>
         </div>
         <div class="library-form-actions">
-            <a class="library-button" href="{% url 'library:bookshelf' %}">返回书架</a>
-            <button class="library-button library-button-primary" type="button" disabled title="保存功能尚未接入">保存书籍（待开发）</button>
+            <a class="library-button" href="{% if is_edit %}{% url 'library:book_detail' book.pk %}{% else %}{% url 'library:bookshelf' %}{% endif %}">取消</a>
+            <button class="library-button library-button-primary" type="submit">保存书籍</button>
         </div>
-    </section>
+    </form>
+</section>
 {% endblock %}

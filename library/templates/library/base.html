@@ -1,18 +1,19 @@
 {% extends 'index.html' %}
-
 {% block css %}
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/library/library.css">
 {% endblock %}
-
+{% block expand_js %}
+    {{ block.super }}
+    <script src="/static/js/library/filter-results.js"></script>
+{% endblock %}
 {% block banner %}{% endblock %}
-
 {% block main %}
-    <div class="library-shell">
-        <div class="library-tabs" role="navigation" aria-label="书库导航">
-            <a href="{% url 'library:bookshelf' %}"{% if request.resolver_match.url_name != 'excerpts' %} class="is-active" aria-current="page"{% endif %}>我的书架</a>
-            <a href="{% url 'library:excerpts' %}"{% if request.resolver_match.url_name == 'excerpts' %} class="is-active" aria-current="page"{% endif %}>我的摘录</a>
-        </div>
-        {% block library_content %}{% endblock %}
+<div class="library-shell">
+    <div class="library-tabs" role="navigation" aria-label="书库导航">
+        <a href="{% url 'library:bookshelf' %}"{% if request.resolver_match.url_name != 'excerpts' and request.resolver_match.url_name != 'add_excerpt' and request.resolver_match.url_name != 'edit_excerpt' %} class="is-active" aria-current="page"{% endif %}>我的书架</a>
+        <a href="{% url 'library:excerpts' %}"{% if request.resolver_match.url_name == 'excerpts' or request.resolver_match.url_name == 'add_excerpt' or request.resolver_match.url_name == 'edit_excerpt' %} class="is-active" aria-current="page"{% endif %}>独立摘录</a>
     </div>
+    {% block library_content %}{% endblock %}
+</div>
 {% endblock %}

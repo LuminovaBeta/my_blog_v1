@@ -1,4 +1,4 @@
-// Filters only the four illustrative cards already present in the HTML.
+// Filters only the illustrative independent excerpts already present in the HTML.
 (() => {
     const page = document.getElementById('excerpt-page');
     if (!page) return;

@@ -203,6 +203,26 @@
   color: #409eff;
   font-weight: 600;
 }
+.library-tools input, .library-tools select {
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid #dcdfe6;
+  border-radius: 5px;
+  background: var(--nav_bg, #fff);
+  color: var(--nav_color, #303133);
+  font: inherit;
+}
+.library-tools input {
+  flex: 1 1 230px;
+  min-width: 0;
+}
+.library-tools select {
+  min-width: 120px;
+}
+.library-tools a {
+  color: #409eff;
+}
 
 .library-empty {
   display: flex;
@@ -382,6 +402,40 @@
   gap: 10px;
 }
 
+.library-delete-hint {
+  align-self: center;
+  color: #909399;
+  font-size: 12px;
+}
+
+.library-book-quotes {
+  margin-top: 18px;
+  padding: 24px;
+}
+.library-book-quotes .library-section-heading {
+  align-items: center;
+}
+
+.library-book-quote {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid rgba(144, 147, 153, 0.22);
+  border-radius: 6px;
+}
+.library-book-quote blockquote {
+  margin: 16px 0;
+  padding-left: 15px;
+  border-left: 3px solid #409eff;
+  color: var(--nav_color, #303133);
+  font-size: 18px;
+  line-height: 1.8;
+}
+.library-book-quote p {
+  margin: 7px 0 0;
+  color: #909399;
+  font-size: 13px;
+}
+
 .library-notes {
   margin-top: 18px;
 }
@@ -476,6 +530,63 @@
   border-top: 1px solid #ebeef5;
 }
 
+.library-field-error, .library-form-errors {
+  color: #f56c6c;
+  font-size: 12px;
+}
+
+.library-filter-error {
+  margin: 14px 0 0;
+  color: #f56c6c;
+  font-size: 13px;
+}
+
+[data-library-results][aria-busy=true] {
+  opacity: 0.55;
+}
+
+.library-upload-placeholder input[type=file] {
+  max-width: 100%;
+  font-size: 12px;
+}
+
+.library-record-actions, .library-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.library-record-actions {
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+.library-record-actions form {
+  display: flex;
+  margin: 0;
+}
+.library-record-actions a, .library-record-actions button {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 28px;
+  margin: 0;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: #409eff;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.library-pagination {
+  justify-content: center;
+  margin-top: 22px;
+  color: #909399;
+  font-size: 13px;
+}
+
 @media screen and (max-width: 800px) {
   #app > main {
     padding: 82px 16px 42px;
@@ -510,7 +621,7 @@
   .library-stats strong {
     font-size: 20px;
   }
-  .library-collection, .library-form-panel, .library-notes {
+  .library-collection, .library-form-panel, .library-book-quotes, .library-notes {
     padding: 18px;
   }
   .library-grid, .library-form-grid, .library-upload-grid {

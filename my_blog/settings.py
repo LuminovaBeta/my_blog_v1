@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'app01.apps.App01Config',
     'api.apps.ApiConfig',
     'library.apps.LibraryConfig',
+    'talks.apps.TalksConfig',
 ]
 
 MIDDLEWARE = [

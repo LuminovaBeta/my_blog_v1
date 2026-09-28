@@ -96,14 +96,21 @@
         margin-top: 16px;
         padding-top: 12px;
         border-top: 1px solid rgba(144, 147, 153, .15);
-        button {
-            padding: 4px 6px;
+        form { display: flex; margin: 0; }
+        a, button {
+            display: inline-flex;
+            align-items: center;
+            box-sizing: border-box;
+            height: 28px;
+            margin: 0;
+            padding: 0 6px;
             border: 0;
             background: none;
-            color: #909399;
+            color: #409eff;
             font: inherit;
             font-size: 12px;
-            cursor: not-allowed;
+            line-height: 1;
+            cursor: pointer;
         }
     }
 }

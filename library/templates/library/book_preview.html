@@ -1,37 +1,47 @@
 {% extends 'library/base.html' %}
-
 {% block library_content %}
-    <div class="library-breadcrumb" role="navigation" aria-label="页面位置">
-        <a href="{% url 'library:bookshelf' %}">我的书库</a><span>/</span><span>书籍详情草图</span>
+{% if book %}
+<div class="library-breadcrumb"><a href="{% url 'library:bookshelf' %}">我的书库</a><span>/</span><span>{{ book.title }}</span></div>
+<section class="library-panel library-detail">
+    <div class="library-detail-cover cover-blue" aria-hidden="true"><i class="fa fa-book"></i></div>
+    <div class="library-detail-info">
+        <span class="library-preview-badge">{{ book.get_read_status_display }}</span>
+        <h1>{{ book.title }}</h1>
+        <p class="library-detail-author">{{ book.author|default:'作者未填写' }}{% if book.category %} · {{ book.category }}{% endif %}</p>
+        {% if book.description %}<p class="library-detail-description">{{ book.description|linebreaksbr }}</p>{% endif %}
+        <div class="library-detail-meta">
+            <div><span>阅读状态</span><strong>{{ book.get_read_status_display }}</strong></div>
+            <div><span>当前进度</span><strong>{{ book.progress_percent }}%</strong></div>
+            {% if book.current_page %}<div><span>当前页码</span><strong>{{ book.current_page }}{% if book.total_pages %} / {{ book.total_pages }}{% endif %}</strong></div>{% endif %}
+            {% if book.translator %}<div><span>译者</span><strong>{{ book.translator }}</strong></div>{% endif %}
+            {% if book.publisher %}<div><span>出版社</span><strong>{{ book.publisher }}</strong></div>{% endif %}
+            {% if book.published_date %}<div><span>出版日期</span><strong>{{ book.published_date|date:'Y-m-d' }}</strong></div>{% endif %}
+            {% if book.isbn %}<div><span>ISBN</span><strong>{{ book.isbn }}</strong></div>{% endif %}
+            {% if book.rating %}<div><span>评分</span><strong>{{ book.rating }} / 5</strong></div>{% endif %}
+            {% if book.started_at %}<div><span>开始阅读</span><strong>{{ book.started_at|date:'Y-m-d' }}</strong></div>{% endif %}
+            {% if book.finished_at %}<div><span>读完日期</span><strong>{{ book.finished_at|date:'Y-m-d' }}</strong></div>{% endif %}
+            <div><span>电子书文件</span><strong>暂未支持保存</strong></div>
+        </div>
+        <div class="library-progress" aria-label="阅读进度 {{ book.progress_percent }}%"><span style="width: {{ book.progress_percent }}%"></span></div>
+        <div class="library-actions">
+            <a class="library-button library-button-primary" href="{% url 'library:edit_book' book.pk %}">编辑书籍 / 进度</a>
+            {% if not book.quotes.all %}<form method="post" action="{% url 'library:delete_book' book.pk %}" onsubmit="return confirm('确定删除这本书吗？')">{% csrf_token %}<button class="library-button" type="submit">删除书籍</button></form>{% else %}<span class="library-delete-hint">删除书籍前需先删除书中好句</span>{% endif %}
+        </div>
     </div>
-
-    <section class="library-panel library-detail">
-        <div class="library-detail-cover cover-blue" aria-hidden="true"><i class="fa fa-book"></i></div>
-        <div class="library-detail-info">
-            <span class="library-preview-badge">示例书籍 · 未保存</span>
-            <h1>示例书籍：Django 入门</h1>
-            <p class="library-detail-author">作者示例 · 技术分类示例</p>
-            <p class="library-detail-description">这里将展示书籍简介、作者、出版社和出版信息。此页面仅用于确认布局；接入数据后，会由真实书籍详情替换。</p>
-            <div class="library-detail-meta">
-                <div><span>阅读状态</span><strong>在读（示例）</strong></div>
-                <div><span>当前进度</span><strong>35%（示例）</strong></div>
-                <div><span>电子书文件</span><strong>暂无</strong></div>
-            </div>
-            <div class="library-progress" aria-label="示例阅读进度 35%"><span style="width: 35%"></span></div>
-            <div class="library-actions">
-                <button class="library-button library-button-primary" type="button" disabled title="阅读进度尚未接入">更新进度</button>
-                <button class="library-button" type="button" disabled title="笔记功能尚未接入">添加笔记</button>
-                <button class="library-button" type="button" disabled title="电子书下载尚未接入">下载电子书</button>
-            </div>
-        </div>
-    </section>
-
-    <section class="library-panel library-notes">
-        <div class="library-section-heading"><div><h2>我的笔记</h2><p>之后可在这里整理摘录和读后感。</p></div></div>
-        <div class="library-empty library-empty-compact">
-            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-            <h3>暂无笔记</h3>
-            <p>笔记功能将在后续接入。</p>
-        </div>
-    </section>
+</section>
+<section class="library-panel library-book-quotes">
+    <div class="library-section-heading"><div><h2>这本书的好句</h2><p>好句直接属于这本书，可记录章节、页码和自己的想法。</p></div><a class="library-button library-button-primary" href="{% url 'library:add_quote' book.pk %}">添加本书好句</a></div>
+    {% for quote in book.quotes.all %}
+    <article class="library-book-quote">
+        <blockquote>{{ quote.content|linebreaksbr }}</blockquote>
+        {% if quote.chapter or quote.page_number %}<p>{{ quote.chapter }}{% if quote.page_number %} · 第 {{ quote.page_number }} 页{% endif %}</p>{% endif %}
+        {% if quote.translation %}<p>译文：{{ quote.translation|linebreaksbr }}</p>{% endif %}
+        {% if quote.note %}<p>我的想法：{{ quote.note|linebreaksbr }}</p>{% endif %}
+        <div class="library-record-actions"><a href="{% url 'library:edit_quote' quote.pk %}">编辑</a><form method="post" action="{% url 'library:delete_quote' quote.pk %}" onsubmit="return confirm('确定删除这条好句吗？')">{% csrf_token %}<button type="submit">删除</button></form></div>
+    </article>
+    {% empty %}
+    <div class="library-empty library-empty-compact"><i class="fa fa-quote-left" aria-hidden="true"></i><h3>还没有本书好句</h3><p>读到喜欢的句子时，可以在这里记录。</p></div>
+    {% endfor %}
+</section>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="/static/talks/talks.css">
+{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block main %}
+    <div class="main">
+        <div class="left">
+            <section class="card">
+                <div class="title"><h2>我的谈资库</h2></div>
+                <div class="body">
+                    <p>谈资库已建立。这里将用于记录日常见闻，目前还没有录入和保存功能。</p>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}

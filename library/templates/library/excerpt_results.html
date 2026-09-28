@@ -1,0 +1,18 @@
+<div class="excerpt-count" role="status">共 {{ count }} 条摘录</div>
+{% if excerpts %}
+<div class="excerpt-list">
+    {% for excerpt in excerpts %}
+    <article class="excerpt-card">
+        <div class="excerpt-card-top"><div class="excerpt-tags"><span class="excerpt-tag tag-{{ excerpt.category }}">{{ excerpt.get_category_display }}</span><span class="excerpt-tag tag-source">{{ excerpt.get_source_type_display }}</span></div><span class="excerpt-date">{{ excerpt.updated_at|date:'Y-m-d H:i' }}</span></div>
+        <blockquote>{{ excerpt.content|linebreaksbr }}</blockquote>
+        {% if excerpt.source_title or excerpt.attribution %}<p class="excerpt-attribution">{% if excerpt.source_title %}《{{ excerpt.source_title }}》{% endif %}{% if excerpt.attribution %} · {{ excerpt.attribution }}{% endif %}</p>{% endif %}
+        {% if excerpt.translation %}<p class="excerpt-translation"><span>译文</span>{{ excerpt.translation|linebreaksbr }}</p>{% endif %}
+        {% if excerpt.note %}<p class="excerpt-note"><span>我的想法</span>{{ excerpt.note|linebreaksbr }}</p>{% endif %}
+        <div class="excerpt-actions"><a href="{% url 'library:edit_excerpt' excerpt.pk %}">编辑</a><form method="post" action="{% url 'library:delete_excerpt' excerpt.pk %}" onsubmit="return confirm('确定删除这条摘录吗？')">{% csrf_token %}<button type="submit">删除</button></form></div>
+    </article>
+    {% endfor %}
+</div>
+{% include 'library/pagination.html' with page=excerpts %}
+{% else %}
+<div class="library-empty"><i class="fa fa-quote-left" aria-hidden="true"></i><h3>{% if query or category or source %}没有匹配的摘录{% else %}还没有独立摘录{% endif %}</h3><p>{% if query or category or source %}可以调整类别、来源或清除搜索词后重试。{% else %}把电影、网页或生活里遇到的好句保存在这里。{% endif %}</p>{% if not query and not category and not source %}<a class="library-button library-button-primary" href="{% url 'library:add_excerpt' %}">添加摘录</a>{% endif %}</div>
+{% endif %}

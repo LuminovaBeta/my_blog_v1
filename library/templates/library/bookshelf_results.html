@@ -1,0 +1,23 @@
+{% if books %}
+<div class="library-grid">
+    {% for book in books %}
+    <article class="library-book-card">
+        <div class="library-book-cover cover-blue" aria-hidden="true"><i class="fa fa-book"></i></div>
+        <div class="library-card-body">
+            <span class="library-status">{{ book.get_read_status_display }} · {{ book.progress_percent }}%</span>
+            <h3>{{ book.title }}</h3>
+            <p>{{ book.author|default:'作者未填写' }}</p>
+            <div class="library-progress" aria-label="阅读进度 {{ book.progress_percent }}%"><span style="width: {{ book.progress_percent }}%"></span></div>
+            <a href="{% url 'library:book_detail' book.pk %}">查看详情 <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% include 'library/pagination.html' with page=books %}
+{% else %}
+<div class="library-empty"><i class="fa fa-book" aria-hidden="true"></i>
+    <h3>{% if query or status %}没有匹配的书籍{% else %}还没有书籍{% endif %}</h3>
+    <p>{% if query or status %}可以调整状态或清除搜索词后重试。{% else %}从添加一本书开始，书中好句会保存在对应书籍详情里。{% endif %}</p>
+    {% if not query and not status %}<a class="library-button library-button-primary" href="{% url 'library:add_book' %}">添加书籍</a>{% endif %}
+</div>
+{% endif %}

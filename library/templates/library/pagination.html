@@ -1,0 +1,7 @@
+{% if page.has_other_pages %}
+<nav class="library-pagination" aria-label="分页">
+    {% if page.has_previous %}<a class="library-button" href="?q={{ query|urlencode }}&status={{ status|urlencode }}&category={{ category|urlencode }}&source={{ source|urlencode }}&page={{ page.previous_page_number }}">上一页</a>{% endif %}
+    <span>第 {{ page.number }} / {{ page.paginator.num_pages }} 页</span>
+    {% if page.has_next %}<a class="library-button" href="?q={{ query|urlencode }}&status={{ status|urlencode }}&category={{ category|urlencode }}&source={{ source|urlencode }}&page={{ page.next_page_number }}">下一页</a>{% endif %}
+</nav>
+{% endif %}

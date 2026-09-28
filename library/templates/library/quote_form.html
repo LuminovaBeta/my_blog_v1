@@ -1,0 +1,13 @@
+{% extends 'library/base.html' %}
+{% block library_content %}
+<div class="library-breadcrumb"><a href="{% url 'library:bookshelf' %}">我的书库</a><span>/</span><a href="{% url 'library:book_detail' book.pk %}">{{ book.title }}</a><span>/</span><span>{% if is_edit %}编辑好句{% else %}添加好句{% endif %}</span></div>
+<section class="library-panel library-form-panel">
+    <div class="library-section-heading"><div><h1>{% if is_edit %}编辑本书好句{% else %}添加本书好句{% endif %}</h1><p>这条好句只属于《{{ book.title }}》，不会出现在独立摘录中。</p></div></div>
+    <form method="post">{% csrf_token %}
+        <div class="library-form-grid">
+            {% for field in form %}<div class="library-form-field{% if field.name == 'content' or field.name == 'translation' or field.name == 'note' %} library-form-wide{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span aria-hidden="true">*</span>{% endif %}</label>{{ field }}{% for error in field.errors %}<small class="library-field-error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+        </div>
+        <div class="library-form-actions"><a class="library-button" href="{% url 'library:book_detail' book.pk %}">取消</a><button class="library-button library-button-primary" type="submit">保存好句</button></div>
+    </form>
+</section>
+{% endblock %}
