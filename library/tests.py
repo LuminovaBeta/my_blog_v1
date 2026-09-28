@@ -6,12 +6,12 @@ from app01.models import UserInfo
 
 class LibraryPageSketchTests(SimpleTestCase):
     def test_routes_belong_to_library_app(self):
-        for name in ('bookshelf', 'book_preview', 'add_book'):
+        for name in ('bookshelf', 'excerpts', 'book_preview', 'add_book'):
             with self.subTest(name=name):
                 self.assertEqual(resolve(reverse(f'library:{name}')).namespace, 'library')
 
     def test_sketch_pages_require_login(self):
-        for name in ('bookshelf', 'book_preview', 'add_book'):
+        for name in ('bookshelf', 'excerpts', 'book_preview', 'add_book'):
             with self.subTest(name=name):
                 response = self.client.get(reverse(f'library:{name}'))
                 self.assertEqual(response.status_code, 302)
@@ -31,7 +31,7 @@ class LibraryAuthenticatedPageTests(TestCase):
         self.client.force_login(self.user)
 
     def test_all_sketch_pages_render_without_book_models(self):
-        for name in ('bookshelf', 'book_preview', 'add_book'):
+        for name in ('bookshelf', 'excerpts', 'book_preview', 'add_book'):
             with self.subTest(name=name):
                 response = self.client.get(reverse(f'library:{name}'))
                 self.assertEqual(response.status_code, 200)
@@ -43,3 +43,11 @@ class LibraryAuthenticatedPageTests(TestCase):
         self.assertContains(response, '保存书籍（待开发）')
         self.assertContains(response, 'disabled title="保存功能尚未接入"')
         self.assertEqual(self.client.post(reverse('library:add_book')).status_code, 405)
+
+    def test_excerpts_are_explicitly_static_and_read_only(self):
+        response = self.client.get(reverse('library:excerpts'))
+        self.assertContains(response, '我的摘录')
+        self.assertContains(response, '静态示例')
+        self.assertContains(response, 'data-excerpt-card', count=4)
+        self.assertContains(response, '/static/js/library/excerpts.js')
+        self.assertEqual(self.client.post(reverse('library:excerpts')).status_code, 405)

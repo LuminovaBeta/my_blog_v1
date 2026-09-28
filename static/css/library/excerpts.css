@@ -1,0 +1,235 @@
+.excerpt-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 32px;
+}
+.excerpt-intro h1 {
+  margin: 4px 0 10px;
+  font-size: 28px;
+  font-weight: 600;
+}
+.excerpt-intro p {
+  margin: 0;
+  color: var(--main_color, #606266);
+  font-size: 14px;
+}
+
+.excerpt-collection {
+  margin-top: 18px;
+  padding: 24px;
+}
+
+.excerpt-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+.excerpt-toolbar .excerpt-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1 1 280px;
+  min-width: 0;
+  padding: 0 12px;
+  color: #909399;
+}
+.excerpt-toolbar .excerpt-search, .excerpt-toolbar select {
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid #dcdfe6;
+  border-radius: 5px;
+  background: var(--nav_bg, #fff);
+}
+.excerpt-toolbar .excerpt-search:focus-within, .excerpt-toolbar select:focus {
+  outline: 1px solid #409eff;
+  border-color: #409eff;
+}
+.excerpt-toolbar input, .excerpt-toolbar select {
+  color: var(--nav_color, #303133);
+  font: inherit;
+  font-size: 14px;
+}
+.excerpt-toolbar input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+.excerpt-toolbar select {
+  min-width: 136px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.excerpt-count {
+  padding: 15px 0 10px;
+  color: #909399;
+  font-size: 12px;
+}
+
+.excerpt-list {
+  display: grid;
+  gap: 16px;
+}
+
+.excerpt-card {
+  position: relative;
+  padding: 22px 24px 16px;
+  border: 1px solid rgba(144, 147, 153, 0.22);
+  border-radius: 8px;
+  background: var(--nav_bg, #fff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
+}
+.excerpt-card[hidden] {
+  display: none;
+}
+.excerpt-card .excerpt-card-top, .excerpt-card .excerpt-tags, .excerpt-card .excerpt-actions {
+  display: flex;
+  align-items: center;
+}
+.excerpt-card .excerpt-card-top {
+  justify-content: space-between;
+  gap: 12px;
+}
+.excerpt-card .excerpt-tags {
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.excerpt-card .excerpt-date {
+  color: #909399;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.excerpt-card blockquote {
+  position: relative;
+  margin: 20px 0 14px;
+  padding-left: 19px;
+  border-left: 3px solid #409eff;
+  color: var(--nav_color, #303133);
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 500;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.excerpt-card .excerpt-attribution {
+  margin: 0 0 15px 22px;
+  color: #909399;
+  font-size: 13px;
+}
+.excerpt-card .excerpt-translation, .excerpt-card .excerpt-note {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 0 22px;
+  color: var(--main_color, #606266);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.excerpt-card .excerpt-translation span, .excerpt-card .excerpt-note span {
+  flex: 0 0 auto;
+  color: #909399;
+}
+.excerpt-card .excerpt-actions {
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(144, 147, 153, 0.15);
+}
+.excerpt-card .excerpt-actions button {
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  color: #909399;
+  font: inherit;
+  font-size: 12px;
+  cursor: not-allowed;
+}
+
+.excerpt-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.excerpt-tag.tag-english {
+  background: #ecf5ff;
+  color: #409eff;
+}
+.excerpt-tag.tag-chinese {
+  background: #e9f7f0;
+  color: #4d9f76;
+}
+.excerpt-tag.tag-classical {
+  background: #fdf2e7;
+  color: #b7793a;
+}
+.excerpt-tag.tag-source {
+  background: #f4f4f5;
+  color: #909399;
+}
+
+.excerpt-no-results {
+  padding: 45px 16px;
+  text-align: center;
+  color: #909399;
+}
+.excerpt-no-results i {
+  font-size: 28px;
+}
+.excerpt-no-results p {
+  margin: 12px 0 18px;
+  font-size: 14px;
+}
+.excerpt-no-results[hidden] {
+  display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .excerpt-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 22px;
+  }
+  .excerpt-intro h1 {
+    font-size: 24px;
+  }
+  .excerpt-collection {
+    padding: 18px;
+  }
+  .excerpt-toolbar .excerpt-search {
+    flex-basis: 100%;
+  }
+  .excerpt-toolbar .excerpt-select {
+    flex: 1 1 130px;
+  }
+  .excerpt-toolbar select {
+    width: 100%;
+  }
+  .excerpt-card {
+    padding: 18px 16px 14px;
+  }
+  .excerpt-card blockquote {
+    margin-top: 16px;
+  }
+  .excerpt-card .excerpt-translation, .excerpt-card .excerpt-note {
+    margin-left: 0;
+  }
+}
+
+/*# sourceMappingURL=excerpts.css.map */

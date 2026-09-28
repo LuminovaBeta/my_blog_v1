@@ -12,6 +12,13 @@ def bookshelf(request):
 
 @login_required(login_url='/login/')
 @require_GET
+def excerpts(request):
+    """仅展示静态摘录样例，不读取或写入数据库。"""
+    return render(request, 'library/excerpts.html')
+
+
+@login_required(login_url='/login/')
+@require_GET
 def book_preview(request):
     """固定示例详情页，与真实书籍主键无关。"""
     return render(request, 'library/book_preview.html')

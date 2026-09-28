@@ -1,0 +1,110 @@
+{% extends 'library/base.html' %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="/static/css/library/excerpts.css">
+{% endblock %}
+
+{% block library_content %}
+    <section class="library-panel excerpt-intro">
+        <div>
+            <span class="library-eyebrow">WORDS TO KEEP</span>
+            <h1>我的摘录</h1>
+            <p>把读到、听到的好句放在这里，留待以后慢慢重读。</p>
+        </div>
+        <button class="library-button library-button-primary" type="button" disabled title="添加摘录尚未接入">添加摘录（待开发）</button>
+    </section>
+
+    <section class="library-panel excerpt-collection" id="excerpt-page">
+        <div class="library-section-heading">
+            <div>
+                <h2>摘录列表</h2>
+                <p>当前为 4 条静态示例；还没有保存真实摘录。</p>
+            </div>
+            <span class="library-preview-badge">静态示例</span>
+        </div>
+
+        <div class="excerpt-toolbar" role="search" aria-label="筛选摘录示例">
+            <label class="excerpt-search">
+                <span class="visually-hidden">搜索句子、作品或作者</span>
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <input type="search" id="excerpt-search" placeholder="搜索句子、作品或作者" autocomplete="off">
+            </label>
+            <label class="excerpt-select">
+                <span class="visually-hidden">内容类别</span>
+                <select id="excerpt-category" aria-label="内容类别">
+                    <option value="all">全部类别</option>
+                    <option value="english">英文</option>
+                    <option value="chinese">现代中文</option>
+                    <option value="classical">文言文</option>
+                </select>
+            </label>
+            <label class="excerpt-select">
+                <span class="visually-hidden">摘录来源</span>
+                <select id="excerpt-source" aria-label="摘录来源">
+                    <option value="all">全部来源</option>
+                    <option value="book">书籍</option>
+                    <option value="movie">电影</option>
+                    <option value="other">其他</option>
+                </select>
+            </label>
+        </div>
+        <div class="excerpt-count" role="status" aria-live="polite">显示 <span id="excerpt-visible-count">4</span> 条示例摘录</div>
+
+        <div class="excerpt-list" id="excerpt-list">
+            <article class="excerpt-card" data-excerpt-card data-category="english" data-source="movie">
+                <div class="excerpt-card-top">
+                    <div class="excerpt-tags"><span class="excerpt-tag tag-english">英文</span><span class="excerpt-tag tag-source">电影</span></div>
+                    <span class="excerpt-date">示例时间</span>
+                </div>
+                <blockquote lang="en">Take your time; the road will still be there.</blockquote>
+                <p class="excerpt-attribution">《示例电影》 · 人物示例</p>
+                <p class="excerpt-translation"><span>译文</span>慢慢来，路依然在那里。</p>
+                <p class="excerpt-note"><span>我的想法</span>提醒自己不用急着赶到终点。</p>
+                <div class="excerpt-actions"><button type="button" disabled title="编辑功能尚未接入">编辑</button><button type="button" disabled title="删除功能尚未接入">删除</button></div>
+            </article>
+
+            <article class="excerpt-card" data-excerpt-card data-category="english" data-source="book">
+                <div class="excerpt-card-top">
+                    <div class="excerpt-tags"><span class="excerpt-tag tag-english">英文</span><span class="excerpt-tag tag-source">书籍</span></div>
+                    <span class="excerpt-date">示例时间</span>
+                </div>
+                <blockquote lang="en">A quiet page can hold a whole afternoon.</blockquote>
+                <p class="excerpt-attribution">《示例书籍》 · 作者示例</p>
+                <p class="excerpt-translation"><span>译文</span>安静的一页，可以留住整个下午。</p>
+                <div class="excerpt-actions"><button type="button" disabled title="编辑功能尚未接入">编辑</button><button type="button" disabled title="删除功能尚未接入">删除</button></div>
+            </article>
+
+            <article class="excerpt-card" data-excerpt-card data-category="classical" data-source="book">
+                <div class="excerpt-card-top">
+                    <div class="excerpt-tags"><span class="excerpt-tag tag-classical">文言文</span><span class="excerpt-tag tag-source">书籍</span></div>
+                    <span class="excerpt-date">示例时间</span>
+                </div>
+                <blockquote lang="zh-CN">心有所向，步虽缓而不止。</blockquote>
+                <p class="excerpt-attribution">《示例古文》 · 作者示例</p>
+                <p class="excerpt-note"><span>我的想法</span>喜欢这句平静又坚定的语气。</p>
+                <div class="excerpt-actions"><button type="button" disabled title="编辑功能尚未接入">编辑</button><button type="button" disabled title="删除功能尚未接入">删除</button></div>
+            </article>
+
+            <article class="excerpt-card" data-excerpt-card data-category="chinese" data-source="other">
+                <div class="excerpt-card-top">
+                    <div class="excerpt-tags"><span class="excerpt-tag tag-chinese">现代中文</span><span class="excerpt-tag tag-source">其他</span></div>
+                    <span class="excerpt-date">示例时间</span>
+                </div>
+                <blockquote lang="zh-CN">慢一点，也能看见路边正在开花的树。</blockquote>
+                <p class="excerpt-attribution">随手记 · 来源示例</p>
+                <div class="excerpt-actions"><button type="button" disabled title="编辑功能尚未接入">编辑</button><button type="button" disabled title="删除功能尚未接入">删除</button></div>
+            </article>
+        </div>
+
+        <div class="excerpt-no-results" id="excerpt-no-results" hidden>
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <p>没有找到匹配的示例摘录</p>
+            <button class="library-button" id="excerpt-reset" type="button">清空筛选</button>
+        </div>
+    </section>
+{% endblock %}
+
+{% block expand_js %}
+    <script src="/static/js/library/excerpts.js"></script>
+{% endblock %}

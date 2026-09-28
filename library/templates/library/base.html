@@ -9,6 +9,10 @@
 
 {% block main %}
     <div class="library-shell">
+        <div class="library-tabs" role="navigation" aria-label="书库导航">
+            <a href="{% url 'library:bookshelf' %}"{% if request.resolver_match.url_name != 'excerpts' %} class="is-active" aria-current="page"{% endif %}>我的书架</a>
+            <a href="{% url 'library:excerpts' %}"{% if request.resolver_match.url_name == 'excerpts' %} class="is-active" aria-current="page"{% endif %}>我的摘录</a>
+        </div>
         {% block library_content %}{% endblock %}
     </div>
 {% endblock %}

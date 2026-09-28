@@ -37,6 +37,30 @@
   margin-top: 0;
 }
 
+.library-tabs {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 18px;
+  padding: 0 2px;
+  border-bottom: 1px solid rgba(144, 147, 153, 0.25);
+}
+.library-tabs a {
+  display: inline-block;
+  padding: 12px 5px;
+  border-bottom: 2px solid transparent;
+  color: #909399;
+  font-size: 14px;
+}
+.library-tabs a.is-active {
+  border-bottom-color: #409eff;
+  color: #409eff;
+  font-weight: 600;
+}
+.library-tabs a:hover {
+  color: #409eff;
+}
+
 .library-panel {
   box-sizing: border-box;
   background: var(--nav_bg, #fff);
