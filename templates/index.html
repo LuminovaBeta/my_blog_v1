@@ -86,6 +86,7 @@
                     <template #dropdown>
                         <el-dropdown-menu>
                             <el-dropdown-item><a href="/backend">个人中心</a></el-dropdown-item>
+                            <el-dropdown-item><a href="{% url 'library:bookshelf' %}">我的书库</a></el-dropdown-item>
                             <el-dropdown-item><a href="/backend/edit_avatar">修改头像</a></el-dropdown-item>
                             <el-dropdown-item><a href="/backend/add_article">发布文章</a></el-dropdown-item>
                             <el-dropdown-item><a href="/admin">后台管理</a></el-dropdown-item>
@@ -875,7 +876,7 @@
         let timer = null;
         clearInterval(timer)
         // 配置定时器函数，定时轮播
-        timer = setInterval(()=>{
+        if (menu_length > 0) timer = setInterval(()=>{
             // 
             index ++
 

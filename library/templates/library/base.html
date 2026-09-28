@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/library/library.css">
+{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block main %}
+    <div class="library-shell">
+        {% block library_content %}{% endblock %}
+    </div>
+{% endblock %}

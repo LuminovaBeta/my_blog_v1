@@ -22,6 +22,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('library/', include('library.urls')),
     # 函数分发
     # path('admin_home/', views.admin_home), # 自定义admin页面（未开发）
     path('',views.index),

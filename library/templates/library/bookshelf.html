@@ -1,0 +1,82 @@
+{% extends 'library/base.html' %}
+
+{% block library_content %}
+    <section class="library-panel library-intro">
+        <div>
+            <span class="library-eyebrow">MY LIBRARY</span>
+            <h1>我的书库</h1>
+            <p>整理读过的书，也留一个地方给准备开始的阅读。</p>
+        </div>
+        <a class="library-button library-button-primary" href="{% url 'library:add_book' %}">添加书籍</a>
+    </section>
+
+    <div class="library-stats" aria-label="书库数据概览">
+        <div class="library-panel"><strong>0</strong><span>全部书籍</span></div>
+        <div class="library-panel"><strong>0</strong><span>正在阅读</span></div>
+        <div class="library-panel"><strong>0</strong><span>已经读完</span></div>
+    </div>
+
+    <section class="library-panel library-collection">
+        <div class="library-section-heading">
+            <div>
+                <h2>我的书架</h2>
+                <p>书籍数据接入后，这里会显示真实藏书。</p>
+            </div>
+            <span class="library-preview-badge">页面草图</span>
+        </div>
+
+        <div class="library-tools" aria-label="未来的书架筛选区域">
+            <span class="library-search-placeholder"><i class="fa fa-search" aria-hidden="true"></i> 搜索书名或作者</span>
+            <span class="library-filter-active">全部</span>
+            <span>想读</span>
+            <span>在读</span>
+            <span>已读</span>
+        </div>
+
+        <div class="library-empty">
+            <i class="fa fa-book" aria-hidden="true"></i>
+            <h3>还没有真实书籍</h3>
+            <p>当前展示的是界面草图。下一步接入数据后，可以从这里添加并管理自己的书。</p>
+            <a class="library-button library-button-primary" href="{% url 'library:add_book' %}">查看添加书籍页面</a>
+        </div>
+
+        <div class="library-section-heading library-preview-heading">
+            <div>
+                <h2>书籍卡片预览</h2>
+                <p>以下为示意排版，不是已保存的书籍。</p>
+            </div>
+        </div>
+        <div class="library-grid">
+            <article class="library-book-card">
+                <div class="library-book-cover cover-blue" aria-hidden="true"><i class="fa fa-book"></i></div>
+                <div class="library-card-body">
+                    <span class="library-status">在读 · 35%</span>
+                    <h3>示例书籍：Django 入门</h3>
+                    <p>作者示例</p>
+                    <div class="library-progress" aria-label="示例阅读进度 35%"><span style="width: 35%"></span></div>
+                    <a href="{% url 'library:book_preview' %}">查看详情草图 <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                </div>
+            </article>
+            <article class="library-book-card">
+                <div class="library-book-cover cover-green" aria-hidden="true"><i class="fa fa-book"></i></div>
+                <div class="library-card-body">
+                    <span class="library-status">想读</span>
+                    <h3>示例书籍：Python 笔记</h3>
+                    <p>作者示例</p>
+                    <div class="library-progress" aria-hidden="true"><span style="width: 0%"></span></div>
+                    <a href="{% url 'library:book_preview' %}">查看详情草图 <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                </div>
+            </article>
+            <article class="library-book-card">
+                <div class="library-book-cover cover-warm" aria-hidden="true"><i class="fa fa-book"></i></div>
+                <div class="library-card-body">
+                    <span class="library-status">已读</span>
+                    <h3>示例书籍：阅读随笔</h3>
+                    <p>作者示例</p>
+                    <div class="library-progress" aria-hidden="true"><span style="width: 100%"></span></div>
+                    <a href="{% url 'library:book_preview' %}">查看详情草图 <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                </div>
+            </article>
+        </div>
+    </section>
+{% endblock %}

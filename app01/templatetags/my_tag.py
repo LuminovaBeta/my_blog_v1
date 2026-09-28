@@ -110,9 +110,11 @@ def dynamic_navigation(request):
         '/about/': '关于',
         '/sites/': '网站导航',
     }
+    if request.user.is_authenticated:
+        path_dict['/library/'] = '我的书库'
     nav_list = []
     for k, v in path_dict.items():
-        if k == path:
+        if k == path or (k == '/library/' and path.startswith('/library/')):
             nav_list.append(f'<a href="{k}" class="active">{v}</a>')
             continue
         nav_list.append(f'<a href="{k}">{v}</a>')
