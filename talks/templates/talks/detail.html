@@ -1,0 +1,28 @@
+{% extends 'library/base.html' %}
+{% block css %}{{ block.super }}<link rel="stylesheet" href="/static/talks/talks.css">{% endblock %}
+{% block library_content %}
+<div class="library-breadcrumb"><a href="{% url 'talks:index' %}#talk-list">谈资库</a><span>/</span><span>查看谈资</span></div>
+<article class="library-panel talk-detail">
+    <div class="talk-detail-heading">
+        <div>
+            <span class="library-preview-badge">{{ talk.get_category_display }}</span>
+            <h1>{{ talk.topic }}</h1>
+            <p>记录于 <time datetime="{{ talk.created_at|date:'c' }}">{{ talk.created_at|date:'Y-m-d H:i' }}</time> · 修改于 <time datetime="{{ talk.updated_at|date:'c' }}">{{ talk.updated_at|date:'Y-m-d H:i' }}</time></p>
+        </div>
+        <div class="library-actions">
+            <a class="library-button" href="{% url 'talks:edit' talk.pk %}">编辑</a>
+            <form method="post" action="{% url 'talks:delete' talk.pk %}" onsubmit="return confirm('确定删除这条谈资吗？')">
+                {% csrf_token %}<button class="library-button" type="submit">删除</button>
+            </form>
+        </div>
+    </div>
+    {% if talk.tags %}<div class="talk-tags">{% for value in talk.tags %}<span>#{{ value }}</span>{% endfor %}</div>{% endif %}
+    <div class="talk-detail-fields">
+        {% if talk.observed %}<section><h2>我看到了什么</h2><p>{{ talk.observed|linebreaksbr }}</p></section>{% endif %}
+        {% if talk.interest_reason %}<section><h2>为什么吸引我</h2><p>{{ talk.interest_reason|linebreaksbr }}</p></section>{% endif %}
+        {% if talk.understanding %}<section><h2>我的理解</h2><p>{{ talk.understanding|linebreaksbr }}</p></section>{% endif %}
+        {% if talk.open_questions %}<section><h2>还想知道什么</h2><p>{{ talk.open_questions|linebreaksbr }}</p></section>{% endif %}
+        {% if talk.source %}<section><h2>来源</h2><p>{{ talk.source|linebreaksbr }}</p></section>{% endif %}
+    </div>
+</article>
+{% endblock %}

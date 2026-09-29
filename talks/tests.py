@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase, TestCase
+from django.test import Client, SimpleTestCase, TestCase
 from django.urls import resolve, reverse
 from django.utils import timezone
 
@@ -45,6 +45,7 @@ class TalksPageTests(TestCase):
         self.assertContains(response, '随手记一条')
         self.assertContains(response, '继续补充')
         self.assertContains(response, '还没有谈资')
+        self.assertNotContains(response, 'MY TALKS')
         self.assertContains(response, 'href="/talks/" class="is-active" aria-current="page"')
         self.assertNotContains(response, 'href="/library/" class="is-active"')
 
@@ -83,8 +84,11 @@ class TalksPageTests(TestCase):
         self.assertEqual(talk.get_category_display(), '短谈资')
         page = self.client.get(reverse('talks:index'))
         self.assertContains(page, '看到一段有趣的对话')
-        self.assertContains(page, '人与人之间需要耐心')
         self.assertContains(page, '#电影')
+        self.assertContains(
+            self.client.get(reverse('talks:detail', args=[talk.pk])),
+            '人与人之间需要耐心',
+        )
 
     def test_invalid_input_does_not_create_record(self):
         self.client.force_login(self.admin)
@@ -127,6 +131,127 @@ class TalksPageTests(TestCase):
         second = self.client.get(reverse('talks:index') + '?page=2')
         self.assertContains(second, '第 2 / 2 页')
         self.assertContains(second, 'class="talk-card"', count=1)
+
+    def test_card_uses_first_nonempty_summary_and_detail_hides_empty_fields(self):
+        talk = Talk.objects.create(
+            owner=self.admin, topic='只有来源的记录', source='一篇报道',
+        )
+        self.client.force_login(self.admin)
+        listing = self.client.get(reverse('talks:index'))
+        self.assertContains(listing, '来源：</span>一篇报道')
+        self.assertContains(listing, reverse('talks:detail', args=[talk.pk]))
+        self.assertNotContains(listing, 'library-record-actions')
+        self.assertNotContains(listing, reverse('talks:edit', args=[talk.pk]))
+        self.assertNotContains(listing, reverse('talks:delete', args=[talk.pk]))
+        detail = self.client.get(reverse('talks:detail', args=[talk.pk]))
+        self.assertContains(detail, '<h2>来源</h2>', html=False)
+        self.assertNotContains(detail, '<h2>我看到了什么</h2>')
+        self.assertNotContains(detail, '<h2>我的理解</h2>')
+
+    def test_search_category_tag_and_partial_pagination(self):
+        for number in range(11):
+            Talk.objects.create(
+                owner=self.admin, topic=f'电影话题 {number}',
+                category=Talk.Category.SHORT, tags=['电影', '聊天'],
+            )
+        Talk.objects.create(
+            owner=self.admin, topic='其他', category=Talk.Category.DAILY,
+            tags=['生活'],
+        )
+        self.client.force_login(self.admin)
+        url = reverse('talks:index') + '?q=电影&category=short&tag=电影'
+        response = self.client.get(url, HTTP_X_LIBRARY_PARTIAL='results')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Library-Partial'], 'results')
+        self.assertIn('X-Library-Partial', response['Vary'])
+        self.assertContains(response, '共 11 条谈资')
+        self.assertNotContains(response, 'data-library-filter-form')
+        self.assertNotContains(response, '其他')
+        self.assertContains(response, 'tag=%E7%94%B5%E5%BD%B1')
+        second = self.client.get(url + '&page=2', HTTP_X_LIBRARY_PARTIAL='results')
+        self.assertContains(second, '第 2 / 2 页')
+        self.assertContains(second, 'class="talk-card"', count=1)
+        self.assertContains(
+            self.client.get(reverse('talks:index') + '?category=unclassified'),
+            '没有匹配的谈资',
+        )
+        self.assertContains(
+            self.client.get(reverse('talks:index') + '?tag=不存在'),
+            '没有匹配的谈资',
+        )
+
+    def test_edit_prefills_tags_and_saves_optional_fields(self):
+        talk = Talk.objects.create(
+            owner=self.admin, topic='原主题', tags=['电影', '聊天'],
+            observed='旧见闻',
+        )
+        self.client.force_login(self.admin)
+        edit_url = reverse('talks:edit', args=[talk.pk])
+        page = self.client.get(edit_url)
+        self.assertContains(page, '电影，聊天')
+        response = self.client.post(edit_url, {
+            'topic': '新主题', 'observed': '', 'understanding': '新理解',
+            'category': 'personal', 'tags_input': '生活，故事',
+        })
+        self.assertRedirects(response, reverse('talks:detail', args=[talk.pk]))
+        talk.refresh_from_db()
+        self.assertEqual(talk.topic, '新主题')
+        self.assertEqual(talk.observed, '')
+        self.assertEqual(talk.understanding, '新理解')
+        self.assertEqual(talk.category, 'personal')
+        self.assertEqual(talk.tags, ['生活', '故事'])
+        detail = self.client.get(reverse('talks:detail', args=[talk.pk]))
+        self.assertContains(detail, '新理解')
+        self.assertNotContains(detail, '<h2>我看到了什么</h2>')
+
+    def test_invalid_edit_preserves_record(self):
+        talk = Talk.objects.create(owner=self.admin, topic='保留原主题')
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse('talks:edit', args=[talk.pk]), {
+            'topic': '   ', 'tags_input': '新标签',
+        })
+        self.assertEqual(response.status_code, 200)
+        talk.refresh_from_db()
+        self.assertEqual(talk.topic, '保留原主题')
+        self.assertEqual(talk.tags, [])
+
+    def test_delete_requires_post_and_csrf(self):
+        talk = Talk.objects.create(owner=self.admin, topic='待删除')
+        self.client.force_login(self.admin)
+        url = reverse('talks:delete', args=[talk.pk])
+        self.assertEqual(self.client.get(url).status_code, 405)
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.admin)
+        self.assertEqual(csrf_client.post(url).status_code, 403)
+        self.assertTrue(Talk.objects.filter(pk=talk.pk).exists())
+        response = self.client.post(url)
+        self.assertRedirects(
+            response, reverse('talks:index') + '#talk-list',
+            fetch_redirect_response=False,
+        )
+        self.assertFalse(Talk.objects.filter(pk=talk.pk).exists())
+
+    def test_record_routes_are_admin_only_and_owner_scoped(self):
+        other_admin = UserInfo.objects.create_user(
+            username='other-talks-admin', password='test-password',
+            is_superuser=True, is_staff=True,
+        )
+        talk = Talk.objects.create(owner=self.admin, topic='私有谈资')
+        detail = reverse('talks:detail', args=[talk.pk])
+        edit = reverse('talks:edit', args=[talk.pk])
+        delete = reverse('talks:delete', args=[talk.pk])
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(detail).status_code, 403)
+        self.assertEqual(self.client.get(edit).status_code, 403)
+        self.assertEqual(self.client.post(edit, {'topic': '越权修改'}).status_code, 403)
+        self.assertEqual(self.client.post(delete).status_code, 403)
+        self.client.force_login(other_admin)
+        self.assertEqual(self.client.get(detail).status_code, 404)
+        self.assertEqual(self.client.get(edit).status_code, 404)
+        self.assertEqual(self.client.post(edit, {'topic': '越权修改'}).status_code, 404)
+        self.assertEqual(self.client.post(delete).status_code, 404)
+        talk.refresh_from_db()
+        self.assertEqual(talk.topic, '私有谈资')
 
 
 class TalkModelTests(TestCase):

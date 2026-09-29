@@ -2,6 +2,7 @@
     margin-top: 18px;
     padding: 24px;
 }
+.talks-compose { margin-top: 0; }
 
 .talks-compose form { margin-top: 22px; }
 .talk-field {
@@ -67,6 +68,8 @@
 .talk-form-actions > span { color: #909399; font-size: 12px; }
 
 .talks-list .library-section-heading { margin-bottom: 18px; }
+.talk-filters { padding-top: 0; }
+.talk-count { margin: 18px 0 14px; color: #909399; font-size: 13px; }
 .talk-card {
     padding: 20px;
     border: 1px solid rgba(144, 147, 153, .22);
@@ -87,6 +90,8 @@
     font-weight: 600;
     overflow-wrap: anywhere;
 }
+.talk-card-heading h3 a { color: inherit; }
+.talk-card-heading h3 a:hover { color: #409eff; }
 .talk-card-heading time { color: #909399; font-size: 12px; white-space: nowrap; }
 .talk-card-preview {
     margin: 15px 0 0;
@@ -104,21 +109,29 @@
     color: #409eff;
     font-size: 12px;
 }
-.talk-card-details {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(144, 147, 153, .16);
+.talk-detail { padding: 28px 32px; }
+.talk-detail-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
 }
-.talk-card-details > summary { color: #409eff; font-size: 13px; cursor: pointer; }
-.talk-card-details > div { margin-top: 16px; }
-.talk-card-details strong { color: var(--main_color, #303133); font-size: 13px; }
-.talk-card-details p {
-    margin: 6px 0 0;
-    color: var(--main_color, #606266);
-    font-size: 13px;
-    line-height: 1.7;
+.talk-detail-heading h1 { margin: 12px 0; font-size: 26px; overflow-wrap: anywhere; }
+.talk-detail-heading p { margin: 0; color: #909399; font-size: 12px; }
+.talk-detail-heading form { margin: 0; }
+.talk-detail-fields { margin-top: 24px; }
+.talk-detail-fields section {
+    padding: 18px 0;
+    border-top: 1px solid rgba(144, 147, 153, .18);
+}
+.talk-detail-fields h2 { margin: 0 0 10px; font-size: 15px; }
+.talk-detail-fields p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
     overflow-wrap: anywhere;
 }
+.talk-edit form { margin-top: 22px; }
 
 @media screen and (max-width: 560px) {
     .talks-compose, .talks-list { padding: 18px; }
@@ -127,4 +140,6 @@
     .talk-card-heading { flex-direction: column; gap: 6px; }
     .talk-form-actions { align-items: flex-start; flex-direction: column; }
     .talk-form-actions .library-button { align-self: stretch; }
+    .talk-detail { padding: 20px; }
+    .talk-detail-heading { flex-direction: column; }
 }

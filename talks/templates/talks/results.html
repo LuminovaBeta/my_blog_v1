@@ -1,0 +1,39 @@
+<p class="talk-count" role="status">共 {{ talks.paginator.count }} 条谈资</p>
+{% for talk in talks %}
+<article class="talk-card">
+    <div class="talk-card-heading">
+        <div>
+            <span class="library-preview-badge">{{ talk.get_category_display }}</span>
+            <h3><a href="{% url 'talks:detail' talk.pk %}">{{ talk.topic }}</a></h3>
+        </div>
+        <time datetime="{{ talk.created_at|date:'c' }}">{{ talk.created_at|date:'Y-m-d H:i' }}</time>
+    </div>
+    {% if talk.observed %}
+        <p class="talk-card-preview">{{ talk.observed|truncatechars:160|linebreaksbr }}</p>
+    {% elif talk.interest_reason %}
+        <p class="talk-card-preview"><span>为什么吸引我：</span>{{ talk.interest_reason|truncatechars:160|linebreaksbr }}</p>
+    {% elif talk.understanding %}
+        <p class="talk-card-preview"><span>我的理解：</span>{{ talk.understanding|truncatechars:160|linebreaksbr }}</p>
+    {% elif talk.open_questions %}
+        <p class="talk-card-preview"><span>还想知道什么：</span>{{ talk.open_questions|truncatechars:160|linebreaksbr }}</p>
+    {% elif talk.source %}
+        <p class="talk-card-preview"><span>来源：</span>{{ talk.source|truncatechars:160|linebreaksbr }}</p>
+    {% else %}
+        <p class="talk-card-preview talk-card-preview-empty">目前只记录了主题。</p>
+    {% endif %}
+    {% if talk.tags %}<div class="talk-tags">{% for value in talk.tags %}<span>#{{ value }}</span>{% endfor %}</div>{% endif %}
+</article>
+{% empty %}
+<div class="library-empty">
+    <i class="fa fa-comments-o" aria-hidden="true"></i>
+    <h3>{% if query or category or tag %}没有匹配的谈资{% else %}还没有谈资{% endif %}</h3>
+    <p>{% if query or category or tag %}可以调整搜索词、分类或标签后重试。{% else %}遇到想和别人聊的事，就从上面的表单记下一句主题。{% endif %}</p>
+</div>
+{% endfor %}
+{% if talks.has_other_pages %}
+<nav class="library-pagination" aria-label="谈资分页">
+    {% if talks.has_previous %}<a class="library-button" href="?q={{ query|urlencode }}&category={{ category|urlencode }}&tag={{ tag|urlencode }}&page={{ talks.previous_page_number }}">上一页</a>{% endif %}
+    <span>第 {{ talks.number }} / {{ talks.paginator.num_pages }} 页</span>
+    {% if talks.has_next %}<a class="library-button" href="?q={{ query|urlencode }}&category={{ category|urlencode }}&tag={{ tag|urlencode }}&page={{ talks.next_page_number }}">下一页</a>{% endif %}
+</nav>
+{% endif %}
