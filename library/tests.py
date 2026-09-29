@@ -33,6 +33,18 @@ class LibraryTests(TestCase):
                 self.assertNotContains(response, '>筛选</button>')
                 self.assertNotContains(response, '>清空</a>')
 
+    def test_talks_navigation_is_visible_only_to_admin(self):
+        self.assertNotContains(self.client.get(reverse("library:bookshelf")), '>谈资库</a>')
+        self.client.force_login(self.other)
+        self.assertNotContains(self.client.get(reverse("library:excerpts")), '>谈资库</a>')
+        admin = UserInfo.objects.create_user(
+            username="library-admin", password="test-password",
+            is_superuser=True, is_staff=True,
+        )
+        self.client.force_login(admin)
+        for name in ("bookshelf", "excerpts"):
+            self.assertContains(self.client.get(reverse(f"library:{name}")), '>谈资库</a>')
+
     def test_book_filter_returns_only_private_result_fragment(self):
         Book.objects.create(owner=self.user, title="在读书", read_status="reading")
         Book.objects.create(owner=self.user, title="想读书", read_status="want")

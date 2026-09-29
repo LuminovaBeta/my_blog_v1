@@ -11,8 +11,9 @@
 {% block main %}
 <div class="library-shell">
     <div class="library-tabs" role="navigation" aria-label="书库导航">
-        <a href="{% url 'library:bookshelf' %}"{% if request.resolver_match.url_name != 'excerpts' and request.resolver_match.url_name != 'add_excerpt' and request.resolver_match.url_name != 'edit_excerpt' %} class="is-active" aria-current="page"{% endif %}>我的书架</a>
+        <a href="{% url 'library:bookshelf' %}"{% if request.resolver_match.namespace == 'library' and request.resolver_match.url_name != 'excerpts' and request.resolver_match.url_name != 'add_excerpt' and request.resolver_match.url_name != 'edit_excerpt' %} class="is-active" aria-current="page"{% endif %}>我的书架</a>
         <a href="{% url 'library:excerpts' %}"{% if request.resolver_match.url_name == 'excerpts' or request.resolver_match.url_name == 'add_excerpt' or request.resolver_match.url_name == 'edit_excerpt' %} class="is-active" aria-current="page"{% endif %}>独立摘录</a>
+        {% if request.user.is_superuser %}<a href="{% url 'talks:index' %}"{% if request.resolver_match.namespace == 'talks' %} class="is-active" aria-current="page"{% endif %}>谈资库</a>{% endif %}
     </div>
     {% block library_content %}{% endblock %}
 </div>
