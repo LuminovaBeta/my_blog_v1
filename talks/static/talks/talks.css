@@ -1,16 +1,130 @@
-#app > nav.nav_bg {
+.talks-compose, .talks-list {
+    margin-top: 18px;
+    padding: 24px;
+}
+
+.talks-compose form { margin-top: 22px; }
+.talk-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: 18px;
+}
+.talk-field label {
+    color: var(--main_color, #303133);
+    font-size: 13px;
+    font-weight: 500;
+}
+.talk-field label > span:not(.talk-optional) { color: #f56c6c; }
+.talk-optional { margin-left: 5px; color: #909399; font-weight: 400; }
+.talk-field input, .talk-field textarea, .talk-field select {
     box-sizing: border-box;
     width: 100%;
+    min-height: 38px;
+    padding: 9px 11px;
+    border: 1px solid #dcdfe6;
+    border-radius: 5px;
     background: var(--nav_bg, #fff);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
-}
-
-#app > nav.nav_bg a,
-#app > nav.nav_bg .right .el-dropdown .el-dropdown-link {
     color: var(--nav_color, #303133);
+    font: inherit;
+    font-size: 14px;
+}
+.talk-field textarea { resize: vertical; line-height: 1.6; }
+.talk-field input:focus, .talk-field textarea:focus, .talk-field select:focus { border-color: #409eff; }
+.talk-field-error, .talk-form-errors { color: #f56c6c; font-size: 12px; }
+
+.talk-extra {
+    padding: 12px 0;
+    border-top: 1px solid rgba(144, 147, 153, .18);
+}
+.talk-extra > summary {
+    color: #409eff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.talk-extra > summary span {
+    margin-left: 6px;
+    color: #909399;
+    font-size: 12px;
+    font-weight: 400;
+}
+.talk-extra-fields { padding-top: 20px; }
+.talk-extra-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.talk-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(144, 147, 153, .18);
+}
+.talk-form-actions > span { color: #909399; font-size: 12px; }
+
+.talks-list .library-section-heading { margin-bottom: 18px; }
+.talk-card {
+    padding: 20px;
+    border: 1px solid rgba(144, 147, 153, .22);
+    border-radius: 7px;
+    background: var(--nav_bg, #fff);
+}
+.talk-card + .talk-card { margin-top: 14px; }
+.talk-card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+.talk-card-heading h3 {
+    margin: 10px 0 0;
+    color: var(--nav_color, #303133);
+    font-size: 17px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+.talk-card-heading time { color: #909399; font-size: 12px; white-space: nowrap; }
+.talk-card-preview {
+    margin: 15px 0 0;
+    color: var(--main_color, #606266);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+.talk-card-preview span, .talk-card-preview-empty { color: #909399; }
+.talk-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.talk-tags span {
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #ecf5ff;
+    color: #409eff;
+    font-size: 12px;
+}
+.talk-card-details {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(144, 147, 153, .16);
+}
+.talk-card-details > summary { color: #409eff; font-size: 13px; cursor: pointer; }
+.talk-card-details > div { margin-top: 16px; }
+.talk-card-details strong { color: var(--main_color, #303133); font-size: 13px; }
+.talk-card-details p {
+    margin: 6px 0 0;
+    color: var(--main_color, #606266);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
-#app > nav.nav_bg .left .logo .logo-white { display: none; }
-#app > nav.nav_bg .left .logo .logo-black { display: block; }
-#app > nav.nav_bg .search button { color: var(--nav_color, #303133); }
-#app > main { box-sizing: border-box; padding-top: 92px; }
+@media screen and (max-width: 560px) {
+    .talks-compose, .talks-list { padding: 18px; }
+    .talk-extra-meta { grid-template-columns: 1fr; gap: 0; }
+    .talk-card { padding: 16px; }
+    .talk-card-heading { flex-direction: column; gap: 6px; }
+    .talk-form-actions { align-items: flex-start; flex-direction: column; }
+    .talk-form-actions .library-button { align-self: stretch; }
+}

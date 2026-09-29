@@ -1,11 +1,133 @@
 {% extends 'library/base.html' %}
 
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="/static/talks/talks.css">
+{% endblock %}
+
 {% block library_content %}
-    <section class="library-panel library-intro">
-        <div>
-            <span class="library-eyebrow">MY TALKS</span>
-            <h1>我的谈资库</h1>
-            <p>谈资库已建立。这里将用于记录日常见闻，目前还没有录入和保存功能。</p>
+<section class="library-panel library-intro">
+    <div>
+        <span class="library-eyebrow">MY TALKS</span>
+        <h1>我的谈资库</h1>
+        <p>先记下值得聊的一件事，想法可以慢慢补充。只有你能看到自己的记录。</p>
+    </div>
+</section>
+
+<section class="library-panel talks-compose" aria-labelledby="talk-compose-title">
+    <div class="library-section-heading">
+        <div><h2 id="talk-compose-title">随手记一条</h2><p>只需填写主题；其余内容都可以留空。</p></div>
+    </div>
+    <form method="post" action="{% url 'talks:index' %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="talk-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="talk-field">
+            <label for="{{ form.topic.id_for_label }}">主题 <span aria-hidden="true">*</span></label>
+            {{ form.topic }}
+            {% for error in form.topic.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
         </div>
-    </section>
+        <div class="talk-field">
+            <label for="{{ form.observed.id_for_label }}">我看到了什么 <span class="talk-optional">选填</span></label>
+            {{ form.observed }}
+            {% for error in form.observed.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+        </div>
+
+        <details class="talk-extra"{% if form.errors %} open{% endif %}>
+            <summary>继续补充 <span>想法、来源、分类和标签（选填）</span></summary>
+            <div class="talk-extra-fields">
+                <div class="talk-field">
+                    <label for="{{ form.interest_reason.id_for_label }}">为什么吸引我</label>
+                    {{ form.interest_reason }}
+                    {% for error in form.interest_reason.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="talk-field">
+                    <label for="{{ form.understanding.id_for_label }}">我的理解</label>
+                    {{ form.understanding }}
+                    {% for error in form.understanding.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="talk-field">
+                    <label for="{{ form.open_questions.id_for_label }}">还想知道什么</label>
+                    {{ form.open_questions }}
+                    {% for error in form.open_questions.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="talk-field">
+                    <label for="{{ form.source.id_for_label }}">来源</label>
+                    {{ form.source }}
+                    {% for error in form.source.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                </div>
+                <div class="talk-extra-meta">
+                    <div class="talk-field">
+                        <label for="{{ form.category.id_for_label }}">分类</label>
+                        {{ form.category }}
+                        {% for error in form.category.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                    </div>
+                    <div class="talk-field">
+                        <label for="{{ form.tags_input.id_for_label }}">标签</label>
+                        {{ form.tags_input }}
+                        {% for error in form.tags_input.errors %}<small class="talk-field-error">{{ error }}</small>{% endfor %}
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <div class="talk-form-actions">
+            <span>记录时间会在保存时自动生成</span>
+            <button class="library-button library-button-primary" type="submit">保存谈资</button>
+        </div>
+    </form>
+</section>
+
+<section class="library-panel talks-list" id="talk-list" aria-labelledby="talk-list-title">
+    <div class="library-section-heading">
+        <div><h2 id="talk-list-title">最近记录</h2><p>共 {{ talks.paginator.count }} 条，按记录时间从新到旧排列。</p></div>
+    </div>
+    {% for talk in talks %}
+    <article class="talk-card">
+        <div class="talk-card-heading">
+            <div>
+                <span class="library-preview-badge">{{ talk.get_category_display }}</span>
+                <h3>{{ talk.topic }}</h3>
+            </div>
+            <time datetime="{{ talk.created_at|date:'c' }}">{{ talk.created_at|date:'Y-m-d H:i' }}</time>
+        </div>
+        {% if talk.observed %}
+            <p class="talk-card-preview">{{ talk.observed|truncatechars:160|linebreaksbr }}</p>
+        {% elif talk.interest_reason %}
+            <p class="talk-card-preview"><span>吸引我的原因：</span>{{ talk.interest_reason|truncatechars:160|linebreaksbr }}</p>
+        {% elif talk.understanding %}
+            <p class="talk-card-preview"><span>我的理解：</span>{{ talk.understanding|truncatechars:160|linebreaksbr }}</p>
+        {% elif talk.open_questions %}
+            <p class="talk-card-preview"><span>还想知道：</span>{{ talk.open_questions|truncatechars:160|linebreaksbr }}</p>
+        {% else %}
+            <p class="talk-card-preview talk-card-preview-empty">目前只记录了主题。</p>
+        {% endif %}
+        {% if talk.tags %}
+        <div class="talk-tags">{% for tag in talk.tags %}<span>#{{ tag }}</span>{% endfor %}</div>
+        {% endif %}
+        {% if talk.observed or talk.interest_reason or talk.understanding or talk.open_questions or talk.source %}
+        <details class="talk-card-details">
+            <summary>查看完整记录</summary>
+            {% if talk.observed %}<div><strong>我看到了什么</strong><p>{{ talk.observed|linebreaksbr }}</p></div>{% endif %}
+            {% if talk.interest_reason %}<div><strong>为什么吸引我</strong><p>{{ talk.interest_reason|linebreaksbr }}</p></div>{% endif %}
+            {% if talk.understanding %}<div><strong>我的理解</strong><p>{{ talk.understanding|linebreaksbr }}</p></div>{% endif %}
+            {% if talk.open_questions %}<div><strong>还想知道什么</strong><p>{{ talk.open_questions|linebreaksbr }}</p></div>{% endif %}
+            {% if talk.source %}<div><strong>来源</strong><p>{{ talk.source|linebreaksbr }}</p></div>{% endif %}
+        </details>
+        {% endif %}
+    </article>
+    {% empty %}
+    <div class="library-empty">
+        <i class="fa fa-comments-o" aria-hidden="true"></i>
+        <h3>还没有谈资</h3>
+        <p>遇到想和别人聊的事，就从上面的表单记下一句主题。</p>
+    </div>
+    {% endfor %}
+    {% if talks.has_other_pages %}
+    <nav class="library-pagination" aria-label="谈资分页">
+        {% if talks.has_previous %}<a class="library-button" href="?page={{ talks.previous_page_number }}#talk-list">上一页</a>{% endif %}
+        <span>第 {{ talks.number }} / {{ talks.paginator.num_pages }} 页</span>
+        {% if talks.has_next %}<a class="library-button" href="?page={{ talks.next_page_number }}#talk-list">下一页</a>{% endif %}
+    </nav>
+    {% endif %}
+</section>
 {% endblock %}
